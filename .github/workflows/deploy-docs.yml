@@ -22,24 +22,24 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.9
-          # 注意这里的路径，相对于仓库根目录
-          environment-file: HamGNN/docs/environment.yml 
+          # 修正路径：移除多余的 "HamGNN/" 前缀
+          environment-file: docs/environment.yml
           activate-environment: hamgnn-docs
           
       - name: Install HamGNN project
         shell: bash -l {0}
-        # 注意这里的路径，相对于仓库根目录
-        run: pip install -e HamGNN
+        # 修正路径：移除多余的 "HamGNN"
+        run: pip install -e .
 
       - name: Build Sphinx docs
         shell: bash -l {0}
-        # 注意这里的路径，相对于仓库根目录
-        run: sphinx-build -b html HamGNN/docs/source HamGNN/docs/_build/html
+         # 修正路径：移除多余的 "HamGNN/" 前缀
+        run: sphinx-build -b html docs/source docs/_build/html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # 注意这里的路径，相对于仓库根目录
-          publish_dir: ./HamGNN/docs/_build/html
+          # 修正路径：移除多余的 "HamGNN/" 前缀
+          publish_dir: ./docs/_build/html
           commit_message: 'docs: Auto-deploy Sphinx documentation from ${{ github.sha }}'
