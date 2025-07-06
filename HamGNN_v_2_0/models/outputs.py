@@ -670,11 +670,11 @@ class EPC_output:
             #nabla_SK2 = nabla_SK[idx,:,n,:,orb2atom_idx[idx][n],:].type_as(HK) # shape:[norbs, num_k, norbs, 3]
             #nabla_SK2 = torch.swapaxes(nabla_SK2, axis0=0, axis1=1) # shape:[num_k, norbs, norbs, 3]
             
-            nabla_SK1 = torch.zeros_like(nabla_SK, dtype=HK.dtype)
-            nabla_SK1[idx,:,:,m,orb2atom_idx[idx][m],:] = nabla_SK[idx,:,:,m,orb2atom_idx[idx][m],:].type_as(HK)
+            nabla_SK1 = torch.zeros_like(nabla_HK, dtype=HK.dtype)
+            nabla_SK1[idx,:,:,m,orb2atom_idx[idx][m],:] = nabla_HK[idx,:,:,m,orb2atom_idx[idx][m],:].type_as(HK)
             
-            nabla_SK2 = torch.zeros_like(nabla_SK, dtype=HK.dtype)
-            nabla_SK2[idx,:,n,:,orb2atom_idx[idx][n],:] = nabla_SK[idx,:,n,:,orb2atom_idx[idx][n],:].type_as(HK)
+            nabla_SK2 = torch.zeros_like(nabla_HK, dtype=HK.dtype)
+            nabla_SK2[idx,:,n,:,orb2atom_idx[idx][n],:] = nabla_HK[idx,:,n,:,orb2atom_idx[idx][n],:].type_as(HK)
             
             sum1 = 'abd, ace, afghi, adf, age -> abchi'
             part1 = torch.einsum(sum1, torch.conj(wavefunction[idx]), wavefunction[idx], nabla_HK[idx], SK[idx], SK[idx])
