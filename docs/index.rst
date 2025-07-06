@@ -1,16 +1,19 @@
-.. HamGNN documentation master file, created by
-   sphinx-quickstart on Sat Jul  6 19:43:45 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. HamGNN 中文注释版文档
+==================================================
 
-欢迎来到 HamGNN 的API文档!
-=======================================
+欢迎来到 HamGNN 中文注释版的 API 文档！
 
-**HamGNN** 是一个用于预测材料哈密顿量的图神经网络框架。
+本文档基于 `QuantumLab-ZY/HamGNN <https://github.com/QuantumLab-ZY/HamGNN>`_ 项目生成，
+由社区贡献者添加了中文注释，旨在帮助中文开发者更好地理解和使用 HamGNN。
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Reference
+   :caption: API 文档
 
-   source/core
+   source/main_entry
+   source/model_structure
+   source/gnn_core
+   source/model_components
+   source/data_processing
+   source/utilities
 
