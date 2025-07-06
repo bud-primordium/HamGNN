@@ -1,3 +1,11 @@
 *.o
 *.pyc
 *.mod
+build/
+utils_abacus/abacus_H0_export/abacus-postprocess-v353/
+*.egg
+HamGNN.egg-info/
+*_annotated.yaml
+docs/_build/
+GEMINI.md
+*/.DS_Store
