@@ -1,0 +1,45 @@
+name: Deploy Sphinx Documentation
+
+on:
+  push:
+    branches:
+      - chinese_annotated  # 当这个分支有更新时触发
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+          # 注意这里的路径，相对于仓库根目录
+          environment-file: HamGNN/docs/environment.yml 
+          activate-environment: hamgnn-docs
+          
+      - name: Install HamGNN project
+        shell: bash -l {0}
+        # 注意这里的路径，相对于仓库根目录
+        run: pip install -e HamGNN
+
+      - name: Build Sphinx docs
+        shell: bash -l {0}
+        # 注意这里的路径，相对于仓库根目录
+        run: sphinx-build -b html HamGNN/docs/source HamGNN/docs/_build/html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # 注意这里的路径，相对于仓库根目录
+          publish_dir: ./HamGNN/docs/_build/html
+          commit_message: 'docs: Auto-deploy Sphinx documentation from ${{ github.sha }}'
