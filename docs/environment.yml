@@ -27,7 +27,9 @@ dependencies:
   - numba
   - tensorboard
   
-  # 其他 pip 依赖
+  # PyTorch Geometric and its dependencies (installed via pip)
+  
+  # Other pip dependencies
   - pip
   - pip:
     - --find-links https://data.pyg.org/whl/torch-2.1.0+cpu.html
@@ -35,7 +37,7 @@ dependencies:
     - torch-sparse
     - torch-cluster
     - torch-spline-conv
-    - pyg
+    - torch-geometric
     - torch-ema
     - torch-runstats
     - lie_learn
