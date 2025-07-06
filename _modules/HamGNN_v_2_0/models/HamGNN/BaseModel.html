@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.HamGNN.BaseModel &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/utilities.html">通用工具函数</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.HamGNN.BaseModel</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.HamGNN.BaseModel 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Descripttion: </span>
+<span class="sd">version: </span>
+<span class="sd">Author: Yang Zhong</span>
+<span class="sd">Date: 2024-08-24 14:22:19</span>
+<span class="sd">LastEditors: Yang Zhong</span>
+<span class="sd">LastEditTime: 2024-11-28 22:14:26</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_scatter</span><span class="w"> </span><span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydict</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasyDict</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">neighborlist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.periodic_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">HamGNN 模型的基类定义</span>
+
+<span class="sd">本模块提供了 `BaseModel` 类，作为所有 HamGNN 图表示学习模型的基类。</span>
+<span class="sd">它主要负责实现一个核心功能：在模型内部动态地构建计算图（邻居列表）。</span>
+<span class="sd">这与在数据预处理阶段固定图结构的方法不同，它允许模型根据原子种类和可调的缩放因子，</span>
+<span class="sd">为每个结构即时地、灵活地确定原子间的相互作用范围。</span>
+
+<span class="sd">该动态图构建功能对于处理多样化的化学环境和实现更具适应性的模型至关重要。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 不同 DFT 软件使用的原子半径 (单位：Angstrom，abacus 除外)</span>
+<span class="c1"># 这些半径用于在动态图构建时确定初始的邻居搜索范围</span>
+<span class="n">ATOMIC_RADII</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;openmx&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;He&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Li&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Be&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+        <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Ne&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span> <span class="s1">&#39;Na&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span> <span class="s1">&#39;Mg&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+        <span class="s1">&#39;Al&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Si&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Cl&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Ar&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+        <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;Ca&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span> <span class="s1">&#39;Sc&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span> <span class="s1">&#39;Ti&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Cr&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+        <span class="s1">&#39;Mn&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Fe&#39;</span><span class="p">:</span> <span class="mf">5.5</span><span class="p">,</span> <span class="s1">&#39;Co&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Ni&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Cu&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span> <span class="s1">&#39;Zn&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ga&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Ge&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;As&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Se&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Br&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Kr&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="s1">&#39;Rb&#39;</span><span class="p">:</span> <span class="mf">11.0</span><span class="p">,</span> <span class="s1">&#39;Sr&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;Zr&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Nb&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Mo&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>
+        <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Ru&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Rh&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Pd&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Ag&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Cd&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>
+        <span class="s1">&#39;In&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Sb&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Te&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Xe&#39;</span><span class="p">:</span> <span class="mf">11.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cs&#39;</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s1">&#39;Ba&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;La&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Ce&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Pr&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Nd&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span>
+        <span class="s1">&#39;Pm&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Sm&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Dy&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Ho&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Lu&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Hf&#39;</span><span class="p">:</span> <span class="mf">9.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ta&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Re&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Os&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Ir&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Pt&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>
+        <span class="s1">&#39;Au&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span> <span class="s1">&#39;Hg&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Tl&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Pb&#39;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span> <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="mf">8.0</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;siesta&#39;</span><span class="p">:{},</span>
+    <span class="s1">&#39;abacus&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="c1"># unit: au</span>
+    <span class="s1">&#39;Ag&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Cu&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Mo&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Sc&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Al&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Fe&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Na&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Se&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Ar&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;F&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Nb&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;S&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;As&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Ga&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Ne&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span>  <span class="s1">&#39;Si&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;Au&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Ge&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;N&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Sn&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;Ba&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;He&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span>  <span class="s1">&#39;Ni&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Sr&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>
+    <span class="s1">&#39;Be&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Hf&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;O&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Ta&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;B&#39;</span> <span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;H&#39;</span> <span class="p">:</span><span class="mi">6</span><span class="p">,</span>  <span class="s1">&#39;Os&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Tc&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;Bi&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Hg&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>  <span class="s1">&#39;Pb&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Te&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;Br&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;I&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Pd&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Ti&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Ca&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span>  <span class="s1">&#39;In&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;P&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Tl&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;Cd&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Ir&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Pt&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;V&#39;</span> <span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;C&#39;</span> <span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;K&#39;</span> <span class="p">:</span><span class="mi">9</span><span class="p">,</span>  <span class="s1">&#39;Rb&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span> <span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Cl&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Kr&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Re&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Xe&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Co&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Li&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Rh&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Y&#39;</span> <span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Cr&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Mg&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Ru&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Zn&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>
+    <span class="s1">&#39;Cs&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Mn&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span>  <span class="s1">&#39;Sb&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span>  <span class="s1">&#39;Zr&#39;</span><span class="p">:</span><span class="mi">8</span>
+<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">DEFAULT_RADIUS</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="c1"># 默认原子半径</span>
+
+<div class="viewcode-block" id="get_radii_from_atomic_numbers">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.get_radii_from_atomic_numbers">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_radii_from_atomic_numbers</span><span class="p">(</span><span class="n">atomic_numbers</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> 
+                                  <span class="n">radius_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">radius_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;openmx&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    根据原子序数列表检索缩放后的原子半径。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atomic_numbers (Union[torch.Tensor, List[int]]): 包含原子序数的列表或张量。</span>
+<span class="sd">        radius_scale (float): 原子半径的缩放因子，默认为 1.5。</span>
+<span class="sd">        radius_type (str): 所用原子半径的来源软件，默认为 &#39;openmx&#39;。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[float]: 与输入原子序数对应的缩放后的原子半径列表。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atomic_numbers</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">atomic_numbers</span> <span class="o">=</span> <span class="n">atomic_numbers</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># 将原子序数转换为元素符号，然后获取缩放后的半径。</span>
+    <span class="c1"># 如果在字典中找不到元素，则使用默认值 0.0。</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">radius_scale</span> <span class="o">*</span> <span class="n">ATOMIC_RADII</span><span class="p">[</span><span class="n">radius_type</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">from_Z</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">DEFAULT_RADIUS</span><span class="p">)</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">atomic_numbers</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="neighbor_list_and_relative_vec">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.neighbor_list_and_relative_vec">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">neighbor_list_and_relative_vec</span><span class="p">(</span>
+    <span class="n">pos</span><span class="p">,</span>
+    <span class="n">r_max</span><span class="p">,</span>
+    <span class="n">self_interaction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">strict_self_interaction</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">pbc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;基于径向截断距离创建邻居列表和相对向量。</span>
+
+<span class="sd">    边的约定如下:</span>
+<span class="sd">    - `edge_index[0]` 是 *源* (卷积中心)。</span>
+<span class="sd">    - `edge_index[1]` 是 *目标* (邻居)。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pos (shape [N, 3]): 原子位置坐标；可以是 Tensor 或 numpy 数组。</span>
+<span class="sd">        r_max (float): 用于寻找邻居的径向截断距离。</span>
+<span class="sd">        cell (numpy shape [3, 3]): 周期性边界条件的晶胞矩阵。</span>
+<span class="sd">        pbc (bool or 3-tuple of bool): 三个维度上的周期性。</span>
+<span class="sd">        self_interaction (bool): 是否包括相同周期性镜像的自相互作用边。</span>
+<span class="sd">        strict_self_interaction (bool): 是否包括任何自相互作用边。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        edge_index (torch.Tensor [2, num_edges]): 边的列表。</span>
+<span class="sd">        shifts (torch.Tensor [num_edges, 3]): 相对晶胞平移向量。</span>
+<span class="sd">        cell_tensor (torch.Tensor [3, 3]): 晶胞张量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pbc</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">pbc</span> <span class="o">=</span> <span class="p">(</span><span class="n">pbc</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span>
+
+    <span class="c1"># 处理位置数据</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">temp_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">out_device</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">out_dtype</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">temp_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="n">out_device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="n">out_dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">get_default_dtype</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">out_device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;当前，邻居列表计算需要 CPU 数据。如果可能，请传递 CPU 张量。&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># 处理晶胞数据</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">temp_cell</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">cell_tensor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">out_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">temp_cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+        <span class="n">cell_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">temp_cell</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">out_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">temp_cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">temp_pos</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">cell_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">temp_cell</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">out_device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">)</span>
+
+    <span class="n">temp_cell</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">complete_cell</span><span class="p">(</span><span class="n">temp_cell</span><span class="p">)</span>
+
+    <span class="c1"># 生成邻居列表</span>
+    <span class="n">first_index</span><span class="p">,</span> <span class="n">second_index</span><span class="p">,</span> <span class="n">shifts</span> <span class="o">=</span> <span class="n">neighborlist</span><span class="o">.</span><span class="n">primitive_neighbor_list</span><span class="p">(</span>
+        <span class="s2">&quot;ijS&quot;</span><span class="p">,</span>
+        <span class="n">pbc</span><span class="p">,</span>
+        <span class="n">temp_cell</span><span class="p">,</span>
+        <span class="n">temp_pos</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span>
+        <span class="n">self_interaction</span><span class="o">=</span><span class="n">strict_self_interaction</span><span class="p">,</span>
+        <span class="n">use_scaled_positions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 过滤自相互作用的边</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">self_interaction</span><span class="p">:</span>
+        <span class="n">bad_edge</span> <span class="o">=</span> <span class="n">first_index</span> <span class="o">==</span> <span class="n">second_index</span>
+        <span class="n">bad_edge</span> <span class="o">&amp;=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">shifts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">keep_edge</span> <span class="o">=</span> <span class="o">~</span><span class="n">bad_edge</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">keep_edge</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;消除自相互作用的边后，没有边剩下。&quot;</span><span class="p">)</span>
+        <span class="n">first_index</span> <span class="o">=</span> <span class="n">first_index</span><span class="p">[</span><span class="n">keep_edge</span><span class="p">]</span>
+        <span class="n">second_index</span> <span class="o">=</span> <span class="n">second_index</span><span class="p">[</span><span class="n">keep_edge</span><span class="p">]</span>
+        <span class="n">shifts</span> <span class="o">=</span> <span class="n">shifts</span><span class="p">[</span><span class="n">keep_edge</span><span class="p">]</span>
+
+    <span class="c1"># 构建输出</span>
+    <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">first_index</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">second_index</span><span class="p">))</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">out_device</span><span class="p">)</span>
+
+    <span class="n">shifts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span>
+        <span class="n">shifts</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">out_device</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">shifts</span><span class="p">,</span> <span class="n">cell_tensor</span></div>
+
+
+<div class="viewcode-block" id="find_matching_columns_of_A_in_B">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.find_matching_columns_of_A_in_B">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_matching_columns_of_A_in_B</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    在矩阵 B 中查找与矩阵 A 匹配的列。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        A (torch.Tensor): 第一个矩阵。</span>
+<span class="sd">        B (torch.Tensor): 第二个矩阵。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 在 B 中匹配列的索引。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;A 和 B 的行数必须相同。&quot;</span>
+    <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;请增 `radius_scale` 因子！&quot;</span>
+
+    <span class="c1"># 转置 A 和 B，将列视为行进行比较</span>
+    <span class="n">A_rows</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 形状: (num_cols_A, 1, num_rows)</span>
+    <span class="n">B_rows</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 形状: (1, num_cols_B, num_rows)</span>
+
+    <span class="c1"># 比较 A 的每一行与 B 的每一行</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">A_rows</span> <span class="o">==</span> <span class="n">B_rows</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 形状: (num_cols_A, num_cols_B)</span>
+
+    <span class="c1"># 找到匹配的索引</span>
+    <span class="n">matching_indices</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">as_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 取元组的第二个元素</span>
+
+    <span class="k">return</span> <span class="n">matching_indices</span></div>
+
+
+<div class="viewcode-block" id="BaseModel">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;所有 HamGNN 图学习模型的基类。</span>
+
+<span class="sd">    它封装了动态图构建的核心逻辑。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        radius_type (str): 用于确定原子半径的来源类型 (e.g., &#39;openmx&#39;)。</span>
+<span class="sd">        radius_scale (float): 原子半径的缩放因子。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;openmx&#39;</span><span class="p">,</span> <span class="n">radius_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            radius_type (str): 原子半径的类型，默认为 &#39;openmx&#39;。</span>
+<span class="sd">            radius_scale (float): 原子半径的缩放因子，默认为 1.5。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_type</span> <span class="o">=</span> <span class="n">radius_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_scale</span> <span class="o">=</span> <span class="n">radius_scale</span>
+
+<div class="viewcode-block" id="BaseModel.forward">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播的占位符，应在子类中实现。&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="BaseModel.generate_graph">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.generate_graph">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        根据原子位置和种类动态生成计算图（邻居列表）。</span>
+
+<span class="sd">        此方法会忽略 `data` 中预先计算的 `edge_index`，并根据每种原子的</span>
+<span class="sd">        化学性质（半径）和 `radius_scale` 重新计算邻居关系。</span>
+<span class="sd">        它还会找到新生成的图的边与原始图的边的对应关系。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): 输入的图数据对象，必须包含 `pos`, `z`, `cell`, `batch` 等信息。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EasyDict: </span>
+<span class="sd">                一个包含新生成的图信息的字典。</span>
+<span class="sd">                - &#39;z&#39;: 原子序数。</span>
+<span class="sd">                - &#39;pos&#39;: 原子位置。</span>
+<span class="sd">                - &#39;edge_index&#39;: 新的边索引。</span>
+<span class="sd">                - &#39;cell_shift&#39;: 边的晶胞平移向量。</span>
+<span class="sd">                - &#39;nbr_shift&#39;: 邻居的相对位置向量。</span>
+<span class="sd">                - &#39;batch&#39;: 批处理索引。</span>
+<span class="sd">                - &#39;matching_edges&#39;: 新图的边在原始图中的匹配索引。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">EasyDict</span><span class="p">()</span>
+
+        <span class="n">node_counts</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="n">latt_batch</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">pos_batch</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="n">pos_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pos_batch</span><span class="p">,</span> <span class="n">node_counts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">z_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">node_counts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="n">nbr_shift</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_shift</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 遍历批处理中的每个晶体</span>
+        <span class="k">for</span> <span class="n">idx_xtal</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pos_batch</span><span class="p">):</span>
+            <span class="c1"># 基于原子半径动态计算邻居列表</span>
+            <span class="n">edge_index_temp</span><span class="p">,</span> <span class="n">shifts_tmp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">neighbor_list_and_relative_vec</span><span class="p">(</span>
+                <span class="n">pos</span><span class="p">,</span>
+                <span class="n">r_max</span><span class="o">=</span><span class="n">get_radii_from_atomic_numbers</span><span class="p">(</span><span class="n">z_batch</span><span class="p">[</span><span class="n">idx_xtal</span><span class="p">],</span> <span class="n">radius_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">radius_scale</span><span class="p">,</span> <span class="n">radius_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">radius_type</span><span class="p">),</span>
+                <span class="n">self_interaction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">strict_self_interaction</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">cell</span><span class="o">=</span><span class="n">latt_batch</span><span class="p">[</span><span class="n">idx_xtal</span><span class="p">],</span>
+                <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># 计算邻居的真实位移向量</span>
+            <span class="n">nbr_shift_temp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ni, ij -&gt; nj&#39;</span><span class="p">,</span>  <span class="n">shifts_tmp</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">pos</span><span class="p">),</span> <span class="n">latt_batch</span><span class="p">[</span><span class="n">idx_xtal</span><span class="p">])</span>
+            
+            <span class="c1"># 调整边索引以适应批处理</span>
+            <span class="k">if</span> <span class="n">idx_xtal</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">edge_index_temp</span> <span class="o">+=</span> <span class="n">node_counts</span><span class="p">[</span><span class="n">idx_xtal</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">edge_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_index_temp</span><span class="p">)</span>
+            <span class="n">cell_shift</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shifts_tmp</span><span class="p">)</span>
+            <span class="n">nbr_shift</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nbr_shift_temp</span><span class="p">)</span>
+
+        <span class="c1"># 拼接所有晶体的图信息</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">)</span>
+        <span class="n">cell_shift</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">cell_shift</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">cell_shift</span><span class="p">)</span>
+        <span class="n">nbr_shift</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">nbr_shift</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">nbr_shift</span><span class="p">)</span>
+
+        <span class="c1"># 找到新生成的边与原始数据中边的对应关系</span>
+        <span class="n">matching_edges</span> <span class="o">=</span> <span class="n">find_matching_columns_of_A_in_B</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">cell_shift</span><span class="o">.</span><span class="n">t</span><span class="p">()],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> 
+                                                      <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">cell_shift</span><span class="o">.</span><span class="n">t</span><span class="p">()],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># 填充图字典</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">z</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;edge_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_index</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;cell_shift&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell_shift</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;nbr_shift&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbr_shift</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;batch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span>
+        <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;matching_edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">matching_edges</span>
+
+        <span class="k">return</span> <span class="n">graph</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算模型的总参数数量。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

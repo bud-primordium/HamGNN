@@ -17,6 +17,7 @@
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/translations.js?v=beaddf03"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
@@ -45,15 +46,32 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">模型顶层结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">模型顶层结构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.representation"><code class="docutils literal notranslate"><span class="pre">Model.representation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.output_module"><code class="docutils literal notranslate"><span class="pre">Model.output_module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.losses"><code class="docutils literal notranslate"><span class="pre">Model.losses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.post_processing"><code class="docutils literal notranslate"><span class="pre">Model.post_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.calculate_loss"><code class="docutils literal notranslate"><span class="pre">Model.calculate_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.check_param"><code class="docutils literal notranslate"><span class="pre">Model.check_param()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Model.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.forward"><code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.log_metrics"><code class="docutils literal notranslate"><span class="pre">Model.log_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.test_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.test_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.training_step"><code class="docutils literal notranslate"><span class="pre">Model.training_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.validation_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.validation_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.Model.Model.validation_step"><code class="docutils literal notranslate"><span class="pre">Model.validation_step()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -70,7 +88,6 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">模型顶层结构</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/model_structure.rst.txt" rel="nofollow"> 查看页面源码</a>
@@ -81,8 +98,242 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>模型顶层结构<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <section id="module-HamGNN_v_2_0.models.Model">
+<span id="id1"></span><h1>模型顶层结构<a class="headerlink" href="#module-HamGNN_v_2_0.models.Model" title="Link to this heading"></a></h1>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-09 13:46:53</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-10-29 21:09:02</p></li>
+</ul>
+<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.Model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">representation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">losses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_monitor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'training/total_loss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amsgrad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points_to_scatter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model" title="Link to this definition"></a></dt>
+<dd><p>核心的 PyTorch Lightning 模型，用于封装和训练 GNN。</p>
+<p>这个类集成了表示网络和输出网络，并定义了完整的训练、验证和测试循环。
+它通过配置文件接收损失函数、评估指标和优化器参数，实现了高度的灵活性和可配置性。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.representation">
+<span class="sig-name descname"><span class="pre">representation</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.representation" title="Link to this definition"></a></dt>
+<dd><p>图表示网络，用于从输入图数据中提取特征。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.output_module">
+<span class="sig-name descname"><span class="pre">output_module</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.output_module" title="Link to this definition"></a></dt>
+<dd><p>输出网络，用于从表示网络提取的特征中预测目标属性。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.losses">
+<span class="sig-name descname"><span class="pre">losses</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.losses" title="Link to this definition"></a></dt>
+<dd><p>一个字典列表，定义了用于训练的损失函数。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.metrics">
+<span class="sig-name descname"><span class="pre">metrics</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.metrics" title="Link to this definition"></a></dt>
+<dd><p>一个字典列表，定义了用于验证和测试的评估指标。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.post_processing">
+<span class="sig-name descname"><span class="pre">post_processing</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.post_processing" title="Link to this definition"></a></dt>
+<dd><p>一个可选的后处理函数，用于在测试阶段计算需要梯度信息的物理量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.calculate_loss">
+<span class="sig-name descname"><span class="pre">calculate_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.calculate_loss"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.calculate_loss" title="Link to this definition"></a></dt>
+<dd><p>根据 <cite>self.losses</cite> 配置计算总损失。</p>
+<p>例如，对于一个均方误差 (MSE) 损失，其计算方式为：</p>
+<div class="math notranslate nohighlight">
+\[L_{MSE} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(y_i\)</span> 是真实值，<span class="math notranslate nohighlight">\(\hat{y}_i\)</span> 是预测值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 当前批次的数据，包含目标值。</p></li>
+<li><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 模型的预测输出。</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) – 当前阶段的名称（’training’, ‘validation’, or ‘test’），用于日志记录。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>计算得到的加权总损失。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.check_param">
+<span class="sig-name descname"><span class="pre">check_param</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.check_param"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.check_param" title="Link to this definition"></a></dt>
+<dd><p>一个调试辅助函数，用于打印模型参数的名称和梯度信息。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.configure_optimizers"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.configure_optimizers" title="Link to this definition"></a></dt>
+<dd><p>配置模型的优化器和学习率调度器。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>包含优化器列表和调度器配置列表的元组。</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="（在 Python v3.13）">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.forward" title="Link to this definition"></a></dt>
+<dd><p>定义模型的前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 输入的批次数据。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含预测值的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.log_metrics">
+<span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.log_metrics"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.log_metrics" title="Link to this definition"></a></dt>
+<dd><p>根据 <cite>self.metrics</cite> 配置计算并记录所有评估指标。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 当前批次的数据，包含目标值。</p></li>
+<li><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 模型的预测输出。</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) – 当前阶段的名称（’validation’ or ‘test’）。</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.test_epoch_end">
+<span class="sig-name descname"><span class="pre">test_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_step_outputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.test_epoch_end"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.test_epoch_end" title="Link to this definition"></a></dt>
+<dd><p>在测试的每个 epoch 结束时调用。</p>
+<p>该方法聚合所有测试批次的结果，将预测和目标保存到 .npy 文件，并生成最终的散点图。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>test_step_outputs</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>]</em>) – 从 <cite>test_step</cite> 返回的输出列表。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.test_step">
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.test_step"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.test_step" title="Link to this definition"></a></dt>
+<dd><p>执行单个测试步骤。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 当前批次的测试数据。</p></li>
+<li><p><strong>batch_idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 当前批次的索引。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含预测、目标和任何后处理值的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.training_step">
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.training_step"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.training_step" title="Link to this definition"></a></dt>
+<dd><p>执行单个训练步骤。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 当前批次的训练数据。</p></li>
+<li><p><strong>batch_idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 当前批次的索引。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>该批次的总训练损失。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.validation_epoch_end">
+<span class="sig-name descname"><span class="pre">validation_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_step_outputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.validation_epoch_end"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.validation_epoch_end" title="Link to this definition"></a></dt>
+<dd><p>在验证的每个 epoch 结束时调用。</p>
+<p>该方法聚合所有验证批次的预测和目标，并生成散点图以可视化模型性能。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>validation_step_outputs</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>]</em>) – 从 <cite>validation_step</cite> 返回的输出列表。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.Model.Model.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/Model.html#Model.validation_step"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.Model.Model.validation_step" title="Link to this definition"></a></dt>
+<dd><p>执行单个验证步骤。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 当前批次的验证数据。</p></li>
+<li><p><strong>batch_idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 当前批次的索引。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含该批次预测值和目标值的字典，用于 <cite>validation_epoch_end</cite>。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

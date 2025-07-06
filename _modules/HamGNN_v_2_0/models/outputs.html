@@ -1,0 +1,904 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.outputs &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utilities.html">通用工具函数</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.outputs</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.outputs 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd">* @Author: Yang Zhong </span>
+<span class="sd">* @Date: 2021-10-08 22:38:15 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-11-07 10:54:51</span>
+<span class="sd">*/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;该模块定义了多种输出层，用于从学习到的图表示中预测各种物理属性。</span>
+
+<span class="sd">这些输出层将图神经网络（GNN）编码的原子和边的特征作为输入，</span>
+<span class="sd">并计算出诸如力、Born有效电荷、压电张量、总能量等物理量。</span>
+<span class="sd">每个类对应一个特定的物理属性预测任务。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">batch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Linear</span><span class="p">,</span> <span class="n">Bilinear</span><span class="p">,</span> <span class="n">Sigmoid</span><span class="p">,</span> <span class="n">Softplus</span><span class="p">,</span> <span class="n">ELU</span><span class="p">,</span> <span class="n">ReLU</span><span class="p">,</span> <span class="n">SELU</span><span class="p">,</span> <span class="n">SiLU</span><span class="p">,</span>
+                      <span class="n">CELU</span><span class="p">,</span> <span class="n">BatchNorm1d</span><span class="p">,</span> <span class="n">ModuleList</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Tanh</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_bn_act</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLPRegression</span><span class="p">,</span> <span class="n">denseRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_scatter</span><span class="w"> </span><span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">global_mean_pool</span><span class="p">,</span> <span class="n">global_add_pool</span><span class="p">,</span> <span class="n">global_max_pool</span>
+
+
+<div class="viewcode-block" id="Force">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Force">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Force</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;基于边特征计算原子受力的输出模块。</span>
+
+<span class="sd">    该模块使用一个密集回归模型（`denseRegression`）来处理每条边的特征，</span>
+<span class="sd">    并将其预测的标量值沿着边的方向矢量投影，从而得到力矢量。</span>
+<span class="sd">    最后，将所有作用到同一个原子上的力矢量进行汇总（scatter-add），得到每个原子的总受力。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span>
+                    <span class="n">use_bath_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 Force 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_edge_features (int, optional): 输入的边特征维度。</span>
+<span class="sd">            activation (callable, optional): 回归模型中使用的激活函数。默认为 `Softplus()`。</span>
+<span class="sd">            use_bath_norm (bool, optional): 是否在回归模型中使用批量归一化。默认为 `True`。</span>
+<span class="sd">            bias (bool, optional): 回归模型中的线性层是否使用偏置。默认为 `True`。</span>
+<span class="sd">            n_h (int, optional): 回归模型中的隐藏层数量。默认为 `3`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Force</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_edge_features</span> <span class="o">=</span> <span class="n">num_edge_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_edge_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                                                <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Force.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Force.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象，包含原子位置 `pos` 和边索引 `edge_index` 等信息。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `edge_attr` 键。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含计算出的原子受力 `force` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edge_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;edge_attr&#39;</span><span class="p">]</span>  <span class="c1"># 边特征张量mji</span>
+        <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span>
+        <span class="n">nbr_shift</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nbr_shift</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span>
+        <span class="c1"># 计算从原子 j 指向原子 i 的方向矢量 (考虑周期性边界条件)</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">nbr_shift</span><span class="p">)</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="c1"># j-&gt;i: ri - rj = rji</span>
+        <span class="n">edge_length</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="c1"># 归一化方向矢量</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">/</span><span class="n">edge_length</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># eji, 形状为 (N_edges, 3)</span>
+        
+        <span class="c1"># 将回归模型输出的标量力大小乘以方向矢量，得到每条边上的力</span>
+        <span class="n">force</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">edge_dir</span>  <span class="c1"># mji * eji</span>
+        <span class="c1"># 将所有作用到目标原子 i 上的力进行求和</span>
+        <span class="n">force</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">force</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;force&#39;</span><span class="p">:</span> <span class="n">force</span><span class="p">}</span> <span class="c1"># 形状为 (N_nodes, 3)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Force_node_vec">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Force_node_vec">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Force_node_vec</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;基于节点标量和矢量特征计算原子受力的输出模块。</span>
+
+<span class="sd">    这个模块假设原子受力可以表示为一个标量部分和一个矢量部分的乘积。</span>
+<span class="sd">    如果节点特征维度大于1，则使用一个回归模型来计算标量部分；</span>
+<span class="sd">    否则，直接使用节点标量特征。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span>
+                    <span class="n">use_bath_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 Force_node_vec 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_node_features (int, optional): 输入的节点特征维度。</span>
+<span class="sd">            activation (callable, optional): 回归模型中使用的激活函数。默认为 `Softplus()`。</span>
+<span class="sd">            use_bath_norm (bool, optional): 是否在回归模型中使用批量归一化。默认为 `True`。</span>
+<span class="sd">            bias (bool, optional): 回归模型中的线性层是否使用偏置。默认为 `True`。</span>
+<span class="sd">            n_h (int, optional): 回归模型中的隐藏层数量。默认为 `3`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Force_node_vec</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">=</span> <span class="n">num_node_features</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regression_node</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                                                <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Force_node_vec.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Force_node_vec.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `node_attr` 和 `node_vec_attr`。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 计算得到的原子受力。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">]</span> <span class="c1"># 节点标量特征</span>
+        <span class="n">node_vec_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_vec_attr&#39;</span><span class="p">]</span> <span class="c1"># 节点矢量特征, 形状: (N_nodes, 1, 3)</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">node_vec_attr</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># 基矢量, 形状: (N_nodes, 3)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># 如果节点特征只有一维，直接将其作为力的标量部分</span>
+            <span class="n">force</span> <span class="o">=</span> <span class="n">node_attr</span> <span class="o">*</span> <span class="n">basis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 否则，通过回归模型计算力的标量部分</span>
+            <span class="n">force</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_node</span><span class="p">(</span><span class="n">node_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">basis</span>
+        <span class="k">return</span> <span class="n">force</span>     </div>
+</div>
+
+
+<div class="viewcode-block" id="Born">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Born">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Born</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 Born 有效电荷张量的输出模块。</span>
+
+<span class="sd">    该模块通过组合二体（边）和三体（角）相互作用来计算每个原子的 Born 有效电荷张量。</span>
+<span class="sd">    二体项由边特征和边方向矢量的外积（张量积）构成。</span>
+<span class="sd">    三体项（可选）由三元组特征和两个相关边的方向矢量外积构成。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_triplet</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_triplet_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span>
+                    <span class="n">use_bath_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 Born 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_triplet (bool, optional): 是否包含三体相互作用。默认为 `True`。</span>
+<span class="sd">            num_node_features (int, optional): 节点特征维度 (当前未使用)。</span>
+<span class="sd">            num_edge_features (int, optional): 边特征维度。</span>
+<span class="sd">            num_triplet_features (int, optional): 三元组特征维度。</span>
+<span class="sd">            activation (callable, optional): 回归模型激活函数。默认为 `Softplus()`。</span>
+<span class="sd">            use_bath_norm (bool, optional): 是否使用批量归一化。默认为 `True`。</span>
+<span class="sd">            bias (bool, optional): 线性层是否使用偏置。默认为 `True`。</span>
+<span class="sd">            n_h (int, optional): 隐藏层数量。默认为 `3`。</span>
+<span class="sd">            cutoff_triplet (float, optional): 计算三体项时边的距离截断半径。默认为 `6.0`。</span>
+<span class="sd">            l_minus_mean (bool, optional): 是否从最终的 Born 张量中减去批次均值。默认为 `False`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Born</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">=</span> <span class="n">num_node_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_edge_features</span> <span class="o">=</span> <span class="n">num_edge_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span> <span class="o">=</span> <span class="n">include_triplet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span> <span class="o">=</span> <span class="n">cutoff_triplet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_minus_mean</span> <span class="o">=</span> <span class="n">l_minus_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_edge_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                                                <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_triplet_features</span> <span class="o">=</span> <span class="n">num_triplet_features</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regression_triplet</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_triplet_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                                                    <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Born.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Born.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 每个原子的 Born 张量，形状为 (N_nodes, 9)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">]</span>
+        <span class="n">edge_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;edge_attr&#39;</span><span class="p">]</span>  <span class="c1"># mji</span>
+        <span class="n">triplet_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;triplet_attr&#39;</span><span class="p">]</span>
+        <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span>
+        <span class="n">nbr_shift</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nbr_shift</span>
+        <span class="c1"># (idx_i, idx_j, idx_k, idx_kj, idx_ji)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;triplet_index&#39;</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">nbr_shift</span><span class="p">)</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="c1"># j-&gt;i: ri-rj = rji</span>
+        <span class="n">edge_length</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">/</span><span class="n">edge_length</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># eji 形状(N_edges, 3)</span>
+        
+        <span class="c1"># --- 对称部分 (二体项) ---</span>
+        <span class="c1"># 计算方向矢量的二阶张量积 (dyad product)</span>
+        <span class="n">dyad_ji_ji</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="nd">@edge_dir</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># e_ji ⊗ e_ji</span>
+        <span class="n">dyad_ji_ji</span> <span class="o">=</span> <span class="n">dyad_ji_ji</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">temp_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">dyad_ji_ji</span>  <span class="c1"># m_ji * (e_ji ⊗ e_ji)</span>
+        <span class="c1"># 将贡献累加到中心原子 i</span>
+        <span class="n">born_tensor_sym</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">temp_sym</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="c1"># --- 交叉部分 (三体项) ---</span>
+            <span class="c1"># 计算 e_kj 和 e_ji 的二阶张量积</span>
+            <span class="n">dyad_kj_ji</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="nd">@edge_dir</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># e_kj ⊗ e_ji</span>
+            <span class="n">dyad_kj_ji</span> <span class="o">=</span> <span class="n">dyad_kj_ji</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+            <span class="c1"># 应用距离截断</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge_length</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">edge_length</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">temp_cross</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_triplet</span><span class="p">(</span><span class="n">triplet_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">dyad_kj_ji</span>  <span class="c1"># m_kji * (e_kj ⊗ e_ji)</span>
+            <span class="c1"># 将贡献累加到中心原子 j</span>
+            <span class="n">born_tensor_cross</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">temp_cross</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">born_tensor</span> <span class="o">=</span> <span class="n">born_tensor_sym</span> <span class="o">+</span> <span class="n">born_tensor_cross</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">born_tensor</span> <span class="o">=</span> <span class="n">born_tensor_sym</span>
+        
+        <span class="c1"># 可选：减去批次均值以满足某些约束</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">:</span>
+            <span class="n">born_tensor</span> <span class="o">=</span> <span class="n">born_tensor</span> <span class="o">-</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">born_tensor</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)[</span><span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">born_tensor</span> <span class="c1"># 形状 (N_nodes, 9)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Born_node_vec">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Born_node_vec">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Born_node_vec</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;基于节点标量和双矢量特征计算 Born 张量的输出模块。</span>
+
+<span class="sd">    此模块假设 Born 张量可以由节点上的两个基矢量（`node_vec_attr`）的</span>
+<span class="sd">    外积（张量积）与一个标量系数相乘得到。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span>
+                    <span class="n">use_bath_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 Born_node_vec 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_node_features (int, optional): 输入的节点特征维度。</span>
+<span class="sd">            activation (callable, optional): 回归模型中使用的激活函数。默认为 `Softplus()`。</span>
+<span class="sd">            use_bath_norm (bool, optional): 是否在回归模型中使用批量归一化。默认为 `True`。</span>
+<span class="sd">            bias (bool, optional): 回归模型中的线性层是否使用偏置。默认为 `True`。</span>
+<span class="sd">            n_h (int, optional): 回归模型中的隐藏层数量。默认为 `3`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Born_node_vec</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">=</span> <span class="n">num_node_features</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regression_node</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                                                <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Born_node_vec.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.Born_node_vec.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `node_attr` 和 `node_vec_attr`。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 计算得到的 Born 张量，形状为 (N_nodes, 9)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">]</span> <span class="c1"># 节点标量特征</span>
+        <span class="n">node_vec_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_vec_attr&#39;</span><span class="p">]</span> <span class="c1"># 形状: (N_nodes, 2, 3)</span>
+        <span class="c1"># 计算两个基矢量的外积</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">node_vec_attr</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="nd">@node_vec_attr</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># 形状: (N_nodes, 3, 3)</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">basis</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span> <span class="c1"># 形状: (N_nodes, 9)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">born</span> <span class="o">=</span> <span class="n">node_attr</span><span class="o">*</span><span class="n">basis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">born</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_node</span><span class="p">(</span><span class="n">node_attr</span><span class="p">)</span><span class="o">*</span><span class="n">basis</span>
+        <span class="k">return</span> <span class="n">born</span>      </div>
+</div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">class piezoelectric(nn.Module):</span>
+<span class="sd">    def __init__(self, num_node_features: int = None, num_edge_features: int = None, activation: callable = Softplus(),</span>
+<span class="sd">                 use_bath_norm: bool = True, bias: bool = True, n_h: int = 3):</span>
+<span class="sd">        super(piezoelectric, self).__init__()</span>
+<span class="sd">        self.num_node_features = num_node_features</span>
+<span class="sd">        self.num_edge_features = num_edge_features</span>
+<span class="sd">        self.regression_edge = denseRegression(in_features=num_edge_features, out_features=1, bias=bias,</span>
+<span class="sd">                                               use_batch_norm=use_bath_norm, activation=activation, n_h=n_h)</span>
+
+<span class="sd">    def forward(self, data, graph_representation: dict = None):</span>
+<span class="sd">        node_attr = graph_representation[&#39;node_attr&#39;]</span>
+<span class="sd">        edge_attr = graph_representation[&#39;edge_attr&#39;]  # mji</span>
+<span class="sd">        j, i = data.edge_index</span>
+<span class="sd">        nbr_shift = data.nbr_shift</span>
+<span class="sd">        pos = data.pos</span>
+<span class="sd">        edge_dir = (pos[i]+nbr_shift) - pos[j]  # j-&gt;i: ri-rj = rji</span>
+<span class="sd">        edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()</span>
+<span class="sd">        edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)</span>
+
+<span class="sd">        dyad_ji_ji_ji = torch.einsum(</span>
+<span class="sd">            &#39;ij,ik,il-&gt;ijkl&#39;, [edge_dir, edge_dir, edge_dir])  # Shape(Nedges, 3, 3, 3)</span>
+<span class="sd">        dyad_ji_ji_ji = dyad_ji_ji_ji.view(-1, 27)</span>
+<span class="sd">        temp_sym = self.regression_edge(</span>
+<span class="sd">            edge_attr) * dyad_ji_ji_ji  # mji*eji@eji@eji</span>
+<span class="sd">        pz_tensor_atom = scatter(temp_sym, i, dim=0)</span>
+
+<span class="sd">        pz_tensor = global_mean_pool(pz_tensor_atom, data.batch)</span>
+<span class="sd">        return pz_tensor  # shape (N, 27)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="piezoelectric">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.piezoelectric">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">piezoelectric</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算压电张量的输出模块。</span>
+
+<span class="sd">    该模块通过组合二体和三体相互作用来计算压电张量。压电张量是三阶张量，</span>
+<span class="sd">    描述了材料在应变下产生极化的能力。计算涉及三阶的矢量张量积。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_triplet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_triplet_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span> <span class="nb">callable</span> <span class="o">=</span> <span class="n">Softplus</span><span class="p">(),</span>
+                 <span class="n">use_bath_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 piezoelectric 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_triplet (bool, optional): 是否包含三体相互作用。默认为 `True`。</span>
+<span class="sd">            num_node_features (int, optional): 节点特征维度 (当前未使用)。</span>
+<span class="sd">            num_edge_features (int, optional): 边特征维度。</span>
+<span class="sd">            num_triplet_features (int, optional): 三元组特征维度。</span>
+<span class="sd">            activation (callable, optional): 回归模型激活函数。默认为 `Softplus()`。</span>
+<span class="sd">            use_bath_norm (bool, optional): 是否使用批量归一化。默认为 `True`。</span>
+<span class="sd">            bias (bool, optional): 线性层是否使用偏置。默认为 `True`。</span>
+<span class="sd">            n_h (int, optional): 隐藏层数量。默认为 `3`。</span>
+<span class="sd">            cutoff_triplet (float, optional): 计算三体项时边的距离截断半径。默认为 `6.0`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">piezoelectric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_node_features</span> <span class="o">=</span> <span class="n">num_node_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_edge_features</span> <span class="o">=</span> <span class="n">num_edge_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span> <span class="o">=</span> <span class="n">include_triplet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span> <span class="o">=</span> <span class="n">cutoff_triplet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_edge_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+                                               <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_triplet_features</span> <span class="o">=</span> <span class="n">num_triplet_features</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regression_triplet</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_triplet_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+                                                      <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+
+<div class="viewcode-block" id="piezoelectric.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.piezoelectric.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含计算出的压电张量 `piezoelectric` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">]</span>
+        <span class="n">edge_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;edge_attr&#39;</span><span class="p">]</span>  <span class="c1"># m_ji</span>
+        <span class="n">triplet_attr</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;triplet_attr&#39;</span><span class="p">]</span>
+        <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span>
+        <span class="n">nbr_shift</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">nbr_shift</span>
+        <span class="c1"># (idx_i, idx_j, idx_k, idx_kj, idx_ji)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;triplet_index&#39;</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">nbr_shift</span><span class="p">)</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>  <span class="c1"># j-&gt;i: ri-rj = rji</span>
+        <span class="n">edge_length</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="n">edge_dir</span> <span class="o">=</span> <span class="n">edge_dir</span><span class="o">/</span><span class="n">edge_length</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># e_ji 形状(N_edges, 3)</span>
+
+        <span class="c1"># --- 对称部分 (二体项) ---</span>
+        <span class="c1"># 计算方向矢量的三阶张量积: e_ji ⊗ e_ji ⊗ e_ji</span>
+        <span class="n">dyad_ji_ji_ji</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s1">&#39;ij,ik,il-&gt;ijkl&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">edge_dir</span><span class="p">,</span> <span class="n">edge_dir</span><span class="p">,</span> <span class="n">edge_dir</span><span class="p">])</span> <span class="c1"># 形状 (N_edges, 3, 3, 3)</span>
+        <span class="n">dyad_ji_ji_ji</span> <span class="o">=</span> <span class="n">dyad_ji_ji_ji</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+
+        <span class="n">temp_sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_edge</span><span class="p">(</span><span class="n">edge_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">dyad_ji_ji_ji</span> <span class="c1"># m_ji * (e_ji ⊗ e_ji ⊗ e_ji)</span>
+        <span class="c1"># 将贡献累加到中心原子 i</span>
+        <span class="n">pzt_sym</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">temp_sym</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_triplet</span><span class="p">:</span>
+            <span class="c1"># --- 交叉部分 (三体项) ---</span>
+            <span class="c1"># 计算三阶张量积: e_kj ⊗ e_ji ⊗ e_ji</span>
+            <span class="n">dyad_kj_ji_ji</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s1">&#39;ij,ik,il-&gt;ijkl&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">edge_dir</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">],</span> <span class="n">edge_dir</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">],</span> <span class="n">edge_dir</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">]])</span> <span class="c1"># 形状 (N_triplet, 3, 3, 3)</span>
+            <span class="n">dyad_kj_ji_ji</span> <span class="o">=</span> <span class="n">dyad_kj_ji_ji</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+            <span class="c1"># 应用距离截断</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge_length</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span>
+                <span class="n">edge_length</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">temp_cross</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_triplet</span><span class="p">(</span>
+                <span class="n">triplet_attr</span><span class="p">)</span> <span class="o">*</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">dyad_kj_ji_ji</span>  <span class="c1"># m_kji * (e_kj ⊗ e_ji ⊗ e_ji)</span>
+            <span class="c1"># 将贡献累加到中心原子 j</span>
+            <span class="n">pzt_cross</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">temp_cross</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">pzt</span> <span class="o">=</span> <span class="n">pzt_sym</span> <span class="o">+</span> <span class="n">pzt_cross</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pzt</span> <span class="o">=</span> <span class="n">pzt_sym</span>
+        <span class="c1"># 对一个晶格内的所有原子贡献进行平均池化，得到晶体的压电张量</span>
+        <span class="n">pzt</span> <span class="o">=</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">pzt</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;piezoelectric&#39;</span><span class="p">:</span> <span class="n">pzt</span><span class="p">}</span>  <span class="c1"># 形状 (N_batch, 27)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="trivial_scalar">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.trivial_scalar">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">trivial_scalar</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个简单的标量预测模块。</span>
+
+<span class="sd">    该模块直接对节点特征进行全局池化（平均、求和或最大值）来预测一个标量属性。</span>
+<span class="sd">    它不包含任何可学习的参数，主要用于基线模型或简单任务。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aggr</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 trivial_scalar 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            aggr (str, optional): 池化操作的类型 (&#39;mean&#39;, &#39;sum&#39;/&#39;add&#39;, &#39;max&#39;)。默认为 &#39;mean&#39;。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">trivial_scalar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">=</span> <span class="n">aggr</span>
+
+<div class="viewcode-block" id="trivial_scalar.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.trivial_scalar.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `node_attr`。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含预测标量 `scalar` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">==</span> <span class="s1">&#39;sum&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">global_add_pool</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">global_max_pool</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;不支持的聚合类型: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;scalar&#39;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="scalar">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.scalar">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">scalar</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个更复杂的标量预测模块，包含一个 MLP。</span>
+
+<span class="sd">    该模块首先对节点特征进行全局池化，然后将得到的图级别特征</span>
+<span class="sd">    送入一个多层感知机（MLP）进行回归或分类。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aggr</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">classification</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Softplus</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 scalar 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            aggr (str, optional): 池化操作类型。默认为 &#39;mean&#39;。</span>
+<span class="sd">            classification (bool, optional): 是否为分类任务。默认为 `False` (回归任务)。</span>
+<span class="sd">            num_node_features (int, optional): 节点特征维度。</span>
+<span class="sd">            n_h (int, optional): MLP 的隐藏层数量。默认为 `3`。</span>
+<span class="sd">            activation (callable, optional): MLP 中使用的激活函数。默认为 `nn.Softplus()`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span> <span class="o">=</span> <span class="n">aggr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classification</span> <span class="o">=</span> <span class="n">classification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
+        
+        <span class="k">if</span> <span class="n">n_h</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">)</span>
+                                      <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_h</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">softpluses</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span>
+                                             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_h</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classification</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_node_features</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logsoftmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_node_features</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="scalar.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.scalar.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `node_attr`。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含预测标量 `scalar` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 步骤 1: 全局池化</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+            <span class="n">crys_fea</span> <span class="o">=</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sum&#39;</span><span class="p">:</span>
+            <span class="n">crys_fea</span> <span class="o">=</span> <span class="n">global_add_pool</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="c1"># 对于 &#39;max&#39; 池化，MLP 在池化之前应用</span>
+            <span class="n">crys_fea</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;不支持的聚合类型: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classification</span><span class="p">:</span>
+            <span class="n">crys_fea</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">crys_fea</span><span class="p">)</span>
+
+        <span class="c1"># 步骤 2: MLP</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;fcs&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;softpluses&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">fc</span><span class="p">,</span> <span class="n">softplus</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">softpluses</span><span class="p">):</span>
+                <span class="n">crys_fea</span> <span class="o">=</span> <span class="n">softplus</span><span class="p">(</span><span class="n">fc</span><span class="p">(</span><span class="n">crys_fea</span><span class="p">))</span>
+
+        <span class="c1"># 步骤 3: 输出层</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span><span class="p">(</span><span class="n">crys_fea</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggr</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="c1"># 在 MLP 之后应用最大池化</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">global_max_pool</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classification</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logsoftmax</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;scalar&#39;</span><span class="p">:</span> <span class="n">out</span><span class="p">}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="crystal_tensor">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.crystal_tensor">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">crystal_tensor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算晶体级别张量的输出模块。</span>
+
+<span class="sd">    该模块包裹了 `Born` 模块，用于计算原子级别的张量。</span>
+<span class="sd">    然后，它可以选择直接返回原子级别的张量，或者通过平均池化</span>
+<span class="sd">    得到晶体级别的张量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l_pred_atomwise_tensor</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_triplet</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_triplet_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span>
+                 <span class="n">use_bath_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.0</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 crystal_tensor 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            l_pred_atomwise_tensor (bool, optional): 如果为 True, 返回原子级张量。否则返回晶体级张量。默认为 `True`。</span>
+<span class="sd">            其他参数 (All other args): 传递给 `Born` 模块的构造函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">crystal_tensor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span> <span class="o">=</span> <span class="n">l_pred_atomwise_tensor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_tensor_output</span> <span class="o">=</span> <span class="n">Born</span><span class="p">(</span><span class="n">include_triplet</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="p">,</span> <span class="n">num_triplet_features</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">n_h</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="crystal_tensor.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.crystal_tensor.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含 `atomic_tensor` 或 `crystal_tensor` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atom_tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_tensor_output</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;atomic_tensor&#39;</span><span class="p">:</span> <span class="n">atom_tensors</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">global_mean_pool</span><span class="p">(</span><span class="n">atom_tensors</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;crystal_tensor&#39;</span><span class="p">:</span> <span class="n">output</span><span class="p">}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="total_energy_and_atomic_forces">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">total_energy_and_atomic_forces</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;同时预测总能量和原子受力的模块。</span>
+
+<span class="sd">    能量被计算为所有原子能量贡献的总和。力是通过对总能量关于原子位置</span>
+<span class="sd">    求负梯度得到的（依据海尔曼-费曼定理）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_node_features</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Softplus</span><span class="p">(),</span> <span class="n">derivative</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 total_energy_and_atomic_forces 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            num_node_features (int, optional): 节点特征维度。</span>
+<span class="sd">            n_h (int, optional): 回归模型隐藏层数量。默认为 `3`。</span>
+<span class="sd">            activation (callable, optional): 激活函数。默认为 `nn.Softplus()`。</span>
+<span class="sd">            derivative (bool, optional): 是否计算力的解析导数。默认为 `False`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span> <span class="o">=</span> <span class="n">derivative</span> <span class="c1"># 在模型中设置 data.pos 的梯度</span>
+        <span class="c1">#self.energy = scalar(aggr=&#39;sum&#39;, classification=False, num_node_features=num_node_features, n_h=n_h, activation=activation)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_regression</span> <span class="o">=</span> <span class="n">denseRegression</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                               <span class="n">use_batch_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">n_h</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="total_energy_and_atomic_forces.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;定义前向传播逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象。</span>
+<span class="sd">            graph_representation (dict, optional): 包含图表示的字典，需要 `node_attr`。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 包含 `forces` 和 `total_energy` 的字典。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#energy = self.energy(data, graph_representation)[&#39;scalar&#39;]</span>
+        <span class="c1"># 计算每个原子的能量贡献</span>
+        <span class="n">atomic_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_regression</span><span class="p">(</span><span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;node_attr&#39;</span><span class="p">])</span>
+        <span class="c1"># 对一个晶格内的所有原子能量求和，得到总能量</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">global_add_pool</span><span class="p">(</span><span class="n">atomic_energy</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span><span class="p">:</span>
+            <span class="c1"># 通过自动微分计算力</span>
+            <span class="n">forces</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
+                                        <span class="n">grad_outputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">energy</span><span class="p">),</span>
+                                        <span class="n">create_graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">forces</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;forces&#39;</span><span class="p">:</span><span class="n">forces</span><span class="p">,</span> <span class="s1">&#39;total_energy&#39;</span><span class="p">:</span><span class="n">energy</span><span class="p">}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="EPC_output">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EPC_output</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算电子-声子耦合 (Electron-Phonon Coupling, EPC) 矩阵的模块。</span>
+
+<span class="sd">    这个类不是一个标准的 `nn.Module`，而是一个可调用的计算流程封装。</span>
+<span class="sd">    它接收一个图表示模型 (representation) 和一个哈密顿量输出模型 (output)，</span>
+<span class="sd">    通过自动微分计算哈密顿量对原子位移的导数，并结合波函数，最终计算出 EPC 矩阵。</span>
+<span class="sd">    EPC 矩阵描述了电子与晶格振动（声子）之间的相互作用强度，是计算材料</span>
+<span class="sd">    电导率、超导电性等关键物理量的核心。</span>
+
+<span class="sd">    计算的核心是利用 `torch.autograd.functional.jacobian` 来获得雅可比矩阵</span>
+<span class="sd">    `nabla_HK` (∂H(k)/∂R)，即 k 点哈密顿量相对于原子坐标 R 的梯度。</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">       此类要求批处理中所有晶体的原子数量必须相等。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        representation (Callable): GNN 模型，用于从原子结构数据计算图表示。</span>
+<span class="sd">        output (Callable): 基于图表示计算哈密顿量 `HK`、重叠矩阵 `SK` 等物理量的模型。</span>
+<span class="sd">                           该模型还需提供 `basis_def` 属性以定义原子轨道基组。</span>
+<span class="sd">        band_win_min (int): 计算 EPC 矩阵时所考虑的能带窗口的起始索引 (从 1 开始)。</span>
+<span class="sd">        band_win_max (int): 计算 EPC 矩阵时所考虑的能带窗口的结束索引。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band_win_min</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">band_win_max</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造 EPC_output 类的实例。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            representation (Callable, optional): GNN 模型实例。</span>
+<span class="sd">            output (Callable, optional): 哈密顿量输出模型实例。</span>
+<span class="sd">            band_win_min (int, optional): 能带窗口起始索引。</span>
+<span class="sd">            band_win_max (int, optional): 能带窗口结束索引。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="n">representation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">band_win_min</span> <span class="o">=</span> <span class="n">band_win_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">band_win_max</span> <span class="o">=</span> <span class="n">band_win_max</span>        
+        
+    <span class="k">def</span><span class="w">  </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使类的实例可被调用。&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="EPC_output.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;执行 EPC 矩阵的前向计算。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Data): PyG 图数据对象，包含原子坐标 `pos`、原子类型 `z`、晶胞 `cell` 等信息。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: 一个包含哈密顿量 `hamiltonian` 和 EPC 矩阵 `epc_mat` 的字典。</span>
+<span class="sd">                  `epc_mat` 的形状为 [N_batch, n_k, n_bands, n_bands, n_atoms, 3]。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Nbatch</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># 约束：批处理中每个晶体的原子数必须相同</span>
+        <span class="n">natoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">z</span><span class="p">)</span><span class="o">/</span><span class="n">Nbatch</span><span class="p">)</span>
+        
+        <span class="c1"># --- 步骤 1: 构建轨道到原子的索引映射 (orb2atom_idx) ---</span>
+        <span class="c1"># 这个索引将每个原子轨道映射到其所属原子的索引。</span>
+        <span class="n">atomic_nums</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">natoms</span><span class="p">)</span> <span class="c1"># shape: [Nbatch, natoms]</span>
+        <span class="n">orb2atom_idx</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nbatch</span><span class="p">):</span>
+            <span class="c1"># 根据每个原子的类型，从基组定义中获取其轨道数量</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">natoms</span><span class="p">):</span>
+                <span class="n">repeats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">basis_def</span><span class="p">[</span><span class="n">atomic_nums</span><span class="p">[</span><span class="n">ib</span><span class="p">][</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()]))</span>
+            <span class="n">repeats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+            <span class="c1"># 例如，如果前两个原子各有3个轨道，则映射为 [0, 0, 0, 1, 1, 1, ...]</span>
+            <span class="n">orb2atom_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">natoms</span><span class="p">),</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">atomic_nums</span><span class="p">))</span>
+        
+        <span class="c1"># --- 步骤 2: 计算哈密顿量关于原子坐标的雅可比矩阵 (nabla_HK) ---</span>
+        <span class="c1"># 定义一个包装函数，使其仅接受原子坐标 `pos` 作为输入，并返回哈密顿量 `HK`。</span>
+        <span class="c1"># 这是 `torch.autograd.functional.jacobian` 所要求的函数签名。</span>
+        <span class="c1"># 使用 `nonlocal` 关键字来捕获和更新外部作用域中的变量。</span>
+        <span class="n">HK</span><span class="p">,</span> <span class="n">SK</span><span class="p">,</span> <span class="n">wavefunction</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">,</span> <span class="n">dSK</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+            <span class="k">nonlocal</span> <span class="n">data</span><span class="p">,</span> <span class="n">HK</span><span class="p">,</span> <span class="n">SK</span><span class="p">,</span> <span class="n">wavefunction</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">,</span> <span class="n">dSK</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span>
+            <span class="n">graph_representation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">graph_representation</span><span class="p">)</span>
+            <span class="c1"># 在前向传播过程中，保存所有需要的中间结果</span>
+            <span class="n">HK</span><span class="p">,</span> <span class="n">SK</span><span class="p">,</span> <span class="n">wavefunction</span><span class="p">,</span> <span class="n">hamiltonian</span><span class="p">,</span> <span class="n">dSK</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;HK&#39;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;SK&#39;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;wavefunction&#39;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;hamiltonian&#39;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;dSK&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">HK</span>
+        
+        <span class="c1"># `detect_anomaly` 用于调试，可以定位在反向传播中导致 NaN 的操作</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">detect_anomaly</span><span class="p">():</span>          
+            <span class="c1"># 核心计算：自动微分得到雅可比矩阵 d(HK)/d(pos)</span>
+            <span class="c1"># nabla_HK 形状: [Nbatch, num_k, norbs, norbs, natoms, 3]</span>
+            <span class="n">nabla_HK</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># --- 步骤 3: 计算 EPC 矩阵元素 ---</span>
+        <span class="c1"># EPC 矩阵 g_{mn} = &lt;ψ_m| dH/dR |ψ_n&gt;</span>
+        <span class="c1"># 在非正交基下，公式会更复杂，需要考虑重叠矩阵 S 的导数 dS/dR。</span>
+        <span class="n">norbs</span> <span class="o">=</span> <span class="n">HK</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">norbs</span><span class="p">)</span>
+           
+        <span class="c1"># 根据指定的窗口选择能带（波函数）</span>
+        <span class="n">wavefunction</span> <span class="o">=</span> <span class="n">wavefunction</span><span class="p">[:,:,</span><span class="bp">self</span><span class="o">.</span><span class="n">band_win_min</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">band_win_max</span><span class="p">,:]</span>
+        <span class="n">wavefunction_conj</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">wavefunction</span><span class="p">)</span>
+        
+        <span class="c1"># --- 方法 1: 使用 `einsum` (内存消耗大，但可能更快) ---</span>
+        <span class="c1"># 这个方法被注释掉了，因为它构建了巨大的中间张量，容易导致内存溢出。</span>
+        <span class="c1"># method 1 for faster speed</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        epc_mat = []</span>
+<span class="sd">        for idx in range(Nbatch):        </span>
+<span class="sd">            #nabla_SK1 = nabla_SK[idx,:,:,m,orb2atom_idx[idx][m],:].type_as(HK) # shape:[num_k, norbs, norbs, 3]</span>
+<span class="sd">            #nabla_SK2 = nabla_SK[idx,:,n,:,orb2atom_idx[idx][n],:].type_as(HK) # shape:[norbs, num_k, norbs, 3]</span>
+<span class="sd">            #nabla_SK2 = torch.swapaxes(nabla_SK2, axis0=0, axis1=1) # shape:[num_k, norbs, norbs, 3]</span>
+<span class="sd">            </span>
+<span class="sd">            nabla_SK1 = torch.zeros_like(nabla_SK, dtype=HK.dtype)</span>
+<span class="sd">            nabla_SK1[idx,:,:,m,orb2atom_idx[idx][m],:] = nabla_SK[idx,:,:,m,orb2atom_idx[idx][m],:].type_as(HK)</span>
+<span class="sd">            </span>
+<span class="sd">            nabla_SK2 = torch.zeros_like(nabla_SK, dtype=HK.dtype)</span>
+<span class="sd">            nabla_SK2[idx,:,n,:,orb2atom_idx[idx][n],:] = nabla_SK[idx,:,n,:,orb2atom_idx[idx][n],:].type_as(HK)</span>
+<span class="sd">            </span>
+<span class="sd">            sum1 = &#39;abd, ace, afghi, adf, age -&gt; abchi&#39;</span>
+<span class="sd">            part1 = torch.einsum(sum1, torch.conj(wavefunction[idx]), wavefunction[idx], nabla_HK[idx], SK[idx], SK[idx])</span>
+<span class="sd">            </span>
+<span class="sd">            sum2 = &#39;abd, ace, afg, adfhi, age -&gt; abchi&#39;</span>
+<span class="sd">            part2 = torch.einsum(sum2, torch.conj(wavefunction[idx]), wavefunction[idx], HK[idx], nabla_SK1[idx], SK[idx])</span>
+<span class="sd">            </span>
+<span class="sd">            sum3 = &#39;abd, ace, afg, adf, agehi -&gt; abchi&#39;</span>
+<span class="sd">            part3 = torch.einsum(sum3, torch.conj(wavefunction[idx]), wavefunction[idx], HK[idx], SK[idx], nabla_SK2[idx])</span>
+<span class="sd">            </span>
+<span class="sd">            epc_mat.append(part1 + part2 + part3)</span>
+<span class="sd">        </span>
+<span class="sd">        epc_mat = torch.cat(epc_mat, dim=0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># --- 方法 2: 使用循环和 `einsum` (内存优化) ---</span>
+        <span class="c1"># 这是当前使用的方法。通过显式循环遍历能带和轨道，避免一次性构造</span>
+        <span class="c1"># 过大的张量，以空间换时间。</span>
+        <span class="n">epc_mat_batch</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nbatch</span><span class="p">):</span> 
+            <span class="n">epc_mat</span> <span class="o">=</span> <span class="p">[]</span>     
+                  
+            <span class="c1"># 构造 dS/dR 张量，注意这里 dSK 的原始形状可能与 nabla_HK 不同</span>
+            <span class="n">nabla_SK</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">nabla_HK</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">HK</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">nabla_SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,:,</span><span class="n">m</span><span class="p">,</span><span class="n">orb2atom_idx</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">m</span><span class="p">],:]</span> <span class="o">=</span> <span class="n">dSK</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            
+            <span class="c1"># 循环遍历所有能带对 (b, c)</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wavefunction</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">wavefunction</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">temp_sum</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="c1"># 循环遍历所有轨道对 (d, e)</span>
+                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">norbs</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">norbs</span><span class="p">):</span>
+                            <span class="c1"># 以下是 EPC 矩阵在非正交基下的三个组成部分</span>
+                            <span class="c1"># sum1: &lt;ψ_b| (dH/dR) |ψ_c&gt; 项</span>
+                            <span class="n">sum1</span> <span class="o">=</span> <span class="s1">&#39;a, a, afghi, af, ag -&gt; ahi&#39;</span>
+                            <span class="n">part1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">sum1</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">wavefunction_conj</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">]),</span> <span class="n">wavefunction</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">],</span> <span class="n">nabla_HK</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">d</span><span class="p">,:],</span> <span class="n">SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,:,</span><span class="n">e</span><span class="p">])</span>
+            
+                            <span class="c1"># sum2: &lt;ψ_b| H (dS/dR) |ψ_c&gt; 项 (部分)</span>
+                            <span class="n">sum2</span> <span class="o">=</span> <span class="s1">&#39;a, a, afg, afhi, ag -&gt; ahi&#39;</span>
+                            <span class="n">part2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">sum2</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">wavefunction_conj</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">]),</span> <span class="n">wavefunction</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">],</span> <span class="n">HK</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">nabla_SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">d</span><span class="p">,:,:,:],</span> <span class="n">SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,:,</span><span class="n">e</span><span class="p">])</span>
+            
+                            <span class="c1"># sum3: &lt;ψ_b| H (dS/dR) |ψ_c&gt; 项 (另一部分)</span>
+                            <span class="n">sum3</span> <span class="o">=</span> <span class="s1">&#39;a, a, afg, af, aghi -&gt; ahi&#39;</span>
+                            <span class="n">part3</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">sum3</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">wavefunction_conj</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">]),</span> <span class="n">wavefunction</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">c</span><span class="p">,</span><span class="n">e</span><span class="p">],</span> <span class="n">HK</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">d</span><span class="p">,:],</span> <span class="n">nabla_SK</span><span class="p">[</span><span class="n">idx</span><span class="p">,:,</span><span class="n">e</span><span class="p">,:,:,:])</span>
+            
+                            <span class="n">temp_sum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part1</span> <span class="o">+</span> <span class="n">part2</span> <span class="o">+</span> <span class="n">part3</span><span class="p">)</span>
+                    <span class="c1"># 对轨道 d 和 e 的贡献求和       </span>
+                    <span class="n">temp_sum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">temp_sum</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">epc_mat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_sum</span><span class="p">)</span> <span class="c1"># 形状: [num_k, natoms, 3]</span>
+                    
+            <span class="c1"># 重新组织形状以匹配 [n_k, n_bands_b, n_bands_c, n_atoms, 3]</span>
+            <span class="n">epc_mat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">epc_mat</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">wavefunction</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">wavefunction</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">natoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">epc_mat_batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epc_mat</span><span class="p">)</span>
+        <span class="c1"># 将批次结果堆叠起来</span>
+        <span class="n">epc_mat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">epc_mat_batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># 最终形状: [Nbatch, num_k, n_bands, n_bands, natoms, 3]</span>
+        
+        
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;hamiltonian&#39;</span><span class="p">:</span><span class="n">hamiltonian</span><span class="p">,</span> <span class="s1">&#39;epc_mat&#39;</span><span class="p">:</span> <span class="n">epc_mat</span><span class="p">}</span></div>
+</div>
+
+
+        
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -42,7 +42,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../source/core.html">HamGNN 中文文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -106,6 +111,11 @@
 
 <span class="sd">    该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的</span>
 <span class="sd">    训练流程无缝集成。</span>
+
+<span class="sd">    主要功能:</span>
+
+<span class="sd">    - 提供了 `graph_data_module` 类用于管理图数据。</span>
+<span class="sd">    - 包含 `collate_fn` 用于 `DataLoader`。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">train_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
@@ -115,7 +125,7 @@
                  <span class="n">val_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">test_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">split_file</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;构造函数，初始化数据模块。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化 `graph_data_module`。</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            dataset (Union[list, tuple, np.array], optional): </span>
@@ -154,6 +164,7 @@
 
 <span class="sd">        此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。</span>
 <span class="sd">        其行为逻辑如下：</span>
+<span class="sd">        </span>
 <span class="sd">        1. 如果 `self.split_file` 存在，则从该文件加载预定义的索引来划分数据集。</span>
 <span class="sd">           这确保了实验的可复现性。</span>
 <span class="sd">        2. 如果没有提供划分文件，则根据 `train_ratio`, `val_ratio`, `test_ratio` </span>
@@ -261,6 +272,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># 回退到默认行为</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object has no attribute &#39;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
 
 </pre></div>
 

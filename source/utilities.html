@@ -17,6 +17,7 @@
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/translations.js?v=beaddf03"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
@@ -44,13 +45,57 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">通用工具函数</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">通用工具函数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Euclidean_loss.forward"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion"><code class="docutils literal notranslate"><span class="pre">Expansion</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_in"><code class="docutils literal notranslate"><span class="pre">Expansion.irrep_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_out_1"><code class="docutils literal notranslate"><span class="pre">Expansion.irrep_out_1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_out_2"><code class="docutils literal notranslate"><span class="pre">Expansion.irrep_out_2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.internal_weights"><code class="docutils literal notranslate"><span class="pre">Expansion.internal_weights</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.forward"><code class="docutils literal notranslate"><span class="pre">Expansion.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.Expansion.get_expansion_path"><code class="docutils literal notranslate"><span class="pre">Expansion.get_expansion_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.RMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">RMSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.SSP.extra_repr"><code class="docutils literal notranslate"><span class="pre">SSP.extra_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.SSP.forward"><code class="docutils literal notranslate"><span class="pre">SSP.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.SWISH.forward"><code class="docutils literal notranslate"><span class="pre">SWISH.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.blockwise_2x2_concat"><code class="docutils literal notranslate"><span class="pre">blockwise_2x2_concat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.cosine_similarity_loss.forward"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.extract_elements_above_threshold"><code class="docutils literal notranslate"><span class="pre">extract_elements_above_threshold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.prod"><code class="docutils literal notranslate"><span class="pre">prod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.sum_zero_loss.forward"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.models.utils.upgrade_tensor_precision"><code class="docutils literal notranslate"><span class="pre">upgrade_tensor_precision()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -69,7 +114,6 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">通用工具函数</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/utilities.rst.txt" rel="nofollow"> 查看页面源码</a>
@@ -80,8 +124,525 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>通用工具函数<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <section id="module-HamGNN_v_2_0.models.utils">
+<span id="id1"></span><h1>通用工具函数<a class="headerlink" href="#module-HamGNN_v_2_0.models.utils" title="Link to this heading"></a></h1>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-11-29 22:13:49</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-11-29 22:26:42</p></li>
+</ul>
+<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Euclidean_loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">Euclidean_loss</span></span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#Euclidean_loss"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Euclidean_loss" title="Link to this definition"></a></dt>
+<dd><p>计算预测值和目标值之间的平均欧几里得距离。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Euclidean_loss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#Euclidean_loss.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Euclidean_loss.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">Expansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irrep_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irrep_out_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irrep_out_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#Expansion"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion" title="Link to this definition"></a></dt>
+<dd><p>一个使用 e3nn 库实现的等变特征扩展模块。</p>
+<p>该模块的核心功能是将一个输入特征（表示为一个 <cite>e3nn</cite> 的不可约表示 <cite>irrep_in</cite>），
+通过张量积分解，映射到一个由两个其他不可约表示 (<cite>irrep_out_1</cite> 和 <cite>irrep_out_2</cite>)
+构成的二维特征空间中。这在构建等变神经网络的交互块时非常关键，因为它允许
+信息在不同阶数的张量特征之间进行混合和传递。</p>
+<p>例如，一个向量特征 (<cite>1o</cite>) 与另一个向量特征 (<cite>1o</cite>) 交互，可以产生标量 (<cite>0e</cite>)、
+反对称矩阵/伪向量 (<cite>1o</cite>) 和对称无迹矩阵 (<cite>2e</cite>) 特征。这个模块就是实现这种
+分解和映射的计算单元。</p>
+<p>计算的核心是利用 Wigner 3-j 符号 (<cite>o3.wigner_3j</cite>)，它描述了三个角动量
+如何耦合。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.irrep_in">
+<span class="sig-name descname"><span class="pre">irrep_in</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_in" title="Link to this definition"></a></dt>
+<dd><p>输入特征的不可约表示。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>o3.Irreps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.irrep_out_1">
+<span class="sig-name descname"><span class="pre">irrep_out_1</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_out_1" title="Link to this definition"></a></dt>
+<dd><p>输出特征的第一个维度（行）的不可约表示。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>o3.Irreps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.irrep_out_2">
+<span class="sig-name descname"><span class="pre">irrep_out_2</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.irrep_out_2" title="Link to this definition"></a></dt>
+<dd><p>输出特征的第二个维度（列）的不可约表示。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>o3.Irreps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.internal_weights">
+<span class="sig-name descname"><span class="pre">internal_weights</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.internal_weights" title="Link to this definition"></a></dt>
+<dd><p>控制权重生成方式。如果为 <cite>True</cite>，权重是模块内部
+固定的 <cite>nn.Parameter</cite>；如果为 <cite>False</cite>，权重由一个 <cite>o3.Linear</cite> 层从
+输入特征动态生成。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#Expansion.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_in</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入特征张量，其维度应与 <cite>irrep_in</cite> 匹配。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>输出的二维特征张量，其形状为 <cite>(N_batch, irrep_out_1.dim, irrep_out_2.dim)</cite>。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.Expansion.get_expansion_path">
+<span class="sig-name descname"><span class="pre">get_expansion_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irrep_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irrep_out_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irrep_out_2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#Expansion.get_expansion_path"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.Expansion.get_expansion_path" title="Link to this definition"></a></dt>
+<dd><p>计算所有可能的从输入 irrep 到输出 irrep 对的分解路径。</p>
+<p>路径存在的条件是，根据群论的耦合规则，<cite>ir_in</cite> 必须包含在
+<cite>ir_out1</cite> 和 <cite>ir_out2</cite> 的张量积中。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>irrep_in</strong> (<em>o3.Irreps</em>) – 输入的不可约表示。</p></li>
+<li><p><strong>irrep_out_1</strong> (<em>o3.Irreps</em>) – 输出的第一个不可约表示。</p></li>
+<li><p><strong>irrep_out_2</strong> (<em>o3.Irreps</em>) – 输出的第二个不可约表示。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>一个包含指令的列表。每个指令是一个列表，格式为</dt><dd><p><cite>[输入irrep索引, 输出1 irrep索引, 输出2 irrep索引, 是否需要权重, 1.0, [multiplicities]]</cite>。</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="（在 Python v3.13）">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.RMSELoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">RMSELoss</span></span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#RMSELoss"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.RMSELoss" title="Link to this definition"></a></dt>
+<dd><p>计算均方根误差 (RMSE) 损失。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.RMSELoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#RMSELoss.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.RMSELoss.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.SSP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">SSP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#SSP"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.SSP" title="Link to this definition"></a></dt>
+<dd><p>应用逐元素的 Shifted SoftPlus (SSP) 激活函数。</p>
+<p>SSP 的计算公式为: <span class="math notranslate nohighlight">\(\text{SSP}(x)=\text{Softplus}(x)-\text{Softplus}(0)\)</span>。
+这确保了 <span class="math notranslate nohighlight">\(\text{SSP}(0)=0\)</span>。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – Softplus 公式中的 <span class="math notranslate nohighlight">\(\beta\)</span> 值。默认为 1。</p></li>
+<li><p><strong>threshold</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>) – 当输入值高于此阈值时，Softplus 将退化为线性函数。默认为 20。</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Shape:</dt><dd><ul class="simple">
+<li><p>输入: <span class="math notranslate nohighlight">\((N, *)\)</span>，其中 <cite>*</cite> 表示任意数量的附加维度。</p></li>
+<li><p>输出: <span class="math notranslate nohighlight">\((N, *)\)</span>，形状与输入相同。</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.SSP.extra_repr">
+<span class="sig-name descname"><span class="pre">extra_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#SSP.extra_repr"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.SSP.extra_repr" title="Link to this definition"></a></dt>
+<dd><p>返回模块的额外表示信息，用于打印。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.SSP.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#SSP.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.SSP.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.SWISH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">SWISH</span></span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#SWISH"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.SWISH" title="Link to this definition"></a></dt>
+<dd><p>Swish 激活函数的模块封装。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.SWISH.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#SWISH.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.SWISH.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.blockwise_2x2_concat">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">blockwise_2x2_concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#blockwise_2x2_concat"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.blockwise_2x2_concat" title="Link to this definition"></a></dt>
+<dd><p>将四个张量以 2x2 的块状模式拼接成一个双倍大小的张量。</p>
+<p>拼接模式如下:
+[top_left | top_right]
+———————-
+[bottom_left | bottom_right]</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_left</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 形状为 <cite>[N, H, W]</cite> 的张量。</p></li>
+<li><p><strong>top_right</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 与 <cite>top_left</cite> 形状相同的张量。</p></li>
+<li><p><strong>bottom_left</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 与 <cite>top_left</cite> 形状相同的张量。</p></li>
+<li><p><strong>bottom_right</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 与 <cite>top_left</cite> 形状相同的张量。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>拼接后的张量，形状为 <cite>[N, 2*H, 2*W]</cite>。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> – 如果输入的张量形状不匹配。</p>
+</dd>
+</dl>
+<p class="rubric">示例</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">blockwise_2x2_concat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([2, 6, 6])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.cosine_similarity_loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">cosine_similarity_loss</span></span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#cosine_similarity_loss"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.cosine_similarity_loss" title="Link to this definition"></a></dt>
+<dd><p>计算两个向量之间的余弦相似度损失。</p>
+<p>损失定义为 <cite>1 - cos(theta)</cite>，其中 <cite>theta</cite> 是两个向量的夹角。
+该损失鼓励两个向量指向相同的方向。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.cosine_similarity_loss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#cosine_similarity_loss.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.cosine_similarity_loss.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.extract_elements_above_threshold">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">extract_elements_above_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#extract_elements_above_threshold"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.extract_elements_above_threshold" title="Link to this definition"></a></dt>
+<dd><p>根据条件张量中的值是否超过阈值，从源张量中提取元素。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condition_tensor</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 用于与阈值比较的张量，形状为 <cite>[N_batch, N, N]</cite>。</p></li>
+<li><p><strong>source_tensor</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 从中提取值的源张量，形状为 <cite>[N_batch, N, N]</cite>。</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – <cite>condition_tensor</cite> 中元素的最小阈值，超过该值则触发提取。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>从 <cite>source_tensor</cite> 中提取的一维值张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> – 如果输入张量的形状不匹配。</p>
+</dd>
+</dl>
+<p class="rubric">示例</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">S</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">extract_elements_above_threshold</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.get_activation">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">get_activation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#get_activation"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.get_activation" title="Link to this definition"></a></dt>
+<dd><p>根据名称字符串获取并实例化一个激活函数模块。</p>
+<p>支持的激活函数包括 ‘softplus’, ‘ssp’, ‘elu’, ‘relu’, ‘selu’, ‘swish’,
+‘tanh’, ‘silu’, ‘celu’。对于 ‘elu’ 和 ‘celu’，可以指定 alpha 参数，
+例如 “elu(0.5)”。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) – 激活函数的名称。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>对应的激活函数实例。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Module</p>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NameError" title="（在 Python v3.13）"><strong>NameError</strong></a> – 如果请求的激活函数不受支持。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.get_hparam_dict">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">get_hparam_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#get_hparam_dict"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.get_hparam_dict" title="Link to this definition"></a></dt>
+<dd><p>从配置对象中提取并格式化用于日志记录的超参数字典。</p>
+<p>它根据 <cite>config.setup.GNN_Net</cite> 的值从 <cite>config.representation_nets</cite>
+中选择对应的参数字典，并进行一些格式化处理。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>EasyDict</em>) – 全局配置对象。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>格式化后的超参数字典，适用于 TensorBoard 等日志工具。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.linear_bn_act">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">linear_bn_act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lbias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#linear_bn_act"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.linear_bn_act" title="Link to this definition"></a></dt>
+<dd><p>根据输入参数灵活构建一个线性层、批量归一化和激活函数的组合模块。</p>
+<p>该函数根据 <cite>use_batch_norm</cite> 和 <cite>activation</cite> 是否提供，来构造不同组合的模块。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>该函数的返回值类型不是固定的。当 <cite>use_batch_norm</cite> 为 <cite>False</cite> 且 <cite>activation</cite>
+为 <cite>None</cite> 时，它返回一个独立的 <cite>nn.Linear</cite> 模块；在其他所有情况下，
+它返回一个 <cite>nn.Sequential</cite> 容器。调用者需要注意处理这个差异。</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 线性层的输入特征维度。</p></li>
+<li><p><strong>out_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 线性层的输出特征维度。</p></li>
+<li><p><strong>lbias</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a><em>, </em><em>optional</em>) – 线性层是否使用偏置。默认为 <cite>False</cite>。</p></li>
+<li><p><strong>activation</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>]</em><em>, </em><em>optional</em>) – 要应用的激活函数实例。如果为 <cite>None</cite>，则不添加激活函数。默认为 <cite>None</cite>。</p></li>
+<li><p><strong>use_batch_norm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a><em>, </em><em>optional</em>) – 是否在激活之前应用批量归一化。默认为 <cite>False</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>组建好的 Pytorch 模块。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[nn.Module, nn.Sequential]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.parse_metric_func">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">parse_metric_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">losses_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#parse_metric_func"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.parse_metric_func" title="Link to this definition"></a></dt>
+<dd><p>解析一个包含损失函数信息的列表，并将字符串名称替换为实际的损失函数实例。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>losses_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="（在 Python v3.13）"><em>list</em></a>) – 一个字典列表，每个字典包含 ‘metric’ (str) 和其他参数。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>更新后的列表，其中 ‘metric’ 的值被替换为 nn.Module 实例。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="（在 Python v3.13）">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.prod">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#prod"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.prod" title="Link to this definition"></a></dt>
+<dd><p>计算序列中所有元素的乘积。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.scatter_plot">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">scatter_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#scatter_plot"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.scatter_plot" title="Link to this definition"></a></dt>
+<dd><p>生成一个预测值 vs. 目标值的散点图。</p>
+<p>图中会画出 y=x 的虚线作为参考。可选地，可以使用核密度估计
+为散点着色，但当前版本为简化实现，使用了固定的绿色。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – 预测值的一维数组。</p></li>
+<li><p><strong>target</strong> (<em>np.ndarray</em>) – 目标值的一维数组。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>生成的 matplotlib Figure 对象。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.sum_zero_loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">sum_zero_loss</span></span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#sum_zero_loss"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.sum_zero_loss" title="Link to this definition"></a></dt>
+<dd><p>一个约束预测向量总和为零的损失。</p>
+<p>该损失计算预测向量在批次维度上求和后的 L2 范数。
+这在需要满足某些物理守恒定律（如总力为零）时非常有用。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.sum_zero_loss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#sum_zero_loss.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.sum_zero_loss.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。 target 在此损失中未使用。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.swish">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">swish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#swish"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.swish" title="Link to this definition"></a></dt>
+<dd><p>Swish 激活函数。</p>
+<p>计算公式为 <cite>x * sigmoid(x)</cite>。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入张量。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>经过 Swish 激活后的张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.triplets">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">triplets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_shift</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#triplets"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.triplets" title="Link to this definition"></a></dt>
+<dd><p>从边列表计算原子三元组 (k -&gt; j -&gt; i)。</p>
+<p>这个函数对于构建需要三体相互作用（如键角）的图模型至关重要。
+它首先将边列表转换为稀疏邻接矩阵，然后通过邻接矩阵的乘积思想
+有效地找到所有通过一个中间节点 <cite>j</cite> 连接的原子对 <cite>(k, i)</cite>。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_index</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 形状为 <cite>(2, N_edges)</cite> 的边索引张量，表示 <cite>j -&gt; i</cite> 的边。</p></li>
+<li><p><strong>num_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 图中的节点总数。</p></li>
+<li><p><strong>cell_shift</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 形状为 <cite>(N_edges, 3)</cite> 的张量，表示每条边跨越的晶胞偏移。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>包含三元组信息的元组:</dt><dd><ul class="simple">
+<li><p>col, row (torch.Tensor): 原始的边索引。</p></li>
+<li><p>idx_i, idx_j, idx_k (torch.Tensor): 三元组中 <cite>i</cite>, <cite>j</cite>, <cite>k</cite> 的原子索引。</p></li>
+<li><p>idx_kj, idx_ji (torch.Tensor): 构成三元组的两条边 <cite>k-&gt;j</cite> 和 <cite>j-&gt;i</cite> 的原始边索引。</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="（在 Python v3.13）">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.utils.upgrade_tensor_precision">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.utils.</span></span><span class="sig-name descname"><span class="pre">upgrade_tensor_precision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/utils.html#upgrade_tensor_precision"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.utils.upgrade_tensor_precision" title="Link to this definition"></a></dt>
+<dd><p>升级给定字典中特定类型张量的精度。</p>
+<p>该函数遍历字典，将 <cite>torch.float32</cite> 张量转换为 <cite>torch.float64</cite> (double)，
+并将 <cite>torch.complex64</cite> 张量转换为 <cite>torch.complex128</cite>。
+所有其他类型的张量保持不变。转换过程中会保留张量的原始设备。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tensor_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 包含 PyTorch 张量的字典。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>该函数直接在原地修改字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">备注</p>
+<p>对于 <cite>float32</cite> 类型的张量，可以使用 <cite>.to(dtype=torch.float64)</cite> 或 <cite>.double()</cite> 两种方法来将其转换为 <cite>float64</cite> 类型。为了与复数张量的转换方式保持一致，此函数中使用了 <cite>.to()</cite> 方法。</p>
+<p class="rubric">示例</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;float_tensor&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upgrade_tensor_precision</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;float_tensor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+<span class="go">torch.float64</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

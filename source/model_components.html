@@ -17,6 +17,7 @@
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/translations.js?v=beaddf03"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
@@ -45,35 +46,220 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">模型通用组件</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#outputs-py">输出模块 (<cite>outputs.py</cite>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#layers-py-e3-layers-py">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.outputs">输出模块 (<cite>outputs.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Born"><code class="docutils literal notranslate"><span class="pre">Born</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Born.forward"><code class="docutils literal notranslate"><span class="pre">Born.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.cutoff_function"><code class="docutils literal notranslate"><span class="pre">cutoff_function()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.shifted_softplus"><code class="docutils literal notranslate"><span class="pre">shifted_softplus()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.softplus_inverse"><code class="docutils literal notranslate"><span class="pre">softplus_inverse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.switch_function"><code class="docutils literal notranslate"><span class="pre">switch_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Born_node_vec"><code class="docutils literal notranslate"><span class="pre">Born_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Born_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Born_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output"><code class="docutils literal notranslate"><span class="pre">EPC_output</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output.representation"><code class="docutils literal notranslate"><span class="pre">EPC_output.representation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output.output"><code class="docutils literal notranslate"><span class="pre">EPC_output.output</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output.band_win_min"><code class="docutils literal notranslate"><span class="pre">EPC_output.band_win_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output.band_win_max"><code class="docutils literal notranslate"><span class="pre">EPC_output.band_win_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.EPC_output.forward"><code class="docutils literal notranslate"><span class="pre">EPC_output.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Force"><code class="docutils literal notranslate"><span class="pre">Force</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Force.forward"><code class="docutils literal notranslate"><span class="pre">Force.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Force_node_vec"><code class="docutils literal notranslate"><span class="pre">Force_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.Force_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Force_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.crystal_tensor"><code class="docutils literal notranslate"><span class="pre">crystal_tensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.crystal_tensor.forward"><code class="docutils literal notranslate"><span class="pre">crystal_tensor.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.piezoelectric"><code class="docutils literal notranslate"><span class="pre">piezoelectric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.piezoelectric.forward"><code class="docutils literal notranslate"><span class="pre">piezoelectric.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.scalar"><code class="docutils literal notranslate"><span class="pre">scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.scalar.forward"><code class="docutils literal notranslate"><span class="pre">scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces.forward"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.trivial_scalar"><code class="docutils literal notranslate"><span class="pre">trivial_scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.outputs.trivial_scalar.forward"><code class="docutils literal notranslate"><span class="pre">trivial_scalar.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.layers">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.BesselBasis"><code class="docutils literal notranslate"><span class="pre">BesselBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.BesselBasis.forward"><code class="docutils literal notranslate"><span class="pre">BesselBasis.forward()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.CosineCutoff"><code class="docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.CosineCutoff.forward"><code class="docutils literal notranslate"><span class="pre">CosineCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.Dense.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Dense.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.GaussianSmearing"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.GaussianSmearing.forward"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.MLPRegression"><code class="docutils literal notranslate"><span class="pre">MLPRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.MLPRegression.forward"><code class="docutils literal notranslate"><span class="pre">MLPRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.cuttoff_envelope"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.cuttoff_envelope.forward"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.denseLayer"><code class="docutils literal notranslate"><span class="pre">denseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.denseLayer.forward"><code class="docutils literal notranslate"><span class="pre">denseLayer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.denseRegression"><code class="docutils literal notranslate"><span class="pre">denseRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.denseRegression.forward"><code class="docutils literal notranslate"><span class="pre">denseRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.sph_harm_layer"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.layers.sph_harm_layer.forward"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Jn"><code class="docutils literal notranslate"><span class="pre">Jn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Jn_zeros"><code class="docutils literal notranslate"><span class="pre">Jn_zeros()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff"><code class="docutils literal notranslate"><span class="pre">PolynomialCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff.forward"><code class="docutils literal notranslate"><span class="pre">PolynomialCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate"><code class="docutils literal notranslate"><span class="pre">Rotate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.D_one_half"><code class="docutils literal notranslate"><span class="pre">Rotate.D_one_half()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H"><code class="docutils literal notranslate"><span class="pre">Rotate.openmx2wiki_H()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H_full"><code class="docutils literal notranslate"><span class="pre">Rotate.openmx2wiki_H_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_left_right"><code class="docutils literal notranslate"><span class="pre">Rotate.openmx2wiki_left_right()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_e3nn_v"><code class="docutils literal notranslate"><span class="pre">Rotate.rotate_e3nn_v()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_matrix_convert"><code class="docutils literal notranslate"><span class="pre">Rotate.rotate_matrix_convert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H"><code class="docutils literal notranslate"><span class="pre">Rotate.rotate_openmx_H()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H_full"><code class="docutils literal notranslate"><span class="pre">Rotate.rotate_openmx_H_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H"><code class="docutils literal notranslate"><span class="pre">Rotate.wiki2openmx_H()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H_full"><code class="docutils literal notranslate"><span class="pre">Rotate.wiki2openmx_H_full()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SelfTp"><code class="docutils literal notranslate"><span class="pre">SelfTp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SelfTp.forward"><code class="docutils literal notranslate"><span class="pre">SelfTp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct"><code class="docutils literal notranslate"><span class="pre">SeparateWeightTensorProduct</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct.forward"><code class="docutils literal notranslate"><span class="pre">SeparateWeightTensorProduct.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SkipConnection"><code class="docutils literal notranslate"><span class="pre">SkipConnection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SkipConnection.forward"><code class="docutils literal notranslate"><span class="pre">SkipConnection.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SphericalBasis"><code class="docutils literal notranslate"><span class="pre">SphericalBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.SphericalBasis.forward"><code class="docutils literal notranslate"><span class="pre">SphericalBasis.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.bessel_basis"><code class="docutils literal notranslate"><span class="pre">bessel_basis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3ElementWise"><code class="docutils literal notranslate"><span class="pre">e3ElementWise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm"><code class="docutils literal notranslate"><span class="pre">e3LayerNorm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.forward"><code class="docutils literal notranslate"><span class="pre">e3LayerNorm.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.reset_parameters"><code class="docutils literal notranslate"><span class="pre">e3LayerNorm.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp"><code class="docutils literal notranslate"><span class="pre">e3TensorDecomp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.convert_mask"><code class="docutils literal notranslate"><span class="pre">e3TensorDecomp.convert_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_H"><code class="docutils literal notranslate"><span class="pre">e3TensorDecomp.get_H()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_net_out"><code class="docutils literal notranslate"><span class="pre">e3TensorDecomp.get_net_out()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.flt2cplx"><code class="docutils literal notranslate"><span class="pre">flt2cplx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.irreps_from_l1l2"><code class="docutils literal notranslate"><span class="pre">irreps_from_l1l2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps"><code class="docutils literal notranslate"><span class="pre">sort_irreps</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps.forward"><code class="docutils literal notranslate"><span class="pre">sort_irreps.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps.inverse"><code class="docutils literal notranslate"><span class="pre">sort_irreps.inverse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.e3_layers.spherical_bessel_formulas"><code class="docutils literal notranslate"><span class="pre">spherical_bessel_formulas()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.num_features"><code class="docutils literal notranslate"><span class="pre">Embedding.num_features</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.Zmax"><code class="docutils literal notranslate"><span class="pre">Embedding.Zmax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.electron_config"><code class="docutils literal notranslate"><span class="pre">Embedding.electron_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.element_embedding"><code class="docutils literal notranslate"><span class="pre">Embedding.element_embedding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.config_linear"><code class="docutils literal notranslate"><span class="pre">Embedding.config_linear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.forward"><code class="docutils literal notranslate"><span class="pre">Embedding.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Embedding.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.logc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.n</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.v</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions._alpha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.center</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions._alpha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.center</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions._alpha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.cutoff_function"><code class="docutils literal notranslate"><span class="pre">cutoff_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.shifted_softplus"><code class="docutils literal notranslate"><span class="pre">shifted_softplus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.softplus_inverse"><code class="docutils literal notranslate"><span class="pre">softplus_inverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.switch_function"><code class="docutils literal notranslate"><span class="pre">switch_function()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -90,7 +276,6 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">模型通用组件</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/model_components.rst.txt" rel="nofollow"> 查看页面源码</a>
@@ -104,11 +289,816 @@
   <section id="id1">
 <h1>模型通用组件<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <p>本部分包含组成 HamGNN 模型的各种通用组件。</p>
-<section id="outputs-py">
-<h2>输出模块 (<cite>outputs.py</cite>)<a class="headerlink" href="#outputs-py" title="Link to this heading"></a></h2>
+<section id="module-HamGNN_v_2_0.models.outputs">
+<span id="outputs-py"></span><h2>输出模块 (<cite>outputs.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.outputs" title="Link to this heading"></a></h2>
+<p>/*
+* &#64;Author: Yang Zhong
+* &#64;Date: 2021-10-08 22:38:15</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-11-07 10:54:51</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Born">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">Born</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_triplet_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_minus_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Born"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Born" title="Link to this definition"></a></dt>
+<dd><p>计算 Born 有效电荷张量的输出模块。</p>
+<p>该模块通过组合二体（边）和三体（角）相互作用来计算每个原子的 Born 有效电荷张量。
+二体项由边特征和边方向矢量的外积（张量积）构成。
+三体项（可选）由三元组特征和两个相关边的方向矢量外积构成。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Born.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Born.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Born.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>每个原子的 Born 张量，形状为 (N_nodes, 9)。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Born_node_vec">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">Born_node_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Born_node_vec"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Born_node_vec" title="Link to this definition"></a></dt>
+<dd><p>基于节点标量和双矢量特征计算 Born 张量的输出模块。</p>
+<p>此模块假设 Born 张量可以由节点上的两个基矢量（<cite>node_vec_attr</cite>）的
+外积（张量积）与一个标量系数相乘得到。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Born_node_vec.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Born_node_vec.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Born_node_vec.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>node_attr</cite> 和 <cite>node_vec_attr</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>计算得到的 Born 张量，形状为 (N_nodes, 9)。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">EPC_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_win_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_win_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#EPC_output"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output" title="Link to this definition"></a></dt>
+<dd><p>计算电子-声子耦合 (Electron-Phonon Coupling, EPC) 矩阵的模块。</p>
+<p>这个类不是一个标准的 <cite>nn.Module</cite>，而是一个可调用的计算流程封装。
+它接收一个图表示模型 (representation) 和一个哈密顿量输出模型 (output)，
+通过自动微分计算哈密顿量对原子位移的导数，并结合波函数，最终计算出 EPC 矩阵。
+EPC 矩阵描述了电子与晶格振动（声子）之间的相互作用强度，是计算材料
+电导率、超导电性等关键物理量的核心。</p>
+<p>计算的核心是利用 <cite>torch.autograd.functional.jacobian</cite> 来获得雅可比矩阵
+<cite>nabla_HK</cite> (∂H(k)/∂R)，即 k 点哈密顿量相对于原子坐标 R 的梯度。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>此类要求批处理中所有晶体的原子数量必须相等。</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output.representation">
+<span class="sig-name descname"><span class="pre">representation</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output.representation" title="Link to this definition"></a></dt>
+<dd><p>GNN 模型，用于从原子结构数据计算图表示。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output.output" title="Link to this definition"></a></dt>
+<dd><p>基于图表示计算哈密顿量 <cite>HK</cite>、重叠矩阵 <cite>SK</cite> 等物理量的模型。
+该模型还需提供 <cite>basis_def</cite> 属性以定义原子轨道基组。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output.band_win_min">
+<span class="sig-name descname"><span class="pre">band_win_min</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output.band_win_min" title="Link to this definition"></a></dt>
+<dd><p>计算 EPC 矩阵时所考虑的能带窗口的起始索引 (从 1 开始)。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output.band_win_max">
+<span class="sig-name descname"><span class="pre">band_win_max</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output.band_win_max" title="Link to this definition"></a></dt>
+<dd><p>计算 EPC 矩阵时所考虑的能带窗口的结束索引。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.EPC_output.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#EPC_output.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.EPC_output.forward" title="Link to this definition"></a></dt>
+<dd><p>执行 EPC 矩阵的前向计算。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象，包含原子坐标 <cite>pos</cite>、原子类型 <cite>z</cite>、晶胞 <cite>cell</cite> 等信息。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>一个包含哈密顿量 <cite>hamiltonian</cite> 和 EPC 矩阵 <cite>epc_mat</cite> 的字典。</dt><dd><p><cite>epc_mat</cite> 的形状为 [N_batch, n_k, n_bands, n_bands, n_atoms, 3]。</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Force">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">Force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Force"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Force" title="Link to this definition"></a></dt>
+<dd><p>基于边特征计算原子受力的输出模块。</p>
+<p>该模块使用一个密集回归模型（<cite>denseRegression</cite>）来处理每条边的特征，
+并将其预测的标量值沿着边的方向矢量投影，从而得到力矢量。
+最后，将所有作用到同一个原子上的力矢量进行汇总（scatter-add），得到每个原子的总受力。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Force.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Force.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Force.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象，包含原子位置 <cite>pos</cite> 和边索引 <cite>edge_index</cite> 等信息。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>edge_attr</cite> 键。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含计算出的原子受力 <cite>force</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Force_node_vec">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">Force_node_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Force_node_vec"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Force_node_vec" title="Link to this definition"></a></dt>
+<dd><p>基于节点标量和矢量特征计算原子受力的输出模块。</p>
+<p>这个模块假设原子受力可以表示为一个标量部分和一个矢量部分的乘积。
+如果节点特征维度大于1，则使用一个回归模型来计算标量部分；
+否则，直接使用节点标量特征。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Force_node_vec.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Force_node_vec.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Force_node_vec.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>node_attr</cite> 和 <cite>node_vec_attr</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>计算得到的原子受力。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.crystal_tensor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">crystal_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l_pred_atomwise_tensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_triplet_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_minus_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#crystal_tensor"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.crystal_tensor" title="Link to this definition"></a></dt>
+<dd><p>计算晶体级别张量的输出模块。</p>
+<p>该模块包裹了 <cite>Born</cite> 模块，用于计算原子级别的张量。
+然后，它可以选择直接返回原子级别的张量，或者通过平均池化
+得到晶体级别的张量。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.crystal_tensor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#crystal_tensor.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.crystal_tensor.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含 <cite>atomic_tensor</cite> 或 <cite>crystal_tensor</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.piezoelectric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">piezoelectric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_triplet_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#piezoelectric"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.piezoelectric" title="Link to this definition"></a></dt>
+<dd><p>计算压电张量的输出模块。</p>
+<p>该模块通过组合二体和三体相互作用来计算压电张量。压电张量是三阶张量，
+描述了材料在应变下产生极化的能力。计算涉及三阶的矢量张量积。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.piezoelectric.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#piezoelectric.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.piezoelectric.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含计算出的压电张量 <cite>piezoelectric</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.scalar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aggr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classification</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#scalar"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.scalar" title="Link to this definition"></a></dt>
+<dd><p>一个更复杂的标量预测模块，包含一个 MLP。</p>
+<p>该模块首先对节点特征进行全局池化，然后将得到的图级别特征
+送入一个多层感知机（MLP）进行回归或分类。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.scalar.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#scalar.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.scalar.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>node_attr</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含预测标量 <cite>scalar</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">total_energy_and_atomic_forces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#total_energy_and_atomic_forces"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces" title="Link to this definition"></a></dt>
+<dd><p>同时预测总能量和原子受力的模块。</p>
+<p>能量被计算为所有原子能量贡献的总和。力是通过对总能量关于原子位置
+求负梯度得到的（依据海尔曼-费曼定理）。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#total_energy_and_atomic_forces.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>node_attr</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含 <cite>forces</cite> 和 <cite>total_energy</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.trivial_scalar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">trivial_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aggr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#trivial_scalar"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.trivial_scalar" title="Link to this definition"></a></dt>
+<dd><p>一个简单的标量预测模块。</p>
+<p>该模块直接对节点特征进行全局池化（平均、求和或最大值）来预测一个标量属性。
+它不包含任何可学习的参数，主要用于基线模型或简单任务。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.trivial_scalar.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#trivial_scalar.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.trivial_scalar.forward" title="Link to this definition"></a></dt>
+<dd><p>定义前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Data</em>) – PyG 图数据对象。</p></li>
+<li><p><strong>graph_representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含图表示的字典，需要 <cite>node_attr</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>包含预测标量 <cite>scalar</cite> 的字典。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="layers-py-e3-layers-py">
-<h2>层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)<a class="headerlink" href="#layers-py-e3-layers-py" title="Link to this heading"></a></h2>
+<section id="module-HamGNN_v_2_0.models.layers">
+<span id="layers-py-e3-layers-py"></span><h2>层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.layers" title="Link to this heading"></a></h2>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-09 10:18:50</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-10-28 20:19:52</p></li>
+</ul>
+<p><a href="#id4"><span class="problematic" id="id5">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.BesselBasis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">BesselBasis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_rbf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#BesselBasis"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.BesselBasis" title="Link to this definition"></a></dt>
+<dd><p>零阶贝塞尔函数作为径向基函数（来自 DimeNet）。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.BesselBasis.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#BesselBasis.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.BesselBasis.forward" title="Link to this definition"></a></dt>
+<dd><p>计算原子间距离的零阶贝塞尔展开。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dist</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 形状为 (N_edge,) 的原子间距离。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>形状为 (N_edge, n_rbf) 的零阶贝塞尔展开。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rbf (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.CosineCutoff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">CosineCutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#CosineCutoff"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.CosineCutoff" title="Link to this definition"></a></dt>
+<dd><p>Behler-Parrinello 余弦截断函数。源自 SchNetPack。</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(r) = \begin{cases}
+ 0.5 \times \left[1 + \cos\left(\frac{\pi r}{r_\text{cutoff}}\right)\right]
+   &amp; r &lt; r_\text{cutoff} \\
+ 0 &amp; r \geqslant r_\text{cutoff} \\
+ \end{cases}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cutoff</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a><em>, </em><em>optional</em>) – 截断半径。</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.CosineCutoff.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distances</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#CosineCutoff.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.CosineCutoff.forward" title="Link to this definition"></a></dt>
+<dd><p>计算截断值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>distances</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 原子间距离张量。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>截断函数的值。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.Dense">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">Dense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=functools.partial(&lt;function</span> <span class="pre">constant_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val=0.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#Dense"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.Dense" title="Link to this definition"></a></dt>
+<dd><p>源自 SchNetPack 的全连接线性层，带有激活函数。</p>
+<div class="math notranslate nohighlight">
+\[y = activation(xW^T + b)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 输入特征数 <span class="math notranslate nohighlight">\(x\)</span>。</p></li>
+<li><p><strong>out_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a>) – 输出特征数 <span class="math notranslate nohighlight">\(y\)</span>。</p></li>
+<li><p><strong>bias</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a><em>, </em><em>optional</em>) – 如果为 False, 层将不学习偏置 <span class="math notranslate nohighlight">\(b\)</span>。</p></li>
+<li><p><strong>activation</strong> (<em>callable</em><em>, </em><em>optional</em>) – 如果为 None, 则不使用激活函数。</p></li>
+<li><p><strong>weight_init</strong> (<em>callable</em><em>, </em><em>optional</em>) – 权重的初始化函数。</p></li>
+<li><p><strong>bias_init</strong> (<em>callable</em><em>, </em><em>optional</em>) – 偏置的初始化函数。</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.Dense.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#Dense.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.Dense.forward" title="Link to this definition"></a></dt>
+<dd><p>计算层的输出。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inputs</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入值的批次。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>层的输出。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.Dense.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#Dense.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.Dense.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>重新初始化模型的权重和偏置值。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.GaussianSmearing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">GaussianSmearing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_gaussians</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#GaussianSmearing"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.GaussianSmearing" title="Link to this definition"></a></dt>
+<dd><p>高斯函数作为径向基函数。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.GaussianSmearing.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#GaussianSmearing.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.GaussianSmearing.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.MLPRegression">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">MLPRegression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_out_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_mlp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lbias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ELU(alpha=1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#MLPRegression"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.MLPRegression" title="Link to this definition"></a></dt>
+<dd><p>一个多层感知机（MLP）回归网络，特征维度在层间减半。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.MLPRegression.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#MLPRegression.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.MLPRegression.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.cuttoff_envelope">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">cuttoff_envelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#cuttoff_envelope"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.cuttoff_envelope" title="Link to this definition"></a></dt>
+<dd><p>多项式形式的截断包络函数。</p>
+<p>当距离 <cite>x</cite> 接近 <cite>cutoff</cite> 时，该函数平滑地衰减到零。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.cuttoff_envelope.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#cuttoff_envelope.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.cuttoff_envelope.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.denseLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">denseLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ELU(alpha=1.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#denseLayer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.denseLayer" title="Link to this definition"></a></dt>
+<dd><p>一个包含线性层、批量归一化和激活函数的残差连接稠密层。</p>
+<p>结构为: <cite>out = Linear(Act(BN(Linear(x))))</cite></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.denseLayer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#denseLayer.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.denseLayer.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.denseRegression">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">denseRegression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#denseRegression"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.denseRegression" title="Link to this definition"></a></dt>
+<dd><p>一个用于回归任务的多层稠密网络。</p>
+<p>包含多个隐藏层和一个最终的线性输出层。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.denseRegression.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#denseRegression.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.denseRegression.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.sph_harm_layer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">sph_harm_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_spherical</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#sph_harm_layer"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.sph_harm_layer" title="Link to this definition"></a></dt>
+<dd><p>计算实数球谐函数的层。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.sph_harm_layer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#sph_harm_layer.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.sph_harm_layer.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>angle</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 极角 theta。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>拼接后的球谐函数值。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-HamGNN_v_2_0.models.e3_layers">MIT License</p>
+<p>Copyright (c) 2023 Xiaoxun-Gong</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Jn">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">Jn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Jn"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Jn" title="Link to this definition"></a></dt>
+<dd><p>n 阶球贝塞尔函数的数值计算。</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Jn_zeros">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">Jn_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Jn_zeros"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Jn_zeros" title="Link to this definition"></a></dt>
+<dd><p>计算最高到 n 阶（不含）的球贝塞尔函数的前 k 个零点。</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.PolynomialCutoff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">PolynomialCutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#PolynomialCutoff"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.PolynomialCutoff.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#PolynomialCutoff.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff.forward" title="Link to this definition"></a></dt>
+<dd><p>评估截断函数。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入的距离。</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">Rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_dtype_torch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_torch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinful</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate" title="Link to this definition"></a></dt>
+<dd><p>处理旋转和不同球谐函数基组间变换的工具类。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.D_one_half">
+<span class="sig-name descname"><span class="pre">D_one_half</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.D_one_half"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.D_one_half" title="Link to this definition"></a></dt>
+<dd><p>计算 l=1/2 (自旋) 的 Wigner-D 矩阵。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H">
+<span class="sig-name descname"><span class="pre">openmx2wiki_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.openmx2wiki_H"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H" title="Link to this definition"></a></dt>
+<dd><p>（单个 l）将 OpenMX 基组哈密顿量块转换为维基百科基组。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H_full">
+<span class="sig-name descname"><span class="pre">openmx2wiki_H_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.openmx2wiki_H_full"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H_full" title="Link to this definition"></a></dt>
+<dd><p>将 OpenMX 基组下的哈密顿量转换为标准维基百科基组。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_left_right">
+<span class="sig-name descname"><span class="pre">openmx2wiki_left_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orbital_types_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.openmx2wiki_left_right"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_left_right" title="Link to this definition"></a></dt>
+<dd><p>为左右两边的轨道类型列表构建完整的基组变换矩阵。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.rotate_e3nn_v">
+<span class="sig-name descname"><span class="pre">rotate_e3nn_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_xyz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.rotate_e3nn_v"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_e3nn_v" title="Link to this definition"></a></dt>
+<dd><p>使用 e3nn 的方法旋转一个向量。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.rotate_matrix_convert">
+<span class="sig-name descname"><span class="pre">rotate_matrix_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.rotate_matrix_convert"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_matrix_convert" title="Link to this definition"></a></dt>
+<dd><p>将 (x, y, z) 顺序的旋转矩阵转换为 (y, z, x) 顺序。
+(参见 e3nn.o3.spherical_harmonics() 和 <a class="reference external" href="https://docs.e3nn.org/en/stable/guide/change_of_basis.html">https://docs.e3nn.org/en/stable/guide/change_of_basis.html</a>)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H">
+<span class="sig-name descname"><span class="pre">rotate_openmx_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_xyz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.rotate_openmx_H"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H" title="Link to this definition"></a></dt>
+<dd><p>在 OpenMX 基组下旋转哈密顿量块 H。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H_full">
+<span class="sig-name descname"><span class="pre">rotate_openmx_H_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_xyz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.rotate_openmx_H_full"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H_full" title="Link to this definition"></a></dt>
+<dd><p>在 OpenMX 基组下旋转完整的（拼接后的）哈密顿量块 H。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H">
+<span class="sig-name descname"><span class="pre">wiki2openmx_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.wiki2openmx_H"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H" title="Link to this definition"></a></dt>
+<dd><p>（单个 l）将维基百科基组哈密顿量块转换为 OpenMX 基组。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H_full">
+<span class="sig-name descname"><span class="pre">wiki2openmx_H_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_types_right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#Rotate.wiki2openmx_H_full"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H_full" title="Link to this definition"></a></dt>
+<dd><p>将标准维基百科基组下的哈密顿量转换为 OpenMX 基组。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SelfTp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">SelfTp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irreps_out</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SelfTp"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SelfTp" title="Link to this definition"></a></dt>
+<dd><p>自张量积层: z_i = W’_{ij}x_j W’’_{ik}x_k (k&gt;=j)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SelfTp.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SelfTp.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SelfTp.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">SeparateWeightTensorProduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irreps_in2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irreps_out</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SeparateWeightTensorProduct"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct" title="Link to this definition"></a></dt>
+<dd><p>使用分离权重的张量积层: z_i = W’_{ij}x_j W’’_{ik}y_k</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SeparateWeightTensorProduct.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SkipConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">SkipConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irreps_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SkipConnection"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SkipConnection" title="Link to this definition"></a></dt>
+<dd><p>实现跳跃连接，如果输入和输出的 Irreps 不匹配，则使用一个线性层进行投影。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SkipConnection.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SkipConnection.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SkipConnection.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SphericalBasis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">SphericalBasis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_irreps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SphericalBasis"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SphericalBasis" title="Link to this definition"></a></dt>
+<dd><p>结合球谐函数和径向贝塞尔基函数，构成一个完整的三维空间基组。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.SphericalBasis.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#SphericalBasis.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.SphericalBasis.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.bessel_basis">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">bessel_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#bessel_basis"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.bessel_basis" title="Link to this definition"></a></dt>
+<dd><p>计算最高到 n 阶（不含）和最大频率 k（不含）的
+归一化和重缩放的球贝塞尔函数的 sympy 符号表达式。</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3ElementWise">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">e3ElementWise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3ElementWise"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3ElementWise" title="Link to this definition"></a></dt>
+<dd><p>对 E(3) 等变特征进行逐元素加权的工具类。</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3LayerNorm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">e3LayerNorm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'component'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtract_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divide_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3LayerNorm"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm" title="Link to this definition"></a></dt>
+<dd><p>E(3) 等变特征的层归一化。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3LayerNorm.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3LayerNorm.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3LayerNorm.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3LayerNorm.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>重新初始化参数。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3TensorDecomp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">e3TensorDecomp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_irreps_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_js_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_dtype_torch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nao_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">26</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinful</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_parity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3TensorDecomp"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp" title="Link to this definition"></a></dt>
+<dd><p>通过 Clebsch-Gordan 系数实现等变特征的分解与重组。</p>
+<p>这个类是模型的核心，它将神经网络预测的抽象球谐系数（等变特征）
+重组为物理上有意义的矩阵（如哈密顿量块），反之亦然。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.convert_mask">
+<span class="sig-name descname"><span class="pre">convert_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3TensorDecomp.convert_mask"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.convert_mask" title="Link to this definition"></a></dt>
+<dd><p>转换掩码以匹配自旋情况下的维度。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_H">
+<span class="sig-name descname"><span class="pre">get_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3TensorDecomp.get_H"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_H" title="Link to this definition"></a></dt>
+<dd><p>从网络输出获取 openmx 类型的哈密顿量 H</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_net_out">
+<span class="sig-name descname"><span class="pre">get_net_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#e3TensorDecomp.get_net_out"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_net_out" title="Link to this definition"></a></dt>
+<dd><p>从 openmx 类型的哈密顿量 H 获取网络输出</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.flt2cplx">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">flt2cplx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flt_dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#flt2cplx"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.flt2cplx" title="Link to this definition"></a></dt>
+<dd><p>将浮点数据类型转换为对应的复数数据类型。</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.irreps_from_l1l2">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">irreps_from_l1l2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mul</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinful</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_parity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#irreps_from_l1l2"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.irreps_from_l1l2" title="Link to this definition"></a></dt>
+<dd><p>根据两个角动量 l1 和 l2 生成耦合后的不可约表示 (Irreps)。</p>
+<p>非自旋情况示例: l1=1, l2=2 (1x2) -&gt;
+required_irreps_full=1+2+3, required_irreps=1+2+3, required_irreps_x1=None</p>
+<p>自旋情况示例: l1=1, l2=2 (1x0.5)x(2x0.5) -&gt;
+required_irreps_full = 1+2+3 + 0+1+2 + 1+2+3 + 2+3+4
+required_irreps = (1+2+3)x0 = 1+2+3
+required_irreps_x1 = (1+2+3)x1 = [0+1+2, 1+2+3, 2+3+4]</p>
+<p>注意：required_irreps_x1 是一个 Irreps 列表。</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.sort_irreps">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">sort_irreps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">irreps_in</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#sort_irreps"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps" title="Link to this definition"></a></dt>
+<dd><p>对 e3nn Irreps 特征进行排序和恢复原始顺序的模块。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.sort_irreps.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#sort_irreps.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps.forward" title="Link to this definition"></a></dt>
+<dd><p>irreps_in -&gt; irreps_out</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.sort_irreps.inverse">
+<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#sort_irreps.inverse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.sort_irreps.inverse" title="Link to this definition"></a></dt>
+<dd><p>irreps_out -&gt; irreps_in</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.e3_layers.spherical_bessel_formulas">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.e3_layers.</span></span><span class="sig-name descname"><span class="pre">spherical_bessel_formulas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/e3_layers.html#spherical_bessel_formulas"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.e3_layers.spherical_bessel_formulas" title="Link to this definition"></a></dt>
+<dd><p>计算最高到 n 阶（不含）的球贝塞尔函数的 sympy 符号表达式。</p>
+</dd></dl>
+
 </section>
 <section id="module-HamGNN_v_2_0.models.embedding">
 <span id="embedding-py"></span><h2>嵌入模块 (<cite>embedding.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.embedding" title="Link to this heading"></a></h2>

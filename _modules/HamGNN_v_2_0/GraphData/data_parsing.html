@@ -42,7 +42,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../source/core.html">HamGNN 中文文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -204,14 +209,17 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;解析所有晶体文件和属性文件，生成并保存图数据。</span>
 
 <span class="sd">    这是数据预处理的核心函数。它执行以下步骤：</span>
+
 <span class="sd">    1.  确定晶体文件的类型和路径。</span>
 <span class="sd">    2.  加载或创建原子 one-hot 编码配置。</span>
 <span class="sd">    3.  从 `id_prop.csv` 文件中读取每个晶体ID及其对应的目标属性。</span>
 <span class="sd">    4.  遍历每个晶体ID，执行以下操作：</span>
-<span class="sd">        a. 读取晶体结构。</span>
-<span class="sd">        b. 生成原子特征（node_attr）。</span>
-<span class="sd">        c. 寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。</span>
-<span class="sd">        d. 将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。</span>
+
+<span class="sd">        a.  读取晶体结构。</span>
+<span class="sd">        b.  生成原子特征（node_attr）。</span>
+<span class="sd">        c.  寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。</span>
+<span class="sd">        d.  将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。</span>
+<span class="sd">    </span>
 <span class="sd">    5.  将所有图数据存储在一个字典中，并使用 `np.savez` 保存为压缩的 `.npz` 文件。</span>
 
 <span class="sd">    Args:</span>

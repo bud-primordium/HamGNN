@@ -45,29 +45,35 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">数据处理与输入</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#config-parsing-py">配置解析 (<cite>config_parsing.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.input.config_parsing">配置解析 (<cite>config_parsing.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.input.config_parsing.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -84,7 +90,6 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">数据处理与输入</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/data_processing.rst.txt" rel="nofollow"> 查看页面源码</a>
@@ -116,17 +121,20 @@
 <dd><p>继承自 pl.LightningDataModule，用于管理图数据集。</p>
 <p>该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的
 训练流程无缝集成。</p>
+<p>主要功能:</p>
+<ul class="simple">
+<li><p>提供了 <cite>graph_data_module</cite> 类用于管理图数据。</p></li>
+<li><p>包含 <cite>collate_fn</cite> 用于 <cite>DataLoader</cite>。</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module.setup"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup" title="Link to this definition"></a></dt>
 <dd><p>划分数据集为训练、验证和测试三部分。</p>
 <p>此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。
-其行为逻辑如下：
-1. 如果 <cite>self.split_file</cite> 存在，则从该文件加载预定义的索引来划分数据集。</p>
-<blockquote>
-<div><p>这确保了实验的可复现性。</p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
+其行为逻辑如下：</p>
+<ol class="arabic simple">
+<li><p>如果 <cite>self.split_file</cite> 存在，则从该文件加载预定义的索引来划分数据集。
+这确保了实验的可复现性。</p></li>
 <li><p>如果没有提供划分文件，则根据 <cite>train_ratio</cite>, <cite>val_ratio</cite>, <cite>test_ratio</cite>
 对数据集进行随机划分。划分是基于固定的随机种子（42），以保证每次运行的划分结果一致。</p></li>
 <li><p>根据 <cite>stage</cite> 参数（’fit’ 或 ‘test’）来决定执行哪部分逻辑。</p></li>
@@ -249,20 +257,19 @@
 <dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.data_parsing.cif_parse">
 <span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.data_parsing.</span></span><span class="sig-name descname"><span class="pre">cif_parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/data_parsing.html#cif_parse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse" title="Link to this definition"></a></dt>
 <dd><p>解析所有晶体文件和属性文件，生成并保存图数据。</p>
-<p>这是数据预处理的核心函数。它执行以下步骤：
-1.  确定晶体文件的类型和路径。
-2.  加载或创建原子 one-hot 编码配置。
-3.  从 <cite>id_prop.csv</cite> 文件中读取每个晶体ID及其对应的目标属性。
-4.  遍历每个晶体ID，执行以下操作：</p>
-<blockquote>
-<div><ol class="loweralpha simple">
+<p>这是数据预处理的核心函数。它执行以下步骤：</p>
+<ol class="arabic simple">
+<li><p>确定晶体文件的类型和路径。</p></li>
+<li><p>加载或创建原子 one-hot 编码配置。</p></li>
+<li><p>从 <cite>id_prop.csv</cite> 文件中读取每个晶体ID及其对应的目标属性。</p></li>
+<li><p>遍历每个晶体ID，执行以下操作：</p>
+<ol class="loweralpha simple">
 <li><p>读取晶体结构。</p></li>
 <li><p>生成原子特征（node_attr）。</p></li>
 <li><p>寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。</p></li>
 <li><p>将所有信息（节点、边、属性等）组装成 <cite>torch_geometric.data.Data</cite> 对象。</p></li>
 </ol>
-</div></blockquote>
-<ol class="arabic simple" start="5">
+</li>
 <li><p>将所有图数据存储在一个字典中，并使用 <cite>np.savez</cite> 保存为压缩的 <cite>.npz</cite> 文件。</p></li>
 </ol>
 <dl class="field-list simple">
@@ -295,8 +302,39 @@
 </dd></dl>
 
 </section>
-<section id="config-parsing-py">
-<h2>配置解析 (<cite>config_parsing.py</cite>)<a class="headerlink" href="#config-parsing-py" title="Link to this heading"></a></h2>
+<section id="module-HamGNN_v_2_0.input.config_parsing">
+<span id="config-parsing-py"></span><h2>配置解析 (<cite>config_parsing.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.input.config_parsing" title="Link to this heading"></a></h2>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-29 15:03:46</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-10-29 16:45:04</p></li>
+</ul>
+<p><a href="#id6"><span class="problematic" id="id7">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.input.config_parsing.read_config">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.input.config_parsing.</span></span><span class="sig-name descname"><span class="pre">read_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config_default.yaml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dataset_params':</span> <span class="pre">{'batch_size':</span> <span class="pre">200,</span> <span class="pre">'csv_params':</span> <span class="pre">{'crystal_path':</span> <span class="pre">'crystals',</span> <span class="pre">'file_type':</span> <span class="pre">'poscar',</span> <span class="pre">'id_prop_path':</span> <span class="pre">'./',</span> <span class="pre">'l_pred_atomwise_tensor':</span> <span class="pre">True,</span> <span class="pre">'l_pred_crystal_tensor':</span> <span class="pre">False,</span> <span class="pre">'rank_tensor':</span> <span class="pre">0},</span> <span class="pre">'database_type':</span> <span class="pre">'db',</span> <span class="pre">'db_params':</span> <span class="pre">{'db_path':</span> <span class="pre">'./',</span> <span class="pre">'property_list':</span> <span class="pre">['energy',</span> <span class="pre">'hamiltonian']},</span> <span class="pre">'graph_data_path':</span> <span class="pre">'./graph_data',</span> <span class="pre">'max_num_nbr':</span> <span class="pre">32,</span> <span class="pre">'radius':</span> <span class="pre">6.0,</span> <span class="pre">'split_file':</span> <span class="pre">None,</span> <span class="pre">'test_ratio':</span> <span class="pre">0.2,</span> <span class="pre">'train_ratio':</span> <span class="pre">0.6,</span> <span class="pre">'val_ratio':</span> <span class="pre">0.2},</span> <span class="pre">'losses_metrics':</span> <span class="pre">{'losses':</span> <span class="pre">[{'loss_weight':</span> <span class="pre">1.0,</span> <span class="pre">'metric':</span> <span class="pre">'mse',</span> <span class="pre">'prediction':</span> <span class="pre">'energy',</span> <span class="pre">'target':</span> <span class="pre">'energy'},</span> <span class="pre">{'loss_weight':</span> <span class="pre">0.0,</span> <span class="pre">'metric':</span> <span class="pre">'cosine_similarity',</span> <span class="pre">'prediction':</span> <span class="pre">'energy',</span> <span class="pre">'target':</span> <span class="pre">'energy'}],</span> <span class="pre">'metrics':</span> <span class="pre">[{'metric':</span> <span class="pre">'mae',</span> <span class="pre">'prediction':</span> <span class="pre">'energy',</span> <span class="pre">'target':</span> <span class="pre">'energy'},</span> <span class="pre">{'metric':</span> <span class="pre">'cosine_similarity',</span> <span class="pre">'prediction':</span> <span class="pre">'energy',</span> <span class="pre">'target':</span> <span class="pre">'energy'}]},</span> <span class="pre">'optim_params':</span> <span class="pre">{'gradient_clip_val':</span> <span class="pre">0.0,</span> <span class="pre">'lr':</span> <span class="pre">0.01,</span> <span class="pre">'lr_decay':</span> <span class="pre">0.5,</span> <span class="pre">'lr_patience':</span> <span class="pre">5,</span> <span class="pre">'max_epochs':</span> <span class="pre">500,</span> <span class="pre">'min_epochs':</span> <span class="pre">100,</span> <span class="pre">'stop_patience':</span> <span class="pre">30},</span> <span class="pre">'output_nets':</span> <span class="pre">{'HamGNN_out':</span> <span class="pre">{'band_num_control':</span> <span class="pre">6,</span> <span class="pre">'calculate_band_energy':</span> <span class="pre">False,</span> <span class="pre">'collinear_spin':</span> <span class="pre">False,</span> <span class="pre">'create_graph':</span> <span class="pre">False,</span> <span class="pre">'ham_only':</span> <span class="pre">True,</span> <span class="pre">'ham_type':</span> <span class="pre">'openmx',</span> <span class="pre">'include_triplet':</span> <span class="pre">False,</span> <span class="pre">'irreps_in_edge':</span> <span class="pre">'',</span> <span class="pre">'irreps_in_node':</span> <span class="pre">'',</span> <span class="pre">'irreps_in_triplet':</span> <span class="pre">'',</span> <span class="pre">'k_path':</span> <span class="pre">None,</span> <span class="pre">'minMagneticMoment':</span> <span class="pre">0.5,</span> <span class="pre">'nao_max':</span> <span class="pre">14,</span> <span class="pre">'nonlinearity_type':</span> <span class="pre">'gate',</span> <span class="pre">'num_k':</span> <span class="pre">5,</span> <span class="pre">'return_forces':</span> <span class="pre">False,</span> <span class="pre">'soc_switch':</span> <span class="pre">False,</span> <span class="pre">'spin_constrained':</span> <span class="pre">False,</span> <span class="pre">'symmetrize':</span> <span class="pre">True},</span> <span class="pre">'output_module':</span> <span class="pre">'HamGNN_out'},</span> <span class="pre">'profiler_params':</span> <span class="pre">{'progress_bar_refresh_rat':</span> <span class="pre">1,</span> <span class="pre">'train_dir':</span> <span class="pre">'train_data'},</span> <span class="pre">'representation_nets':</span> <span class="pre">{},</span> <span class="pre">'setup':</span> <span class="pre">{'GNN_Net':</span> <span class="pre">'Edge_GNN',</span> <span class="pre">'accelerator':</span> <span class="pre">None,</span> <span class="pre">'checkpoint_path':</span> <span class="pre">'./',</span> <span class="pre">'ignore_warnings':</span> <span class="pre">False,</span> <span class="pre">'l_minus_mean':</span> <span class="pre">False,</span> <span class="pre">'load_from_checkpoint':</span> <span class="pre">False,</span> <span class="pre">'num_gpus':</span> <span class="pre">[1],</span> <span class="pre">'precision':</span> <span class="pre">32,</span> <span class="pre">'property':</span> <span class="pre">'scalar_per_atom',</span> <span class="pre">'resume':</span> <span class="pre">False,</span> <span class="pre">'stage':</span> <span class="pre">'fit'}}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/input/config_parsing.html#read_config"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.input.config_parsing.read_config" title="Link to this definition"></a></dt>
+<dd><p>从 YAML 文件读取配置，并与默认配置合并。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a><em>, </em><em>optional</em>) – 用户指定的配置文件路径。默认为 ‘config_default.yaml’。</p></li>
+<li><p><strong>config_default</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a><em>, </em><em>optional</em>) – 包含所有默认参数的字典。默认为本模块中定义的 <cite>config_default</cite>。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>一个 EasyDict 对象，包含了合并后的最终配置，可以通过属性点号 <cite>.</cite>
+方便地访问各级配置项。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>easydict.EasyDict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

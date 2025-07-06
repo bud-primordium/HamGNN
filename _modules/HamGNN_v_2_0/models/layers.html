@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.layers &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utilities.html">通用工具函数</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.layers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.layers 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-10-09 10:18:50 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-10-28 20:19:52</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">本模块定义了 HamGNN 模型中使用的各种基础神经网络层和激活函数。</span>
+<span class="sd">这些层是构建更复杂的等变网络模块的基础组件，包括自定义的全连接层、</span>
+<span class="sd">回归网络、径向基函数以及截断函数等。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_bn_act</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">batch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Linear</span><span class="p">,</span> <span class="n">Bilinear</span><span class="p">,</span> <span class="n">Sigmoid</span><span class="p">,</span> <span class="n">Softplus</span><span class="p">,</span> <span class="n">ELU</span><span class="p">,</span> <span class="n">ReLU</span><span class="p">,</span> <span class="n">SELU</span><span class="p">,</span> <span class="n">SiLU</span><span class="p">,</span>
+                      <span class="n">CELU</span><span class="p">,</span> <span class="n">BatchNorm1d</span><span class="p">,</span> <span class="n">ModuleList</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Tanh</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn.models.dimenet_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">real_sph_harm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="kn">import</span> <span class="n">xavier_uniform_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="kn">import</span> <span class="n">constant_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="c1"># 默认的权重初始化函数，使用零进行初始化</span>
+<span class="n">zeros_initializer</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">constant_</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="denseLayer">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.denseLayer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">denseLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个包含线性层、批量归一化和激活函数的残差连接稠密层。</span>
+
+<span class="sd">    结构为: `out = Linear(Act(BN(Linear(x))))`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                    <span class="n">use_batch_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">ELU</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            in_features (int): 输入特征维度。</span>
+<span class="sd">            out_features (int): 输出特征维度。</span>
+<span class="sd">            bias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">            activation (callable): 激活函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lba</span> <span class="o">=</span> <span class="n">linear_bn_act</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                        <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_batch_norm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">out_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">)</span>
+<div class="viewcode-block" id="denseLayer.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.denseLayer.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lba</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="denseRegression">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.denseRegression">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">denseRegression</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个用于回归任务的多层稠密网络。</span>
+<span class="sd">    </span>
+<span class="sd">    包含多个隐藏层和一个最终的线性输出层。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                    <span class="n">use_batch_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            in_features (int): 输入特征维度。</span>
+<span class="sd">            out_features (int): 输出特征维度（回归目标维度）。</span>
+<span class="sd">            bias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">            activation (callable): 隐藏层使用的激活函数。</span>
+<span class="sd">            n_h (int): 隐藏层的数量。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n_h</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">lbias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                        <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_batch_norm</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_h</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+<div class="viewcode-block" id="denseRegression.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.denseRegression.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">fc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="cuttoff_envelope">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.cuttoff_envelope">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">cuttoff_envelope</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;多项式形式的截断包络函数。</span>
+<span class="sd">    </span>
+<span class="sd">    当距离 `x` 接近 `cutoff` 时，该函数平滑地衰减到零。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">            exponent (int): 多项式的指数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">cuttoff_envelope</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">exponent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+<div class="viewcode-block" id="cuttoff_envelope.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.cuttoff_envelope.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span>
+        <span class="n">x_pow_p0</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">x_pow_p1</span> <span class="o">=</span> <span class="n">x_pow_p0</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="n">x_pow_p2</span> <span class="o">=</span> <span class="n">x_pow_p1</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="c1"># 仅对小于 cutoff 的距离计算包络，其余为零</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x_pow_p0</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x_pow_p1</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x_pow_p2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span></div>
+</div>
+
+
+<div class="viewcode-block" id="CosineCutoff">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.CosineCutoff">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CosineCutoff</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Behler-Parrinello 余弦截断函数。源自 SchNetPack。</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       f(r) = \begin{cases}</span>
+<span class="sd">        0.5 \times \left[1 + \cos\left(\frac{\pi r}{r_\text{cutoff}}\right)\right]</span>
+<span class="sd">          &amp; r &lt; r_\text{cutoff} \\</span>
+<span class="sd">        0 &amp; r \geqslant r_\text{cutoff} \\</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cutoff (float, optional): 截断半径。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CosineCutoff</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;cutoff&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="n">cutoff</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="CosineCutoff.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.CosineCutoff.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算截断值。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distances (torch.Tensor): 原子间距离张量。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 截断函数的值。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 计算截断函数的值</span>
+        <span class="n">cutoffs</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">distances</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="c1"># 移除超出截断半径的贡献</span>
+        <span class="n">cutoffs</span> <span class="o">*=</span> <span class="p">(</span><span class="n">distances</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cutoffs</span></div>
+</div>
+
+
+<div class="viewcode-block" id="MLPRegression">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.MLPRegression">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MLPRegression</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个多层感知机（MLP）回归网络，特征维度在层间减半。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_out_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_mlp</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">lbias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">activation</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ELU</span><span class="p">(),</span> <span class="n">use_batch_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_in_features (int): 输入特征维度。</span>
+<span class="sd">            num_out_features (int): 输出特征维度。</span>
+<span class="sd">            num_mlp (int): MLP 的层数。</span>
+<span class="sd">            lbias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            activation (Callable): 激活函数。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MLPRegression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">=</span> <span class="p">[</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">),</span> 
+                                   <span class="n">lbias</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_mlp</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">+=</span> <span class="p">[</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">num_mlp</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">num_out_features</span><span class="p">,</span> 
+                                    <span class="n">lbias</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="p">)]</span>                           
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">=</span> <span class="n">ModuleList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLPRegression.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.MLPRegression.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">lr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">lr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+
+<div class="viewcode-block" id="sph_harm_layer">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.sph_harm_layer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">sph_harm_layer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算实数球谐函数的层。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_spherical</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_spherical (int): 球谐函数的阶数 l。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">sph_harm_layer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spherical</span> <span class="o">=</span> <span class="n">num_spherical</span>
+        <span class="c1"># 使用 PyTorch Geometric 的工具生成符号化的球谐函数表达式</span>
+        <span class="n">sph_harm_forms</span> <span class="o">=</span> <span class="n">real_sph_harm</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;theta&#39;</span><span class="p">)</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># l=0 时，Y00 是常数</span>
+                <span class="n">sph1</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">sph1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 将符号表达式转换为可计算的 PyTorch 函数</span>
+                <span class="n">sph</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sph</span><span class="p">)</span>
+
+<div class="viewcode-block" id="sph_harm_layer.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.sph_harm_layer.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            angle (torch.Tensor): 极角 theta。</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 拼接后的球谐函数值。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="BesselBasis">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.BesselBasis">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BesselBasis</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    零阶贝塞尔函数作为径向基函数（来自 DimeNet）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">n_rbf</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff_func</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cutoff (float): 径向截断半径。</span>
+<span class="sd">            n_rbf (int): 径向基函数的数量。</span>
+<span class="sd">            cutoff_func (callable, optional): 应用于基函数的截断函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BesselBasis</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 计算贝塞尔函数的频率</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_rbf</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;freqs&quot;</span><span class="p">,</span> <span class="n">freqs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="o">=</span> <span class="n">cutoff_func</span>
+
+<div class="viewcode-block" id="BesselBasis.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.BesselBasis.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;计算原子间距离的零阶贝塞尔展开。</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                dist (torch.Tensor): 形状为 (N_edge,) 的原子间距离。</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                rbf (torch.Tensor): 形状为 (N_edge, n_rbf) 的零阶贝塞尔展开。</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span>
+        <span class="c1"># 零阶球贝塞尔函数 j0(x) = sin(x)/x</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span> <span class="o">/</span> <span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rbf</span> <span class="o">=</span> <span class="n">rbf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+<div class="viewcode-block" id="GaussianSmearing">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.GaussianSmearing">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaussianSmearing</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;高斯函数作为径向基函数。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">num_gaussians</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cutoff_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            start (float): 第一个高斯函数的中心位置。</span>
+<span class="sd">            stop (float): 最后一个高斯函数的中心位置。</span>
+<span class="sd">            num_gaussians (int): 高斯函数的数量。</span>
+<span class="sd">            cutoff_func (callable, optional): 应用于基函数的截断函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GaussianSmearing</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num_gaussians</span><span class="p">)</span>
+        <span class="c1"># 计算高斯函数的宽度系数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="o">=</span> <span class="n">cutoff_func</span>
+<div class="viewcode-block" id="GaussianSmearing.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.GaussianSmearing.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">expansion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expansion</span> <span class="o">=</span> <span class="n">expansion</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">expansion</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Dense">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.Dense">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dense</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;源自 SchNetPack 的全连接线性层，带有激活函数。</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       y = activation(xW^T + b)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_features (int): 输入特征数 :math:`x`。</span>
+<span class="sd">        out_features (int): 输出特征数 :math:`y`。</span>
+<span class="sd">        bias (bool, optional): 如果为 False, 层将不学习偏置 :math:`b`。</span>
+<span class="sd">        activation (callable, optional): 如果为 None, 则不使用激活函数。</span>
+<span class="sd">        weight_init (callable, optional): 权重的初始化函数。</span>
+<span class="sd">        bias_init (callable, optional): 偏置的初始化函数。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">,</span>
+        <span class="n">out_features</span><span class="p">,</span>
+        <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight_init</span><span class="o">=</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="o">=</span><span class="n">zeros_initializer</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_init</span> <span class="o">=</span> <span class="n">weight_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Dense</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
+        <span class="c1"># 初始化线性层 y = xW^T + b</span>
+
+<div class="viewcode-block" id="Dense.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.Dense.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;重新初始化模型的权重和偏置值。&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dense.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.layers.Dense.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算层的输出。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (torch.Tensor): 输入值的批次。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 层的输出。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 计算线性层 y = xW^T + b</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Dense</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="c1"># 添加激活函数</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

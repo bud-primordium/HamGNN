@@ -17,10 +17,11 @@
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/translations.js?v=beaddf03"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
     <link rel="search" title="搜索" href="search.html" />
-    <link rel="next" title="HamGNN 中文文档" href="source/core.html" /> 
+    <link rel="next" title="主程序入口" href="source/main_entry.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +45,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="source/core.html">HamGNN 中文文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -78,13 +84,50 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="source/core.html">HamGNN 中文文档</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/model_components.html">模型通用组件</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/utilities.html">通用工具函数</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#hamgnn-net-py">HamGNN 网络 (<cite>net.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.BaseModel">基础模型 (<cite>BaseModel.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#kan-attention-kan-py">注意力与 KAN 层 (<cite>Attention_kan.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.wigner">物理工具 (<cite>wigner.py</cite>, <cite>clebsch_gordan.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_components.html">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.outputs">输出模块 (<cite>outputs.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.layers">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#module-HamGNN_v_2_0.input.config_parsing">配置解析 (<cite>config_parsing.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/utilities.html">通用工具函数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion"><code class="docutils literal notranslate"><span class="pre">Expansion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.blockwise_2x2_concat"><code class="docutils literal notranslate"><span class="pre">blockwise_2x2_concat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.extract_elements_above_threshold"><code class="docutils literal notranslate"><span class="pre">extract_elements_above_threshold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.prod"><code class="docutils literal notranslate"><span class="pre">prod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/utilities.html#HamGNN_v_2_0.models.utils.upgrade_tensor_precision"><code class="docutils literal notranslate"><span class="pre">upgrade_tensor_precision()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -94,7 +137,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
-        <a href="source/core.html" class="btn btn-neutral float-right" title="HamGNN 中文文档" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="source/main_entry.html" class="btn btn-neutral float-right" title="主程序入口" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,1076 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.e3_layers &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utilities.html">通用工具函数</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.e3_layers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.e3_layers 源代码</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># The following modified codes are borrowed from https://github.com/Xiaoxun-Gong/DeepH-E3 for Test purpose</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MIT License</span>
+
+<span class="sd">Copyright (c) 2023 Xiaoxun-Gong</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_scatter</span><span class="w"> </span><span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">degree</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">e3nn.o3</span><span class="w"> </span><span class="kn">import</span> <span class="n">Irrep</span><span class="p">,</span> <span class="n">Irreps</span><span class="p">,</span> <span class="n">wigner_3j</span><span class="p">,</span> <span class="n">matrix_to_angles</span><span class="p">,</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">FullyConnectedTensorProduct</span><span class="p">,</span> <span class="n">TensorProduct</span><span class="p">,</span> <span class="n">SphericalHarmonics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">e3nn.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Extract</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sym</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">special</span> <span class="k">as</span> <span class="n">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+
+<div class="viewcode-block" id="PolynomialCutoff">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PolynomialCutoff</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;多项式截断函数，如 DimeNet 中所提议: https://arxiv.org/abs/2003.03123</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            r_max (float): 截断半径。</span>
+<span class="sd">            p (int): 包络函数中使用的幂次。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PolynomialCutoff</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="n">p</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;r_max&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="n">r_max</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="PolynomialCutoff.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        评估截断函数。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 输入的距离。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span>
+            <span class="o">-</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># 仅对小于 r_max 的距离应用包络</span>
+        <span class="n">envelope</span> <span class="o">*=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">envelope</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Jn">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Jn">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Jn</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    n 阶球贝塞尔函数的数值计算。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">))</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">jv</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Jn_zeros">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Jn_zeros">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Jn_zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算最高到 n 阶（不含）的球贝塞尔函数的前 k 个零点。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zerosj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+    <span class="n">zerosj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">racines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">):</span>
+            <span class="n">foo</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">Jn</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+            <span class="n">racines</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">foo</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">racines</span>
+        <span class="n">zerosj</span><span class="p">[</span><span class="n">i</span><span class="p">][:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">racines</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">zerosj</span></div>
+
+
+<div class="viewcode-block" id="spherical_bessel_formulas">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.spherical_bessel_formulas">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spherical_bessel_formulas</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算最高到 n 阶（不含）的球贝塞尔函数的 sympy 符号表达式。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">x</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">x</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">x</span>
+        <span class="n">f</span> <span class="o">+=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="n">i</span><span class="p">)]</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span></div>
+
+
+<div class="viewcode-block" id="bessel_basis">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.bessel_basis">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bessel_basis</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    计算最高到 n 阶（不含）和最大频率 k（不含）的</span>
+<span class="sd">    归一化和重缩放的球贝塞尔函数的 sympy 符号表达式。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">zeros</span> <span class="o">=</span> <span class="n">Jn_zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">normalizer</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">normalizer_tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">normalizer_tmp</span> <span class="o">+=</span> <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">Jn</span><span class="p">(</span><span class="n">zeros</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">normalizer_tmp</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">normalizer_tmp</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">normalizer</span> <span class="o">+=</span> <span class="p">[</span><span class="n">normalizer_tmp</span><span class="p">]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">spherical_bessel_formulas</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+    <span class="n">bess_basis</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">bess_basis_tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">bess_basis_tmp</span> <span class="o">+=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">normalizer</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+                                            <span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">f</span><span class="p">[</span><span class="n">order</span><span class="p">]</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">zeros</span><span class="p">[</span><span class="n">order</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">))]</span>
+        <span class="n">bess_basis</span> <span class="o">+=</span> <span class="p">[</span><span class="n">bess_basis_tmp</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">bess_basis</span></div>
+
+
+<div class="viewcode-block" id="flt2cplx">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.flt2cplx">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">flt2cplx</span><span class="p">(</span><span class="n">flt_dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;将浮点数据类型转换为对应的复数数据类型。&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flt_dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+        <span class="n">cplx_dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">complex64</span>
+    <span class="k">elif</span> <span class="n">flt_dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+        <span class="n">cplx_dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">complex128</span>
+    <span class="k">elif</span> <span class="n">flt_dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+        <span class="n">cplx_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex64</span>
+    <span class="k">elif</span> <span class="n">flt_dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+        <span class="n">cplx_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;不支持的浮点类型: </span><span class="si">{</span><span class="n">flt_dtype</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cplx_dtype</span></div>
+
+
+<div class="viewcode-block" id="irreps_from_l1l2">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.irreps_from_l1l2">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">irreps_from_l1l2</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">spinful</span><span class="p">,</span> <span class="n">no_parity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    根据两个角动量 l1 和 l2 生成耦合后的不可约表示 (Irreps)。</span>
+<span class="sd">    </span>
+<span class="sd">    非自旋情况示例: l1=1, l2=2 (1x2) -&gt;</span>
+<span class="sd">    required_irreps_full=1+2+3, required_irreps=1+2+3, required_irreps_x1=None</span>
+<span class="sd">    </span>
+<span class="sd">    自旋情况示例: l1=1, l2=2 (1x0.5)x(2x0.5) -&gt;</span>
+<span class="sd">    required_irreps_full = 1+2+3 + 0+1+2 + 1+2+3 + 2+3+4</span>
+<span class="sd">    required_irreps = (1+2+3)x0 = 1+2+3</span>
+<span class="sd">    required_irreps_x1 = (1+2+3)x1 = [0+1+2, 1+2+3, 2+3+4]</span>
+<span class="sd">    </span>
+<span class="sd">    注意：required_irreps_x1 是一个 Irreps 列表。</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">no_parity</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span><span class="p">)</span>
+    <span class="n">required_ls</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">l1</span> <span class="o">-</span> <span class="n">l2</span><span class="p">),</span> <span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">required_irreps</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">([(</span><span class="n">mul</span><span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">required_ls</span><span class="p">])</span>
+    <span class="n">required_irreps_full</span> <span class="o">=</span> <span class="n">required_irreps</span>
+    <span class="n">required_irreps_x1</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+        <span class="n">required_irreps_x1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">required_irreps</span><span class="p">:</span>
+            <span class="n">required_ls_irx1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">irx1</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">([(</span><span class="n">mul</span><span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">required_ls_irx1</span><span class="p">])</span>
+            <span class="n">required_irreps_x1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">irx1</span><span class="p">)</span>
+            <span class="n">required_irreps_full</span> <span class="o">+=</span> <span class="n">irx1</span>
+    <span class="k">return</span> <span class="n">required_irreps_full</span><span class="p">,</span> <span class="n">required_irreps</span><span class="p">,</span> <span class="n">required_irreps_x1</span></div>
+
+
+<div class="viewcode-block" id="Rotate">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Rotate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;处理旋转和不同球谐函数基组间变换的工具类。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_dtype_torch</span><span class="p">,</span> <span class="n">device_torch</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">spinful</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">sqrt_2</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span> <span class="o">=</span> <span class="n">spinful</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">default_dtype_torch</span> <span class="ow">in</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">complex128</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">default_dtype_torch</span> <span class="ow">in</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        
+        <span class="c1"># 从 OpenMX 实球谐函数基组到复球谐函数基组的变换矩阵</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">cfloat</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">cfloat</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">cfloat</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span> <span class="o">/</span> <span class="n">sqrt_2</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">cfloat</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="c1"># 从 OpenMX 实球谐函数基组到维基百科定义的实球谐函数基组的变换矩阵</span>
+        <span class="c1"># https://en.wikipedia.org/wiki/Table_of_spherical_harmonics#Real_spherical_harmonics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">),</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)[[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device_torch</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Us_wiki2openmx</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki_sp</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki_sp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">default_dtype_torch</span> 
+
+<div class="viewcode-block" id="Rotate.rotate_e3nn_v">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_e3nn_v">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate_e3nn_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">order_xyz</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用 e3nn 的方法旋转一个向量。&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">order_xyz</span><span class="p">:</span>
+            <span class="c1"># R 是 (x, y, z) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_matrix_convert</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+            <span class="c1"># R_e3nn 是 (y, z, x) 顺序</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># R 是 (y, z, x) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="n">R</span>
+        <span class="k">return</span> <span class="n">v</span> <span class="o">@</span> <span class="n">Irrep</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">D_from_matrix</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">)</span></div>
+
+    <span class="c1"># 注意: 在 e3nn 规范中，旋转矩阵是左乘向量的。</span>
+    <span class="c1"># 但这里旋转矩阵默认是右乘向量的，这是为了方便处理向量开头可能存在的额外维度。</span>
+    <span class="c1"># 解决方法很简单，只需确保输入到此处的矩阵 R 是用于右乘的即可，因为 R 转置后，输出的 D 矩阵也恰好被转置。</span>
+
+<div class="viewcode-block" id="Rotate.rotate_openmx_H">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate_openmx_H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">l_left</span><span class="p">,</span> <span class="n">l_right</span><span class="p">,</span> <span class="n">order_xyz</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在 OpenMX 基组下旋转哈密顿量块 H。&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">order_xyz</span><span class="p">:</span>
+            <span class="c1"># R 是 (x, y, z) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_matrix_convert</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+            <span class="c1"># R_e3nn 是 (y, z, x) 顺序</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># R 是 (y, z, x) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="n">R</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_left</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Irrep</span><span class="p">(</span><span class="n">l_left</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">D_from_matrix</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_left</span><span class="p">]</span> <span class="o">@</span> <span class="n">H</span> \
+               <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_right</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">Irrep</span><span class="p">(</span><span class="n">l_right</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">D_from_matrix</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_right</span><span class="p">]</span></div>
+
+    
+<div class="viewcode-block" id="Rotate.rotate_openmx_H_full">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H_full">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate_openmx_H_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">,</span> <span class="n">order_xyz</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在 OpenMX 基组下旋转完整的（拼接后的）哈密顿量块 H。&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="c1"># TODO: 尚不支持批处理操作</span>
+        <span class="k">if</span> <span class="n">order_xyz</span><span class="p">:</span>
+            <span class="c1"># R 是 (x, y, z) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_matrix_convert</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+            <span class="c1"># R_e3nn 是 (y, z, x) 顺序</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># R 是 (y, z, x) 顺序</span>
+            <span class="n">R_e3nn</span> <span class="o">=</span> <span class="n">R</span>
+        <span class="n">irreps_left</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">l</span><span class="p">))</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">orbital_types_left</span><span class="p">])</span>
+        <span class="n">irreps_right</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">l</span><span class="p">))</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">orbital_types_right</span><span class="p">])</span>
+        <span class="n">U_left</span> <span class="o">=</span> <span class="n">irreps_left</span><span class="o">.</span><span class="n">D_from_matrix</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">)</span>
+        <span class="n">U_right</span> <span class="o">=</span> <span class="n">irreps_right</span><span class="o">.</span><span class="n">D_from_matrix</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">)</span>
+        <span class="n">openmx2wiki_left</span><span class="p">,</span> <span class="n">openmx2wiki_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openmx2wiki_left_right</span><span class="p">(</span><span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+            <span class="n">U_left</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D_one_half</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">),</span> <span class="n">U_left</span><span class="p">)</span>
+            <span class="n">U_right</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D_one_half</span><span class="p">(</span><span class="n">R_e3nn</span><span class="p">),</span> <span class="n">U_right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">openmx2wiki_left</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">U_left</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">@</span> <span class="n">openmx2wiki_left</span> <span class="o">@</span> <span class="n">H</span> \
+               <span class="o">@</span> <span class="n">openmx2wiki_right</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">U_right</span> <span class="o">@</span> <span class="n">openmx2wiki_right</span></div>
+
+
+<div class="viewcode-block" id="Rotate.wiki2openmx_H_full">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H_full">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wiki2openmx_H_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;将标准维基百科基组下的哈密顿量转换为 OpenMX 基组。&quot;&quot;&quot;</span>
+        <span class="n">openmx2wiki_left</span><span class="p">,</span> <span class="n">openmx2wiki_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openmx2wiki_left_right</span><span class="p">(</span><span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">openmx2wiki_left</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">H</span> <span class="o">@</span> <span class="n">openmx2wiki_right</span></div>
+
+
+<div class="viewcode-block" id="Rotate.openmx2wiki_H_full">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H_full">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openmx2wiki_H_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;将 OpenMX 基组下的哈密顿量转换为标准维基百科基组。&quot;&quot;&quot;</span>
+        <span class="n">openmx2wiki_left</span><span class="p">,</span> <span class="n">openmx2wiki_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openmx2wiki_left_right</span><span class="p">(</span><span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">openmx2wiki_left</span> <span class="o">@</span> <span class="n">H</span> <span class="o">@</span> <span class="n">openmx2wiki_right</span><span class="o">.</span><span class="n">T</span></div>
+
+    
+<div class="viewcode-block" id="Rotate.wiki2openmx_H">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wiki2openmx_H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">l_left</span><span class="p">,</span> <span class="n">l_right</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;（单个 l）将维基百科基组哈密顿量块转换为 OpenMX 基组。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_left</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">H</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_right</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Rotate.openmx2wiki_H">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openmx2wiki_H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">l_left</span><span class="p">,</span> <span class="n">l_right</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;（单个 l）将 OpenMX 基组哈密顿量块转换为维基百科基组。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_left</span><span class="p">]</span> <span class="o">@</span> <span class="n">H</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l_right</span><span class="p">]</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="Rotate.openmx2wiki_left_right">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_left_right">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">openmx2wiki_left_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orbital_types_left</span><span class="p">,</span> <span class="n">orbital_types_right</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;为左右两边的轨道类型列表构建完整的基组变换矩阵。&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orbital_types_left</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">orbital_types_left</span> <span class="o">=</span> <span class="p">[</span><span class="n">orbital_types_left</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">orbital_types_right</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">orbital_types_right</span> <span class="o">=</span> <span class="p">[</span><span class="n">orbital_types_right</span><span class="p">]</span>
+        <span class="n">openmx2wiki_left</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">orbital_types_left</span><span class="p">])</span>
+        <span class="n">openmx2wiki_right</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Us_openmx2wiki</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">orbital_types_right</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+            <span class="n">openmx2wiki_left</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="n">openmx2wiki_left</span><span class="p">,</span> <span class="n">openmx2wiki_left</span><span class="p">)</span>
+            <span class="n">openmx2wiki_right</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">block_diag</span><span class="p">(</span><span class="n">openmx2wiki_right</span><span class="p">,</span> <span class="n">openmx2wiki_right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">openmx2wiki_left</span><span class="p">,</span> <span class="n">openmx2wiki_right</span></div>
+
+    
+<div class="viewcode-block" id="Rotate.rotate_matrix_convert">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_matrix_convert">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate_matrix_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将 (x, y, z) 顺序的旋转矩阵转换为 (y, z, x) 顺序。</span>
+<span class="sd">        (参见 e3nn.o3.spherical_harmonics() 和 https://docs.e3nn.org/en/stable/guide/change_of_basis.html)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">@</span> <span class="n">R</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span> <span class="c1"># todo: cuda</span></div>
+
+    
+<div class="viewcode-block" id="Rotate.D_one_half">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.D_one_half">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">D_one_half</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算 l=1/2 (自旋) 的 Wigner-D 矩阵。&quot;&quot;&quot;</span>
+        <span class="c1"># 输入到此函数的 R 应为 y,z,x 顺序</span>
+        <span class="c1"># 这里没有考虑空间反演，即假设 l=1/2 的不等价不可约表示带有偶宇称</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">R</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1"># 宇称指数</span>
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">matrix_to_angles</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.4142135623730951</span> <span class="c1"># &lt;1/2 mz|1/2 my&gt;</span>
+        <span class="n">Uz1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sp_z_rot</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">Uy</span> <span class="o">=</span> <span class="n">J</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sp_z_rot</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">@</span> <span class="n">J</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span>
+        <span class="n">Uz2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sp_z_rot</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Uz1</span> <span class="o">@</span> <span class="n">Uy</span> <span class="o">@</span> <span class="n">Uz2</span></div>
+
+        <span class="c1"># return torch.eye(2, dtype=self.dtype)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sp_z_rot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;绕 Z 轴的自旋旋转矩阵。[[e^{-ia/2}, 0], [0, e^{ia/2}]]&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="o">*</span><span class="n">angle</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">M</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">freqs</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">angle</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">M</span></div>
+
+
+<div class="viewcode-block" id="sort_irreps">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">sort_irreps</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;对 e3nn Irreps 特征进行排序和恢复原始顺序的模块。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">irreps_in</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)</span>
+        <span class="n">sorted_irreps</span> <span class="o">=</span> <span class="n">irreps_in</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        
+        <span class="n">irreps_out_list</span> <span class="o">=</span> <span class="p">[((</span><span class="n">mul</span><span class="p">,</span> <span class="n">ir</span><span class="p">),)</span> <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">sorted_irreps</span><span class="o">.</span><span class="n">irreps</span><span class="p">]</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sorted_irreps</span><span class="o">.</span><span class="n">inv</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extr</span> <span class="o">=</span> <span class="n">Extract</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_out_list</span><span class="p">,</span> <span class="n">instructions</span><span class="p">)</span>
+        
+        <span class="n">irreps_in_list</span> <span class="o">=</span> <span class="p">[((</span><span class="n">mul</span><span class="p">,</span> <span class="n">ir</span><span class="p">),)</span> <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">irreps_in</span><span class="p">]</span>
+        <span class="n">instructions_inv</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sorted_irreps</span><span class="o">.</span><span class="n">p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extr_inv</span> <span class="o">=</span> <span class="n">Extract</span><span class="p">(</span><span class="n">sorted_irreps</span><span class="o">.</span><span class="n">irreps</span><span class="p">,</span> <span class="n">irreps_in_list</span><span class="p">,</span> <span class="n">instructions_inv</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span> <span class="o">=</span> <span class="n">irreps_in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">irreps_out</span> <span class="o">=</span> <span class="n">sorted_irreps</span><span class="o">.</span><span class="n">irreps</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+    
+<div class="viewcode-block" id="sort_irreps.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;irreps_in -&gt; irreps_out&#39;&#39;&#39;</span>
+        <span class="n">extracted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">extracted</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sort_irreps.inverse">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps.inverse">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;irreps_out -&gt; irreps_in&#39;&#39;&#39;</span>
+        <span class="n">extracted_inv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extr_inv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">extracted_inv</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="e3TensorDecomp">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">e3TensorDecomp</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    通过 Clebsch-Gordan 系数实现等变特征的分解与重组。</span>
+<span class="sd">    </span>
+<span class="sd">    这个类是模型的核心，它将神经网络预测的抽象球谐系数（等变特征）</span>
+<span class="sd">    重组为物理上有意义的矩阵（如哈密顿量块），反之亦然。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net_irreps_out</span><span class="p">,</span> <span class="n">out_js_list</span><span class="p">,</span> <span class="n">default_dtype_torch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">nao_max</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">spinful</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_parity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">if_sort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="n">default_dtype_torch</span> <span class="o">=</span> <span class="n">flt2cplx</span><span class="p">(</span><span class="n">default_dtype_torch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">default_dtype_torch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span> <span class="o">=</span> <span class="n">spinful</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nao_max</span> <span class="o">=</span> <span class="n">nao_max</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span> <span class="o">=</span> <span class="n">out_js_list</span>
+        <span class="k">if</span> <span class="n">net_irreps_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">net_irreps_out</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">net_irreps_out</span><span class="p">)</span>
+
+        <span class="n">required_irreps_out</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">in_slices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">wms</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># wm = wigner_multiplier</span>
+        <span class="n">H_slices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">wms_H</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="n">in_slices_sp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">H_slices_sp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">wms_sp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">wms_sp_H</span> <span class="o">=</span> <span class="p">[]</span>
+            
+        <span class="k">for</span> <span class="n">H_l1</span><span class="p">,</span> <span class="n">H_l2</span> <span class="ow">in</span> <span class="n">out_js_list</span><span class="p">:</span>
+            
+            <span class="c1"># = 构造 required_irreps_out =</span>
+            <span class="n">mul</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="c1"># if net_irreps_out is not None:</span>
+            <span class="c1">#     if len(net_irreps_out) &lt; len(required_irreps_out) + 1:</span>
+            <span class="c1">#         raise ValueError(&#39;Net irreps out and target does not match&#39;)</span>
+            <span class="c1">#     mul = net_irreps_out[len(required_irreps_out)].mul</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">required_irreps_out_single</span><span class="p">,</span> <span class="n">required_irreps_x1</span> <span class="o">=</span> <span class="n">irreps_from_l1l2</span><span class="p">(</span><span class="n">H_l1</span><span class="p">,</span> <span class="n">H_l2</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">spinful</span><span class="p">,</span> <span class="n">no_parity</span><span class="o">=</span><span class="n">no_parity</span><span class="p">)</span>
+            <span class="n">required_irreps_out</span> <span class="o">+=</span> <span class="n">required_irreps_out_single</span>
+            
+            <span class="c1"># 自旋情况，例如：(1x0.5)x(2x0.5) = (1+2+3)x(0+1) = (1+2+3)+(0+1+2)+(1+2+3)+(2+3+4)</span>
+            <span class="c1"># 右侧所有项共同构成 in_slices 中的一个切片</span>
+            <span class="c1"># 上面右侧的每个括号对应 in_slice_sp 中的一个切片</span>
+            <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+                <span class="n">in_slice_sp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">required_irreps_out_single</span><span class="o">.</span><span class="n">dim</span><span class="p">]</span>
+                <span class="n">H_slice_sp</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">wm_sp</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+                <span class="n">wm_sp_H</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">_a</span><span class="p">,</span> <span class="n">ir</span><span class="p">),</span> <span class="n">ir_times_1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">required_irreps_out_single</span><span class="p">,</span> <span class="n">required_irreps_x1</span><span class="p">):</span>
+                    <span class="n">required_irreps_out</span> <span class="o">+=</span> <span class="n">ir_times_1</span>
+                    <span class="n">in_slice_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_slice_sp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">ir_times_1</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+                    <span class="n">H_slice_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_slice_sp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+                    <span class="n">wm_irx1</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">wm_irx1_H</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">_b</span><span class="p">,</span> <span class="n">ir_1</span> <span class="ow">in</span> <span class="n">ir_times_1</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">_c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mul</span><span class="p">):</span>
+                            <span class="n">wm_irx1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wigner_3j</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ir_1</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">))</span>
+                            <span class="n">wm_irx1_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wigner_3j</span><span class="p">(</span><span class="n">ir_1</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ir_1</span><span class="o">.</span><span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                            <span class="c1"># wm_irx1.append(wigner_3j(ir.l, 1, ir_1.l, dtype=default_dtype_torch, device=device_torch) * sqrt(2 * ir_1.l + 1))</span>
+                            <span class="c1"># wm_irx1_H.append(wigner_3j(ir_1.l, ir.l, 1, dtype=default_dtype_torch, device=device_torch) * sqrt(2 * ir_1.l + 1))</span>
+                    <span class="n">wm_irx1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">wm_irx1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">wm_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm_irx1</span><span class="p">)</span>
+                    <span class="n">wm_irx1_H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">wm_irx1_H</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">wm_sp_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm_irx1_H</span><span class="p">)</span>
+            
+            <span class="c1"># = 构造切片 =</span>
+            <span class="n">in_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">required_irreps_out</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+            <span class="n">H_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_slices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">H_l1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">H_l2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+                <span class="n">in_slices_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_slice_sp</span><span class="p">)</span>
+                <span class="n">H_slices_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_slice_sp</span><span class="p">)</span>
+            
+            <span class="c1"># = 获取作用于网络输出的 CG 系数乘子 =</span>
+            <span class="n">wm</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">wm_H</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_a</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">required_irreps_out_single</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mul</span><span class="p">):</span>
+                    <span class="c1"># 关于这个 2l+1:</span>
+                    <span class="c1"># 我们想要 3j-symbol 的精确逆，即 torch.einsum(&quot;ijk,jkl-&gt;il&quot;,w_3j(l,l1,l2),w_3j(l1,l2,l))==torch.eye(...)。</span>
+                    <span class="c1"># 但事实并非如此，因为 CG 系数是幺正的，而 3j-symbol 与 CG 系数相差一个常数因子。</span>
+                    <span class="c1"># 但我们从 https://en.wikipedia.org/wiki/3-j_symbol#Mathematical_relation_to_Clebsch%E2%80%93Gordan_coefficients</span>
+                    <span class="c1"># 知道 2l+1 正是我们想要的因子。</span>
+                    <span class="n">wm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wigner_3j</span><span class="p">(</span><span class="n">H_l1</span><span class="p">,</span> <span class="n">H_l2</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">))</span>
+                    <span class="n">wm_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wigner_3j</span><span class="p">(</span><span class="n">ir</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">H_l1</span><span class="p">,</span> <span class="n">H_l2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="c1"># wm.append(wigner_3j(H_l1, H_l2, ir.l, dtype=default_dtype_torch, device=device_torch) * sqrt(2 * ir.l + 1))</span>
+                    <span class="c1"># wm_H.append(wigner_3j(ir.l, H_l1, H_l2, dtype=default_dtype_torch, device=device_torch) * sqrt(2 * ir.l + 1))</span>
+            <span class="n">wm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">wm</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">wm_H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">wm_H</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">wms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm</span><span class="p">)</span>
+            <span class="n">wms_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm_H</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+                <span class="n">wms_sp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm_sp</span><span class="p">)</span>
+                <span class="n">wms_sp_H</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wm_sp_H</span><span class="p">)</span>
+            
+        <span class="c1"># = 检查网络输出的 irreps =</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="n">required_irreps_out</span> <span class="o">=</span> <span class="n">required_irreps_out</span> <span class="o">+</span> <span class="n">required_irreps_out</span>
+        <span class="k">if</span> <span class="n">net_irreps_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">if_sort</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">net_irreps_out</span> <span class="o">==</span> <span class="n">required_irreps_out</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span><span class="o">.</span><span class="n">irreps</span><span class="o">.</span><span class="n">simplify</span><span class="p">(),</span> <span class="sa">f</span><span class="s1">&#39;requires </span><span class="si">{</span><span class="n">required_irreps_out</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span><span class="o">.</span><span class="n">irreps</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span><span class="si">}</span><span class="s1"> but got </span><span class="si">{</span><span class="n">net_irreps_out</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">net_irreps_out</span> <span class="o">==</span> <span class="n">required_irreps_out</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;requires </span><span class="si">{</span><span class="n">required_irreps_out</span><span class="si">}</span><span class="s1"> but got </span><span class="si">{</span><span class="n">net_irreps_out</span><span class="si">}</span><span class="s1">&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_slices</span> <span class="o">=</span> <span class="n">in_slices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wms</span> <span class="o">=</span> <span class="n">wms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">H_slices</span> <span class="o">=</span> <span class="n">H_slices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wms_H</span> <span class="o">=</span> <span class="n">wms_H</span>
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_slices_sp</span> <span class="o">=</span> <span class="n">in_slices_sp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">H_slices_sp</span> <span class="o">=</span> <span class="n">H_slices_sp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wms_sp</span> <span class="o">=</span> <span class="n">wms_sp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wms_sp_H</span> <span class="o">=</span> <span class="n">wms_sp_H</span>
+
+        <span class="c1"># = 注册旋转核函数 =</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate_kernel</span> <span class="o">=</span> <span class="n">Rotate</span><span class="p">(</span><span class="n">default_dtype_torch</span><span class="p">,</span> <span class="n">spinful</span><span class="o">=</span><span class="n">spinful</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">spinful</span><span class="p">:</span>
+            <span class="n">sqrt2</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
+                                            <span class="c1">#  0,   y,   z,   x</span>
+            <span class="c1"># self.oyzx2spin = torch.tensor([[   0, -1, 1j,   0,  ],  # uu</span>
+            <span class="c1">#                                [   1,  0,  0,   1,  ],  # ud</span>
+            <span class="c1">#                                [  -1,  0,  0,   1,  ],  # du</span>
+            <span class="c1">#                                [   0,  1, 1j,   0,  ]], # dd</span>
+            <span class="c1">#                                dtype=default_dtype_torch) / sqrt2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">oyzx2spin</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span>  <span class="mi">1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>   <span class="mi">1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
+                                           <span class="p">[</span>  <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>   <span class="mi">1</span><span class="p">],</span>
+                                           <span class="p">[</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="n">j</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>   <span class="mi">1</span><span class="p">],</span>
+                                           <span class="p">[</span>  <span class="mi">1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">]],</span>
+                                            <span class="n">dtype</span><span class="o">=</span><span class="n">default_dtype_torch</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt2</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">if_sort</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="n">sort_irreps</span><span class="p">(</span><span class="n">required_irreps_out</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">required_irreps_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">irreps_out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">required_irreps_out</span> <span class="o">=</span> <span class="n">required_irreps_out</span>
+    
+<div class="viewcode-block" id="e3TensorDecomp.get_H">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_H">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_H</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net_out</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39; 从网络输出获取 openmx 类型的哈密顿量 H &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">net_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">inverse</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+            <span class="n">half_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">net_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">re</span> <span class="o">=</span> <span class="n">net_out</span><span class="p">[:,</span> <span class="p">:</span><span class="n">half_len</span><span class="p">]</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">net_out</span><span class="p">[:,</span> <span class="n">half_len</span><span class="p">:]</span>
+            <span class="n">net_out</span> <span class="o">=</span> <span class="n">re</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">im</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">net_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao_max</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">net_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nao_max</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span>
+        <span class="n">num_irreps_row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">)))</span>
+        
+        <span class="n">start_i</span><span class="p">,</span> <span class="n">start_j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">li</span><span class="p">,</span> <span class="n">lj</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">):</span>
+            <span class="n">in_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_slices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">net_out_block</span> <span class="o">=</span> <span class="n">net_out</span><span class="p">[:,</span> <span class="n">in_slice</span><span class="p">]</span>
+            <span class="n">n_i</span><span class="p">,</span> <span class="n">n_j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">li</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">lj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">blockpart</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">narrow</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">start_i</span><span class="p">,</span><span class="n">n_i</span><span class="p">)</span><span class="o">.</span><span class="n">narrow</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">start_j</span><span class="p">,</span><span class="n">n_j</span><span class="p">)</span> <span class="c1"># shape: (N_batch, (4,) n_i, n_j)</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+                <span class="c1"># (1+2+3)+(0+1+2)+(1+2+3)+(2+3+4) -&gt; (1+2+3)x(0+1)</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wms_sp</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                    <span class="n">in_slice_sp</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_slices_sp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_slices_sp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">H_block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">net_out_block</span><span class="p">[:,</span> <span class="n">in_slice_sp</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">H_block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;jkl,il-&gt;ijk&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wms_sp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">),</span> <span class="n">net_out_block</span><span class="p">[:,</span> <span class="n">in_slice_sp</span><span class="p">]))</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">H_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">H_block</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># (1+2+3)x(0+1) -&gt; (uu,ud,du,dd)x(1x2)</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;imn,klm,jn-&gt;ijkl&#39;</span><span class="p">,</span> <span class="n">H_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">oyzx2spin</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">))</span>
+                <span class="c1"># H_block = self.rotate_kernel.wiki2openmx_H(H_block, *self.out_js_list[i])</span>
+                <span class="n">blockpart</span> <span class="o">+=</span> <span class="n">H_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">net_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_i</span><span class="p">,</span> <span class="n">n_j</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span> <span class="o">*</span> <span class="n">net_out_block</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># H_block = self.rotate_kernel.wiki2openmx_H(H_block, *self.out_js_list[i])</span>
+                <span class="n">blockpart</span> <span class="o">+=</span> <span class="n">H_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">net_out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_i</span><span class="p">,</span> <span class="n">n_j</span><span class="p">)</span>
+                
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_irreps_row</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">start_i</span> <span class="o">+=</span> <span class="n">n_i</span>
+                <span class="n">start_j</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start_j</span> <span class="o">+=</span> <span class="n">n_j</span>
+        <span class="k">return</span> <span class="n">block</span> <span class="c1"># 输出形状: [edge, (4 spin components,) H_flattened_concatenated]</span></div>
+
+
+<div class="viewcode-block" id="e3TensorDecomp.get_net_out">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_net_out">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_net_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;从 openmx 类型的哈密顿量 H 获取网络输出&#39;&#39;&#39;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">)):</span>
+            <span class="n">H_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_slices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">H</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">H_slice</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_kernel</span><span class="o">.</span><span class="n">openmx2wiki_H</span><span class="p">(</span><span class="n">H_block</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="c1"># (uu,ud,du,dd)x(1x2) -&gt; (1+2+3)x(0+1)</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ilmn,jmn,kl-&gt;ijk&#39;</span><span class="p">,</span> <span class="n">H_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wms_H</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">oyzx2spin</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span>
+                <span class="c1"># (1+2+3)x(0+1) -&gt; (1+2+3)+(0+1+2)+(1+2+3)+(2+3+4)</span>
+                <span class="n">net_out_block</span> <span class="o">=</span> <span class="p">[</span><span class="n">H_block</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wms_sp_H</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                    <span class="n">H_slice_sp</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_slices_sp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_slices_sp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="n">net_out_block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;jlm,ilm-&gt;ij&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wms_sp_H</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">H_block</span><span class="p">[:,</span> <span class="n">H_slice_sp</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]))</span>
+                <span class="n">net_out_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">net_out_block</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">net_out_block</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="n">H</span><span class="p">[:,</span> <span class="n">H_slice</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">H_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_kernel</span><span class="o">.</span><span class="n">openmx2wiki_H</span><span class="p">(</span><span class="n">H_block</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">out_js_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">net_out_block</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wms_H</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">H_block</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">net_out_block</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">out</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">imag</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="e3TensorDecomp.convert_mask">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.convert_mask">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;转换掩码以匹配自旋情况下的维度。&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">spinful</span>
+        <span class="n">num_edges</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mask</span></div>
+</div>
+
+
+<div class="viewcode-block" id="e3LayerNorm">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">e3LayerNorm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;E(3) 等变特征的层归一化。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="n">subtract_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">divide_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        
+        <span class="k">if</span> <span class="n">affine</span><span class="p">:</span>          
+            <span class="n">ib</span><span class="p">,</span> <span class="n">iw</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="n">weight_slices</span><span class="p">,</span> <span class="n">bias_slices</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">irreps_in</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ir</span><span class="o">.</span><span class="n">is_scalar</span><span class="p">():</span> <span class="c1"># 偏置仅作用于标量 (0e)</span>
+                    <span class="n">bias_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">ib</span><span class="p">,</span> <span class="n">ib</span> <span class="o">+</span> <span class="n">mul</span><span class="p">))</span>
+                    <span class="n">ib</span> <span class="o">+=</span> <span class="n">mul</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">bias_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">weight_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">iw</span><span class="p">,</span> <span class="n">iw</span> <span class="o">+</span> <span class="n">mul</span><span class="p">))</span>
+                <span class="n">iw</span> <span class="o">+=</span> <span class="n">mul</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">iw</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ib</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias_slices</span> <span class="o">=</span> <span class="n">bias_slices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight_slices</span> <span class="o">=</span> <span class="n">weight_slices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;bias&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtract_mean</span> <span class="o">=</span> <span class="n">subtract_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">divide_norm</span> <span class="o">=</span> <span class="n">divide_norm</span>
+        <span class="k">assert</span> <span class="n">normalization</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;norm&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">=</span> <span class="n">normalization</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+    
+<div class="viewcode-block" id="e3LayerNorm.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;重新初始化参数。&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># nn.init.uniform_(self.weight)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+            <span class="c1"># nn.init.uniform_(self.bias)</span>
+
+<div class="viewcode-block" id="e3LayerNorm.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="c1"># 输入 x 的形状必须是 [num_node(edge), dim]</span>
+        <span class="c1"># 如果 x 的第一个维度是节点索引，则 batch 应为 batch.batch</span>
+        <span class="c1"># 如果 x 的第一个维度是边索引，则 batch 应为 batch.batch[batch.edge_index[0]]</span>
+        
+        <span class="k">if</span> <span class="n">batch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="c1"># 来自 torch_geometric.nn.norm.LayerNorm</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> 
+        <span class="n">batch_degree</span> <span class="o">=</span> <span class="n">degree</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ix</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="n">ir</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span><span class="p">):</span>        
+            <span class="n">field</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">:</span> <span class="n">ix</span> <span class="o">+</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span> <span class="c1"># [node, mul, repr]</span>
+            
+            <span class="c1"># 计算并减去均值</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtract_mean</span> <span class="ow">or</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># 如果 subtract_mean=False，不对 l&gt;0 的 irreps 减去均值</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                            <span class="n">reduce</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_degree</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="c1"># scatter_mean 不支持复数</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span>
+                
+            <span class="c1"># 计算并除以范数</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">divide_norm</span> <span class="ow">or</span> <span class="n">ir</span><span class="o">.</span><span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># 如果 subtract_mean=False，不对 l&gt;0 的 irreps 除以范数</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">batch</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                            <span class="n">reduce</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># 此处添加 abs() 以处理复数</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;norm&#39;</span><span class="p">:</span>
+                    <span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()[</span><span class="n">batch</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+            
+            <span class="c1"># 仿射变换</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_slices</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">*</span> <span class="n">weight</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ir</span><span class="o">.</span><span class="n">is_scalar</span><span class="p">():</span>
+                <span class="n">bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_slices</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">+</span> <span class="n">bias</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+            
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+            <span class="n">ix</span> <span class="o">+=</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span>
+            
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="e3ElementWise">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3ElementWise">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">e3ElementWise</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;对 E(3) 等变特征进行逐元素加权的工具类。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)</span>
+        
+        <span class="n">len_weight</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span><span class="p">:</span>
+            <span class="n">len_weight</span> <span class="o">+=</span> <span class="n">mul</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_weight</span> <span class="o">=</span> <span class="n">len_weight</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 形状为 [edge/node, channels] 的等变特征。</span>
+<span class="sd">            weight (torch.Tensor): 形状为 [edge/node, self.len_weight] 的权重。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">ix</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">iw</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">irreps_in</span><span class="p">:</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">:</span> <span class="n">ix</span> <span class="o">+</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">]</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">*</span> <span class="n">weight</span><span class="p">[:,</span> <span class="n">iw</span><span class="p">:</span> <span class="n">iw</span> <span class="o">+</span> <span class="n">mul</span><span class="p">][:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+            
+            <span class="n">ix</span> <span class="o">+=</span> <span class="n">mul</span> <span class="o">*</span> <span class="n">ir</span><span class="o">.</span><span class="n">dim</span>
+            <span class="n">iw</span> <span class="o">+=</span> <span class="n">mul</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SkipConnection">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SkipConnection">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SkipConnection</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    实现跳跃连接，如果输入和输出的 Irreps 不匹配，则使用一个线性层进行投影。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_out</span><span class="p">,</span> <span class="n">is_complex</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">irreps_in</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)</span>
+        <span class="n">irreps_out</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_out</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">irreps_in</span> <span class="o">==</span> <span class="n">irreps_out</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sc</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">irreps_in</span><span class="o">=</span><span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_out</span><span class="o">=</span><span class="n">irreps_out</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="SkipConnection.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SkipConnection.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">old</span> <span class="o">+</span> <span class="n">new</span></div>
+</div>
+
+
+<div class="viewcode-block" id="SelfTp">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SelfTp">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SelfTp</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;自张量积层: z_i = W&#39;_{ij}x_j W&#39;&#39;_{ik}x_k (k&gt;=j)&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;z_i = W&#39;_{ij}x_j W&#39;&#39;_{ik}x_k (k&gt;=j)&#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;internal_weights&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="c1"># 内部权重必须为 False</span>
+        <span class="k">assert</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;shared_weights&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># 共享权重必须为 True</span>
+        
+        <span class="n">irreps_in</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)</span>
+        <span class="n">irreps_out</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_out</span><span class="p">)</span>
+        
+        <span class="n">instr_tp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">weights1</span><span class="p">,</span> <span class="n">weights2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i1</span><span class="p">,</span> <span class="p">(</span><span class="n">mul1</span><span class="p">,</span> <span class="n">ir1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">)):</span>
+                <span class="n">mul2</span><span class="p">,</span> <span class="n">ir2</span> <span class="o">=</span> <span class="n">irreps_in</span><span class="p">[</span><span class="n">i2</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i_out</span><span class="p">,</span> <span class="p">(</span><span class="n">mul_out</span><span class="p">,</span> <span class="n">ir3</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">irreps_out</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">ir3</span> <span class="ow">in</span> <span class="n">ir1</span> <span class="o">*</span> <span class="n">ir2</span><span class="p">:</span>
+                        <span class="n">weights1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">mul1</span><span class="p">,</span> <span class="n">mul_out</span><span class="p">)))</span>
+                        <span class="n">weights2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">mul2</span><span class="p">,</span> <span class="n">mul_out</span><span class="p">)))</span>
+                        <span class="n">instr_tp</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">i_out</span><span class="p">,</span> <span class="s1">&#39;uvw&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">tp</span> <span class="o">=</span> <span class="n">TensorProduct</span><span class="p">(</span><span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_in</span><span class="p">,</span> <span class="n">irreps_out</span><span class="p">,</span> <span class="n">instr_tp</span><span class="p">,</span> <span class="n">internal_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shared_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span><span class="n">weights1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span><span class="n">weights2</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="SelfTp.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SelfTp.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">weight1</span><span class="p">,</span> <span class="n">weight2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights2</span><span class="p">):</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">weight1</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">weight2</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="SeparateWeightTensorProduct">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SeparateWeightTensorProduct</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用分离权重的张量积层: z_i = W&#39;_{ij}x_j W&#39;&#39;_{ik}y_k&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">irreps_in1</span><span class="p">,</span> <span class="n">irreps_in2</span><span class="p">,</span> <span class="n">irreps_out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;z_i = W&#39;_{ij}x_j W&#39;&#39;_{ik}y_k&#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;internal_weights&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="c1"># 内部权重必须为 False</span>
+        <span class="k">assert</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;shared_weights&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># 共享权重必须为 True</span>
+        
+        <span class="n">irreps_in1</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in1</span><span class="p">)</span>
+        <span class="n">irreps_in2</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_in2</span><span class="p">)</span>
+        <span class="n">irreps_out</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">irreps_out</span><span class="p">)</span>
+                
+        <span class="n">instr_tp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">weights1</span><span class="p">,</span> <span class="n">weights2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i1</span><span class="p">,</span> <span class="p">(</span><span class="n">mul1</span><span class="p">,</span> <span class="n">ir1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">irreps_in1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i2</span><span class="p">,</span> <span class="p">(</span><span class="n">mul2</span><span class="p">,</span> <span class="n">ir2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">irreps_in2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i_out</span><span class="p">,</span> <span class="p">(</span><span class="n">mul_out</span><span class="p">,</span> <span class="n">ir3</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">irreps_out</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">ir3</span> <span class="ow">in</span> <span class="n">ir1</span> <span class="o">*</span> <span class="n">ir2</span><span class="p">:</span>
+                        <span class="n">weights1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">mul1</span><span class="p">,</span> <span class="n">mul_out</span><span class="p">)))</span>
+                        <span class="n">weights2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">mul2</span><span class="p">,</span> <span class="n">mul_out</span><span class="p">)))</span>
+                        <span class="n">instr_tp</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">i_out</span><span class="p">,</span> <span class="s1">&#39;uvw&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">tp</span> <span class="o">=</span> <span class="n">TensorProduct</span><span class="p">(</span><span class="n">irreps_in1</span><span class="p">,</span> <span class="n">irreps_in2</span><span class="p">,</span> <span class="n">irreps_out</span><span class="p">,</span> <span class="n">instr_tp</span><span class="p">,</span> <span class="n">internal_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shared_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span><span class="n">weights1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span><span class="n">weights2</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="SeparateWeightTensorProduct.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">weight1</span><span class="p">,</span> <span class="n">weight2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights2</span><span class="p">):</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">weight1</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">weight2</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tp</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="SphericalBasis">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SphericalBasis">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SphericalBasis</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;结合球谐函数和径向贝塞尔基函数，构成一个完整的三维空间基组。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_irreps</span><span class="p">,</span> <span class="n">rcutoff</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">get_default_dtype</span><span class="p">()):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="n">target_irreps</span> <span class="o">=</span> <span class="n">Irreps</span><span class="p">(</span><span class="n">target_irreps</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span> <span class="o">=</span> <span class="n">SphericalHarmonics</span><span class="p">(</span>
+            <span class="n">irreps_out</span><span class="o">=</span><span class="n">target_irreps</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;component&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="n">max_order</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">target_irreps</span><span class="p">))</span> <span class="c1"># 最大角动量 l</span>
+        <span class="n">max_freq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target_irreps</span><span class="p">))</span> <span class="c1"># 最大多重性</span>
+        
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">bessel_basis</span><span class="p">(</span><span class="n">max_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_freq</span><span class="p">)</span>
+        <span class="n">lambdify_torch</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># &#39;+&#39;: torch.add,</span>
+            <span class="c1"># &#39;-&#39;: torch.sub,</span>
+            <span class="c1"># &#39;*&#39;: torch.mul,</span>
+            <span class="c1"># &#39;/&#39;: torch.div,</span>
+            <span class="c1"># &#39;**&#39;: torch.pow,</span>
+            <span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
+            <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span>
+        <span class="p">}</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mul</span><span class="p">,</span> <span class="n">ir</span> <span class="ow">in</span> <span class="n">target_irreps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">freq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mul</span><span class="p">):</span>
+                <span class="n">funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">basis</span><span class="p">[</span><span class="n">ir</span><span class="o">.</span><span class="n">l</span><span class="p">][</span><span class="n">freq</span><span class="p">],</span> <span class="p">[</span><span class="n">lambdify_torch</span><span class="p">]))</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">bessel_funcs</span> <span class="o">=</span> <span class="n">funcs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="n">e3ElementWise</span><span class="p">(</span><span class="n">target_irreps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">PolynomialCutoff</span><span class="p">(</span><span class="n">rcutoff</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;rcutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="n">rcutoff</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">irreps_out</span> <span class="o">=</span> <span class="n">target_irreps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;eps&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="n">eps</span><span class="p">]))</span>
+        
+<div class="viewcode-block" id="SphericalBasis.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.e3_layers.SphericalBasis.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="c1"># direction 应为 y, z, x 顺序</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">sbf</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">f</span><span class="p">((</span><span class="n">length</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcutoff</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bessel_funcs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="n">sbf</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">(</span><span class="n">length</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

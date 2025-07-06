@@ -45,25 +45,38 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GNN 核心层</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#hamgnn-net-py">HamGNN 网络 (<cite>net.py</cite>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#basemodel-py">基础模型 (<cite>BaseModel.py</cite>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#kan-attention-kan-py">注意力与 KAN 层 (<cite>Attention_kan.py</cite>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.models.HamGNN.wigner">物理工具 (<cite>wigner.py</cite>, <cite>clebsch_gordan.py</cite>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hamgnn-net-py">HamGNN 网络 (<cite>net.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.HamGNN.BaseModel">基础模型 (<cite>BaseModel.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_type"><code class="docutils literal notranslate"><span class="pre">BaseModel.radius_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_scale"><code class="docutils literal notranslate"><span class="pre">BaseModel.radius_scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.forward"><code class="docutils literal notranslate"><span class="pre">BaseModel.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.generate_graph"><code class="docutils literal notranslate"><span class="pre">BaseModel.generate_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.num_params"><code class="docutils literal notranslate"><span class="pre">BaseModel.num_params</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.find_matching_columns_of_A_in_B"><code class="docutils literal notranslate"><span class="pre">find_matching_columns_of_A_in_B()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.get_radii_from_atomic_numbers"><code class="docutils literal notranslate"><span class="pre">get_radii_from_atomic_numbers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.neighbor_list_and_relative_vec"><code class="docutils literal notranslate"><span class="pre">neighbor_list_and_relative_vec()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kan-attention-kan-py">注意力与 KAN 层 (<cite>Attention_kan.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.HamGNN.wigner">物理工具 (<cite>wigner.py</cite>, <cite>clebsch_gordan.py</cite>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan.forward"><code class="docutils literal notranslate"><span class="pre">ClebschGordan.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -80,7 +93,6 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">GNN 核心层</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/gnn_core.rst.txt" rel="nofollow"> 查看页面源码</a>
@@ -97,8 +109,152 @@
 <section id="hamgnn-net-py">
 <h2>HamGNN 网络 (<cite>net.py</cite>)<a class="headerlink" href="#hamgnn-net-py" title="Link to this heading"></a></h2>
 </section>
-<section id="basemodel-py">
-<h2>基础模型 (<cite>BaseModel.py</cite>)<a class="headerlink" href="#basemodel-py" title="Link to this heading"></a></h2>
+<section id="module-HamGNN_v_2_0.models.HamGNN.BaseModel">
+<span id="basemodel-py"></span><h2>基础模型 (<cite>BaseModel.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.HamGNN.BaseModel" title="Link to this heading"></a></h2>
+<p>Descripttion:
+version:
+Author: Yang Zhong
+Date: 2024-08-24 14:22:19
+LastEditors: Yang Zhong
+LastEditTime: 2024-11-28 22:14:26</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.HamGNN.BaseModel.</span></span><span class="sig-name descname"><span class="pre">BaseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openmx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#BaseModel"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel" title="Link to this definition"></a></dt>
+<dd><p>所有 HamGNN 图学习模型的基类。</p>
+<p>它封装了动态图构建的核心逻辑。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_type">
+<span class="sig-name descname"><span class="pre">radius_type</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_type" title="Link to this definition"></a></dt>
+<dd><p>用于确定原子半径的来源类型 (e.g., ‘openmx’)。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_scale">
+<span class="sig-name descname"><span class="pre">radius_scale</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_scale" title="Link to this definition"></a></dt>
+<dd><p>原子半径的缩放因子。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#BaseModel.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.forward" title="Link to this definition"></a></dt>
+<dd><p>前向传播的占位符，应在子类中实现。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.generate_graph">
+<span class="sig-name descname"><span class="pre">generate_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#BaseModel.generate_graph"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.generate_graph" title="Link to this definition"></a></dt>
+<dd><p>根据原子位置和种类动态生成计算图（邻居列表）。</p>
+<p>此方法会忽略 <cite>data</cite> 中预先计算的 <cite>edge_index</cite>，并根据每种原子的
+化学性质（半径）和 <cite>radius_scale</cite> 重新计算邻居关系。
+它还会找到新生成的图的边与原始图的边的对应关系。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Data</em>) – 输入的图数据对象，必须包含 <cite>pos</cite>, <cite>z</cite>, <cite>cell</cite>, <cite>batch</cite> 等信息。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>一个包含新生成的图信息的字典。
+- ‘z’: 原子序数。
+- ‘pos’: 原子位置。
+- ‘edge_index’: 新的边索引。
+- ‘cell_shift’: 边的晶胞平移向量。
+- ‘nbr_shift’: 邻居的相对位置向量。
+- ‘batch’: 批处理索引。
+- ‘matching_edges’: 新图的边在原始图中的匹配索引。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EasyDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.num_params">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><span class="pre">int</span></a></em><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.num_params" title="Link to this definition"></a></dt>
+<dd><p>计算模型的总参数数量。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.find_matching_columns_of_A_in_B">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.HamGNN.BaseModel.</span></span><span class="sig-name descname"><span class="pre">find_matching_columns_of_A_in_B</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#find_matching_columns_of_A_in_B"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.find_matching_columns_of_A_in_B" title="Link to this definition"></a></dt>
+<dd><p>在矩阵 B 中查找与矩阵 A 匹配的列。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 第一个矩阵。</p></li>
+<li><p><strong>B</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 第二个矩阵。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>在 B 中匹配列的索引。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.get_radii_from_atomic_numbers">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.HamGNN.BaseModel.</span></span><span class="sig-name descname"><span class="pre">get_radii_from_atomic_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomic_numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openmx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#get_radii_from_atomic_numbers"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.get_radii_from_atomic_numbers" title="Link to this definition"></a></dt>
+<dd><p>根据原子序数列表检索缩放后的原子半径。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomic_numbers</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）"><em>int</em></a><em>]</em><em>]</em>) – 包含原子序数的列表或张量。</p></li>
+<li><p><strong>radius_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 原子半径的缩放因子，默认为 1.5。</p></li>
+<li><p><strong>radius_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) – 所用原子半径的来源软件，默认为 ‘openmx’。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>与输入原子序数对应的缩放后的原子半径列表。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.HamGNN.BaseModel.neighbor_list_and_relative_vec">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.HamGNN.BaseModel.</span></span><span class="sig-name descname"><span class="pre">neighbor_list_and_relative_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_interaction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_self_interaction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/HamGNN/BaseModel.html#neighbor_list_and_relative_vec"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.HamGNN.BaseModel.neighbor_list_and_relative_vec" title="Link to this definition"></a></dt>
+<dd><p>基于径向截断距离创建邻居列表和相对向量。</p>
+<p>边的约定如下:
+- <cite>edge_index[0]</cite> 是 <em>源</em> (卷积中心)。
+- <cite>edge_index[1]</cite> 是 <em>目标</em> (邻居)。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>shape</em><em> [</em><em>N</em><em>, </em><em>3</em><em>]</em>) – 原子位置坐标；可以是 Tensor 或 numpy 数组。</p></li>
+<li><p><strong>r_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 用于寻找邻居的径向截断距离。</p></li>
+<li><p><strong>cell</strong> (<em>numpy shape</em><em> [</em><em>3</em><em>, </em><em>3</em><em>]</em>) – 周期性边界条件的晶胞矩阵。</p></li>
+<li><p><strong>pbc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a><em> or </em><em>3-tuple</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) – 三个维度上的周期性。</p></li>
+<li><p><strong>self_interaction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) – 是否包括相同周期性镜像的自相互作用边。</p></li>
+<li><p><strong>strict_self_interaction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) – 是否包括任何自相互作用边。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>边的列表。
+shifts (torch.Tensor [num_edges, 3]): 相对晶胞平移向量。
+cell_tensor (torch.Tensor [3, 3]): 晶胞张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>edge_index (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a> [2, num_edges])</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="kan-attention-kan-py">
 <h2>注意力与 KAN 层 (<cite>Attention_kan.py</cite>)<a class="headerlink" href="#kan-attention-kan-py" title="Link to this heading"></a></h2>

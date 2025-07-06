@@ -42,7 +42,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="source/core.html">HamGNN 中文文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -75,17 +80,22 @@
  <a href="#_"><strong>_</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
@@ -108,10 +118,26 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.band_win_max">band_win_max（HamGNN_v_2_0.models.outputs.EPC_output 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.band_win_min">band_win_min（HamGNN_v_2_0.models.outputs.EPC_output 属性）</a>
+</li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel">BaseModel（HamGNN_v_2_0.models.HamGNN.BaseModel 中的类）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions">BernsteinRadialBasisFunctions（HamGNN_v_2_0.models.basis 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.bessel_basis">bessel_basis()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.BesselBasis">BesselBasis（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.blockwise_2x2_concat">blockwise_2x2_concat()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Born_node_vec">Born_node_vec（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Born">Born（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.data_parsing.build_config">build_config()（在 HamGNN_v_2_0.GraphData.data_parsing 模块中）</a>
 </li>
   </ul></td>
@@ -122,17 +148,31 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec">cal_shfit_vec()（在 HamGNN_v_2_0.GraphData.data_parsing 模块中）</a>
 </li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.calculate_loss">calculate_loss() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center">center（HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions 属性）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center">center（HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions 属性）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.check_param">check_param() （HamGNN_v_2_0.models.Model.Model 方法）</a>
 </li>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.data_parsing.cif_parse">cif_parse()（在 HamGNN_v_2_0.GraphData.data_parsing 模块中）</a>
 </li>
       <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan">ClebschGordan（HamGNN_v_2_0.models.HamGNN.clebsch_gordan 中的类）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.config_linear">config_linear（HamGNN_v_2_0.models.embedding.Embedding 属性）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.configure_optimizers">configure_optimizers() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.config_linear">config_linear（HamGNN_v_2_0.models.embedding.Embedding 属性）</a>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.convert_mask">convert_mask() （HamGNN_v_2_0.models.e3_layers.e3TensorDecomp 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.cosine_similarity_loss">cosine_similarity_loss（HamGNN_v_2_0.models.utils 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.CosineCutoff">CosineCutoff（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.crystal_tensor">crystal_tensor（HamGNN_v_2_0.models.outputs 中的类）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.functional.cutoff_function">cutoff_function()（在 HamGNN_v_2_0.models.functional 模块中）</a>
 </li>
@@ -144,23 +184,57 @@
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff">cutoff（HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions 属性）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.cuttoff_envelope">cuttoff_envelope（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.D_one_half">D_one_half() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.denseLayer">denseLayer（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.denseRegression">denseRegression（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.Dense">Dense（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3ElementWise">e3ElementWise（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm">e3LayerNorm（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp">e3TensorDecomp（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.electron_config">electron_config（HamGNN_v_2_0.models.embedding.Embedding 属性）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.element_embedding">element_embedding（HamGNN_v_2_0.models.embedding.Embedding 属性）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding">Embedding（HamGNN_v_2_0.models.embedding 中的类）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding">Embedding（HamGNN_v_2_0.models.embedding 中的类）</a>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output">EPC_output（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Euclidean_loss">Euclidean_loss（HamGNN_v_2_0.models.utils 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion">Expansion（HamGNN_v_2_0.models.utils 中的类）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions">ExponentialBernsteinRadialBasisFunctions（HamGNN_v_2_0.models.basis 中的类）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions">ExponentialGaussianRadialBasisFunctions（HamGNN_v_2_0.models.basis 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.SSP.extra_repr">extra_repr() （HamGNN_v_2_0.models.utils.SSP 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.extract_elements_above_threshold">extract_elements_above_threshold()（在 HamGNN_v_2_0.models.utils 模块中）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -168,21 +242,99 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.find_matching_columns_of_A_in_B">find_matching_columns_of_A_in_B()（在 HamGNN_v_2_0.models.HamGNN.BaseModel 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.flt2cplx">flt2cplx()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Force_node_vec">Force_node_vec（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Force">Force（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward">forward() （HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward">forward() （HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward">forward() （HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions 方法）</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward">forward() （HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward">forward() （HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions 方法）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.forward">forward() （HamGNN_v_2_0.models.e3_layers.e3LayerNorm 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff.forward">forward() （HamGNN_v_2_0.models.e3_layers.PolynomialCutoff 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SelfTp.forward">forward() （HamGNN_v_2_0.models.e3_layers.SelfTp 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct.forward">forward() （HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SkipConnection.forward">forward() （HamGNN_v_2_0.models.e3_layers.SkipConnection 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps.forward">forward() （HamGNN_v_2_0.models.e3_layers.sort_irreps 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SphericalBasis.forward">forward() （HamGNN_v_2_0.models.e3_layers.SphericalBasis 方法）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.forward">forward() （HamGNN_v_2_0.models.embedding.Embedding 方法）</a>
 </li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.forward">forward() （HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel 方法）</a>
+</li>
       <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan.forward">forward() （HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.BesselBasis.forward">forward() （HamGNN_v_2_0.models.layers.BesselBasis 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.CosineCutoff.forward">forward() （HamGNN_v_2_0.models.layers.CosineCutoff 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.cuttoff_envelope.forward">forward() （HamGNN_v_2_0.models.layers.cuttoff_envelope 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.Dense.forward">forward() （HamGNN_v_2_0.models.layers.Dense 方法）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.denseLayer.forward">forward() （HamGNN_v_2_0.models.layers.denseLayer 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.denseRegression.forward">forward() （HamGNN_v_2_0.models.layers.denseRegression 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.GaussianSmearing.forward">forward() （HamGNN_v_2_0.models.layers.GaussianSmearing 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.MLPRegression.forward">forward() （HamGNN_v_2_0.models.layers.MLPRegression 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.sph_harm_layer.forward">forward() （HamGNN_v_2_0.models.layers.sph_harm_layer 方法）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.forward">forward() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Born.forward">forward() （HamGNN_v_2_0.models.outputs.Born 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Born_node_vec.forward">forward() （HamGNN_v_2_0.models.outputs.Born_node_vec 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.crystal_tensor.forward">forward() （HamGNN_v_2_0.models.outputs.crystal_tensor 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.forward">forward() （HamGNN_v_2_0.models.outputs.EPC_output 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Force.forward">forward() （HamGNN_v_2_0.models.outputs.Force 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.Force_node_vec.forward">forward() （HamGNN_v_2_0.models.outputs.Force_node_vec 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.piezoelectric.forward">forward() （HamGNN_v_2_0.models.outputs.piezoelectric 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.scalar.forward">forward() （HamGNN_v_2_0.models.outputs.scalar 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces.forward">forward() （HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.trivial_scalar.forward">forward() （HamGNN_v_2_0.models.outputs.trivial_scalar 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.cosine_similarity_loss.forward">forward() （HamGNN_v_2_0.models.utils.cosine_similarity_loss 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Euclidean_loss.forward">forward() （HamGNN_v_2_0.models.utils.Euclidean_loss 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.forward">forward() （HamGNN_v_2_0.models.utils.Expansion 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.RMSELoss.forward">forward() （HamGNN_v_2_0.models.utils.RMSELoss 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.SSP.forward">forward() （HamGNN_v_2_0.models.utils.SSP 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.sum_zero_loss.forward">forward() （HamGNN_v_2_0.models.utils.sum_zero_loss 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.SWISH.forward">forward() （HamGNN_v_2_0.models.utils.SWISH 方法）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -192,9 +344,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions">GaussianRadialBasisFunctions（HamGNN_v_2_0.models.basis 中的类）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.GaussianSmearing">GaussianSmearing（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.generate_graph">generate_graph() （HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.get_activation">get_activation()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.get_expansion_path">get_expansion_path() （HamGNN_v_2_0.models.utils.Expansion 方法）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_H">get_H() （HamGNN_v_2_0.models.e3_layers.e3TensorDecomp 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.get_hparam_dict">get_hparam_dict()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea">get_init_atomfea()（在 HamGNN_v_2_0.GraphData.data_parsing 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3TensorDecomp.get_net_out">get_net_out() （HamGNN_v_2_0.models.e3_layers.e3TensorDecomp 方法）</a>
+</li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.get_radii_from_atomic_numbers">get_radii_from_atomic_numbers()（在 HamGNN_v_2_0.models.HamGNN.BaseModel 模块中）</a>
 </li>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.graph_data.graph_data_module">graph_data_module（HamGNN_v_2_0.GraphData.graph_data 中的类）</a>
 </li>
@@ -219,10 +387,24 @@
 </li>
       </ul></li>
       <li>
+    HamGNN_v_2_0.input.config_parsing
+
+      <ul>
+        <li><a href="source/data_processing.html#module-HamGNN_v_2_0.input.config_parsing">module</a>
+</li>
+      </ul></li>
+      <li>
     HamGNN_v_2_0.models.basis
 
       <ul>
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.basis">module</a>
+</li>
+      </ul></li>
+      <li>
+    HamGNN_v_2_0.models.e3_layers
+
+      <ul>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.e3_layers">module</a>
 </li>
       </ul></li>
       <li>
@@ -232,13 +414,20 @@
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.embedding">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     HamGNN_v_2_0.models.functional
 
       <ul>
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.functional">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    HamGNN_v_2_0.models.HamGNN.BaseModel
+
+      <ul>
+        <li><a href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.BaseModel">module</a>
 </li>
       </ul></li>
       <li>
@@ -255,13 +444,81 @@
         <li><a href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.wigner">module</a>
 </li>
       </ul></li>
+      <li>
+    HamGNN_v_2_0.models.layers
+
+      <ul>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.layers">module</a>
+</li>
+      </ul></li>
+      <li>
+    HamGNN_v_2_0.models.Model
+
+      <ul>
+        <li><a href="source/model_structure.html#module-HamGNN_v_2_0.models.Model">module</a>
+</li>
+      </ul></li>
+      <li>
+    HamGNN_v_2_0.models.outputs
+
+      <ul>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.outputs">module</a>
+</li>
+      </ul></li>
+      <li>
+    HamGNN_v_2_0.models.utils
+
+      <ul>
+        <li><a href="source/utilities.html#module-HamGNN_v_2_0.models.utils">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.internal_weights">internal_weights（HamGNN_v_2_0.models.utils.Expansion 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps.inverse">inverse() （HamGNN_v_2_0.models.e3_layers.sort_irreps 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.irrep_in">irrep_in（HamGNN_v_2_0.models.utils.Expansion 属性）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.irrep_out_1">irrep_out_1（HamGNN_v_2_0.models.utils.Expansion 属性）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.Expansion.irrep_out_2">irrep_out_2（HamGNN_v_2_0.models.utils.Expansion 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.irreps_from_l1l2">irreps_from_l1l2()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Jn">Jn()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Jn_zeros">Jn_zeros()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.linear_bn_act">linear_bn_act()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.log_metrics">log_metrics() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc">logc（HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 属性）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.losses">losses（HamGNN_v_2_0.models.Model.Model 属性）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -269,6 +526,12 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.metrics">metrics（HamGNN_v_2_0.models.Model.Model 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.MLPRegression">MLPRegression（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model">Model（HamGNN_v_2_0.models.Model 中的类）</a>
+</li>
       <li>
     module
 
@@ -277,15 +540,29 @@
 </li>
         <li><a href="source/data_processing.html#module-HamGNN_v_2_0.GraphData.graph_data">HamGNN_v_2_0.GraphData.graph_data</a>
 </li>
+        <li><a href="source/data_processing.html#module-HamGNN_v_2_0.input.config_parsing">HamGNN_v_2_0.input.config_parsing</a>
+</li>
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.basis">HamGNN_v_2_0.models.basis</a>
+</li>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.e3_layers">HamGNN_v_2_0.models.e3_layers</a>
 </li>
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.embedding">HamGNN_v_2_0.models.embedding</a>
 </li>
         <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.functional">HamGNN_v_2_0.models.functional</a>
 </li>
+        <li><a href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.BaseModel">HamGNN_v_2_0.models.HamGNN.BaseModel</a>
+</li>
         <li><a href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.clebsch_gordan">HamGNN_v_2_0.models.HamGNN.clebsch_gordan</a>
 </li>
         <li><a href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.wigner">HamGNN_v_2_0.models.HamGNN.wigner</a>
+</li>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.layers">HamGNN_v_2_0.models.layers</a>
+</li>
+        <li><a href="source/model_structure.html#module-HamGNN_v_2_0.models.Model">HamGNN_v_2_0.models.Model</a>
+</li>
+        <li><a href="source/model_components.html#module-HamGNN_v_2_0.models.outputs">HamGNN_v_2_0.models.outputs</a>
+</li>
+        <li><a href="source/utilities.html#module-HamGNN_v_2_0.models.utils">HamGNN_v_2_0.models.utils</a>
 </li>
       </ul></li>
   </ul></td>
@@ -294,6 +571,8 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.neighbor_list_and_relative_vec">neighbor_list_and_relative_vec()（在 HamGNN_v_2_0.models.HamGNN.BaseModel 模块中）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions">num_basis_functions（HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 属性）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions">num_basis_functions（HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions 属性）</a>
@@ -306,6 +585,8 @@
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.num_features">num_features（HamGNN_v_2_0.models.embedding.Embedding 属性）</a>
 </li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.num_params">num_params（HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel 属性）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n">n（HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 属性）</a>
 </li>
   </ul></td>
@@ -314,7 +595,37 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H">openmx2wiki_H() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_H_full">openmx2wiki_H_full() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.openmx2wiki_left_right">openmx2wiki_left_right() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.output_module">output_module（HamGNN_v_2_0.models.Model.Model 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.output">output（HamGNN_v_2_0.models.outputs.EPC_output 属性）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions">OverlapBernsteinRadialBasisFunctions（HamGNN_v_2_0.models.basis 中的类）</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.parse_metric_func">parse_metric_func()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.piezoelectric">piezoelectric（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.PolynomialCutoff">PolynomialCutoff（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.post_processing">post_processing（HamGNN_v_2_0.models.Model.Model 属性）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.prod">prod()（在 HamGNN_v_2_0.models.utils 模块中）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -322,19 +633,45 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_scale">radius_scale（HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel 属性）</a>
+</li>
+      <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel.radius_type">radius_type（HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel 属性）</a>
+</li>
+      <li><a href="source/data_processing.html#HamGNN_v_2_0.input.config_parsing.read_config">read_config()（在 HamGNN_v_2_0.input.config_parsing 模块中）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.representation">representation（HamGNN_v_2_0.models.Model.Model 属性）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.EPC_output.representation">representation（HamGNN_v_2_0.models.outputs.EPC_output 属性）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions 方法）</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions 方法）</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions 方法）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.e3LayerNorm.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.e3_layers.e3LayerNorm 方法）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.embedding.Embedding.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.embedding.Embedding 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.Dense.reset_parameters">reset_parameters() （HamGNN_v_2_0.models.layers.Dense 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.RMSELoss">RMSELoss（HamGNN_v_2_0.models.utils 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_e3nn_v">rotate_e3nn_v() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_matrix_convert">rotate_matrix_convert() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H">rotate_openmx_H() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.rotate_openmx_H_full">rotate_openmx_H_full() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate">Rotate（HamGNN_v_2_0.models.e3_layers 中的类）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -342,13 +679,39 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.scalar">scalar（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.scatter_plot">scatter_plot()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SelfTp">SelfTp（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SeparateWeightTensorProduct">SeparateWeightTensorProduct（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup">setup() （HamGNN_v_2_0.GraphData.graph_data.graph_data_module 方法）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.functional.shifted_softplus">shifted_softplus()（在 HamGNN_v_2_0.models.functional 模块中）</a>
 </li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SkipConnection">SkipConnection（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.functional.softplus_inverse">softplus_inverse()（在 HamGNN_v_2_0.models.functional 模块中）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/model_components.html#HamGNN_v_2_0.models.functional.softplus_inverse">softplus_inverse()（在 HamGNN_v_2_0.models.functional 模块中）</a>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.sort_irreps">sort_irreps（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.layers.sph_harm_layer">sph_harm_layer（HamGNN_v_2_0.models.layers 中的类）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.spherical_bessel_formulas">spherical_bessel_formulas()（在 HamGNN_v_2_0.models.e3_layers 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.SphericalBasis">SphericalBasis（HamGNN_v_2_0.models.e3_layers 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.SSP">SSP（HamGNN_v_2_0.models.utils 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.sum_zero_loss">sum_zero_loss（HamGNN_v_2_0.models.utils 中的类）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.swish">swish()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.SWISH">SWISH（HamGNN_v_2_0.models.utils 中的类）</a>
 </li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.functional.switch_function">switch_function()（在 HamGNN_v_2_0.models.functional 模块中）</a>
 </li>
@@ -360,9 +723,29 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader">test_dataloader() （HamGNN_v_2_0.GraphData.graph_data.graph_data_module 方法）</a>
 </li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.test_epoch_end">test_epoch_end() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.test_step">test_step() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.total_energy_and_atomic_forces">total_energy_and_atomic_forces（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader">train_dataloader() （HamGNN_v_2_0.GraphData.graph_data.graph_data_module 方法）</a>
+</li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.training_step">training_step() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.triplets">triplets()（在 HamGNN_v_2_0.models.utils 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.outputs.trivial_scalar">trivial_scalar（HamGNN_v_2_0.models.outputs 中的类）</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/utilities.html#HamGNN_v_2_0.models.utils.upgrade_tensor_precision">upgrade_tensor_precision()（在 HamGNN_v_2_0.models.utils 模块中）</a>
 </li>
   </ul></td>
 </tr></table>
@@ -372,8 +755,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/data_processing.html#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader">val_dataloader() （HamGNN_v_2_0.GraphData.graph_data.graph_data_module 方法）</a>
 </li>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.validation_epoch_end">validation_epoch_end() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/model_structure.html#HamGNN_v_2_0.models.Model.Model.validation_step">validation_step() （HamGNN_v_2_0.models.Model.Model 方法）</a>
+</li>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v">v（HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions 属性）</a>
 </li>
   </ul></td>
@@ -384,11 +771,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width">width（HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions 属性）</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width">width（HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions 属性）</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.wigner.wigner">wigner()（在 HamGNN_v_2_0.models.HamGNN.wigner 模块中）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H">wiki2openmx_H() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
+</li>
+      <li><a href="source/model_components.html#HamGNN_v_2_0.models.e3_layers.Rotate.wiki2openmx_H_full">wiki2openmx_H_full() （HamGNN_v_2_0.models.e3_layers.Rotate 方法）</a>
 </li>
   </ul></td>
 </tr></table>
