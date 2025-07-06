@@ -1,0 +1,42 @@
+name: hamgnn-docs
+channels:
+  - pytorch
+  - pyg
+  - conda-forge
+  - defaults
+dependencies:
+  # 核心 Python
+  - python=3.9
+  
+  # Sphinx 和相关插件
+  - sphinx
+  - sphinx_rtd_theme
+  - sphinx-autodoc-typehints
+  - myst-parser
+
+  # HamGNN 核心依赖
+  - numpy
+  - pytorch
+  - pytorch-lightning
+  - torchmetrics
+  - e3nn
+  - pymatgen
+  - easydict
+  - ase
+  - tqdm
+  - numba
+  - tensorboard
+  
+  # PyTorch Geometric 及其依赖 (通过 pyg channel 安装预编译版本)
+  - pyg
+  - torch_scatter
+  - torch_sparse
+  - torch_cluster
+  - torch_spline_conv
+  
+  # 其他 pip 依赖
+  - pip
+  - pip:
+    - torch-ema
+    - torch-runstats
+    - lie_learn
