@@ -34,7 +34,7 @@ jobs:
       - name: Build Sphinx docs
         shell: bash -l {0}
          # 修正路径：移除多余的 "HamGNN/" 前缀
-        run: sphinx-build -b html docs/source docs/_build/html
+        run: sphinx-build -b html docs docs/_build/html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
