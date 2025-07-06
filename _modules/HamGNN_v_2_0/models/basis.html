@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.basis &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.basis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.basis 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Descripttion: </span>
+<span class="sd">version: </span>
+<span class="sd">Author: Yang Zhong</span>
+<span class="sd">Date: 2024-06-20 21:30:56</span>
+<span class="sd">LastEditors: Yang Zhong</span>
+<span class="sd">LastEditTime: 2024-06-20 21:32:28</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;此模块定义了多种用于图神经网络的径向基函数 (Radial Basis Functions, RBFs)。</span>
+
+<span class="sd">RBFs 的核心作用是将一个标量（通常是原子间距离）映射到一个高维特征向量。</span>
+<span class="sd">这使得模型能够以一种平滑且具有良好泛化能力的方式来编码距离信息。</span>
+<span class="sd">文件中实现了基于伯恩斯坦多项式和高斯函数的多种变体。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">binom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">cutoff_function</span><span class="p">,</span> <span class="n">softplus_inverse</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">computes radial basis functions with Bernstein polynomials</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BernsteinRadialBasisFunctions">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BernsteinRadialBasisFunctions</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用伯恩斯坦多项式计算径向基函数。</span>
+
+<span class="sd">    这种基函数利用伯恩斯坦多项式作为基底，将距离 `r` 映射到 `num_basis_functions` 维</span>
+<span class="sd">    的特征空间。为了数值稳定性，计算过程在对数空间中进行。</span>
+
+<span class="sd">    原始的伯恩斯坦基函数定义为:</span>
+<span class="sd">    B_v,n(x) = C(n,v) * x^v * (1-x)^(n-v)</span>
+<span class="sd">    其中 x = r / cutoff。</span>
+
+<span class="sd">    为了避免当 x 接近 0 或 1 时可能出现的数值下溢，本实现计算其对数：</span>
+<span class="sd">    log(B_v,n(x)) = log(C(n,v)) + v*log(x) + (n-v)*log(1-x)</span>
+<span class="sd">    并利用 `torch.log(-torch.expm1(log(x)))` 来精确计算 `log(1-x)`。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_basis_functions (int): 基函数的数量，即输出向量的维度。</span>
+<span class="sd">        cutoff (torch.Tensor): 截断半径，超出此距离的相互作用将被忽略。</span>
+<span class="sd">        logc (torch.Tensor): 预计算的对数化二项式系数 log(C(n,v))。</span>
+<span class="sd">        n (torch.Tensor): 伯恩斯坦多项式的次数 n = N-1-v，其中 N 是基函数数量。</span>
+<span class="sd">        v (torch.Tensor): 伯恩斯坦多项式的索引 v。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_basis_functions (int): 要使用的径向基函数的数量。</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BernsteinRadialBasisFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">=</span> <span class="n">num_basis_functions</span>
+        <span class="c1"># 预计算对数化的二项式系数 log(C(n,v)) 以提高效率</span>
+        <span class="n">logfactorial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_basis_functions</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">):</span>
+            <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_basis_functions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span>
+        <span class="n">logbinomial</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="c1"># 注册为 buffer，使其成为模型状态的一部分但不是可训练参数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;cutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;logc&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">logbinomial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BernsteinRadialBasisFunctions.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;此基函数没有可训练参数，因此该方法为空。&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BernsteinRadialBasisFunctions.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算给定距离 `r` 的径向基函数值。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r (torch.Tensor): 原子间距离张量，形状为 (N_interactions, 1)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 径向基函数的值，形状为 (N_interactions, num_basis_functions)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 将距离映射到 [0, 1] 区间，并在对数空间中计算</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span>
+        <span class="c1"># log(B) = log(C) + n*log(x) + v*log(1-x)</span>
+        <span class="c1"># 使用 torch.log(-torch.expm1(x)) 来稳定地计算 log(1-exp(x))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># 乘以截断函数并转换回正常空间</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">cutoff_function</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">computes radial basis functions with exponential Bernstein polynomials</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExponentialBernsteinRadialBasisFunctions">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExponentialBernsteinRadialBasisFunctions</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用指数缩放的伯恩斯坦多项式计算径向基函数。</span>
+
+<span class="sd">    该变体在标准的伯恩斯坦基函数上引入了一个可学习的指数衰减因子 `alpha`。</span>
+<span class="sd">    这使得基函数能够更好地适应不同尺度上的相互作用。</span>
+
+<span class="sd">    基函数的变量从 `x = r / cutoff` 替换为 `x = exp(-alpha * r)`。</span>
+<span class="sd">    参数 `alpha` 通过 `softplus` 函数保证其为正值。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_basis_functions (int): 基函数的数量。</span>
+<span class="sd">        cutoff (torch.Tensor): 截断半径。</span>
+<span class="sd">        _alpha (nn.Parameter): 可训练的衰减系数（softplus之前）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ini_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_basis_functions (int): 要使用的径向基函数的数量。</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">            ini_alpha (float, optional): `alpha` 参数的初始值。默认为 0.5。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ExponentialBernsteinRadialBasisFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">=</span> <span class="n">num_basis_functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span> <span class="o">=</span> <span class="n">ini_alpha</span>
+        <span class="c1"># 与 BernsteinRadialBasisFunctions 相同的二项式系数预计算</span>
+        <span class="n">logfactorial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_basis_functions</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">):</span>
+            <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_basis_functions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span>
+        <span class="n">logbinomial</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="c1"># 注册 buffer 和可训练参数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;cutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;logc&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">logbinomial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;_alpha&#39;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ExponentialBernsteinRadialBasisFunctions.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;使用 softplus 的逆函数来初始化 `_alpha`，使其 softplus 后的值等于 `ini_alpha`。&quot;&quot;&quot;</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">,</span> <span class="n">softplus_inverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ExponentialBernsteinRadialBasisFunctions.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算给定距离 `r` 的径向基函数值。&quot;&quot;&quot;</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">)</span>
+        <span class="c1"># 变量替换为 x = exp(-alpha*r)，并进入对数空间</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">r</span>
+        <span class="c1"># 同样使用数值稳定的方法计算对数伯恩斯坦多项式</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">cutoff_function</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">computes radial basis functions with exponential Gaussians</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExponentialGaussianRadialBasisFunctions">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExponentialGaussianRadialBasisFunctions</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用指数缩放的高斯函数计算径向基函数。</span>
+
+<span class="sd">    这种基函数由一组高斯函数构成，其中心点在指数空间上均匀分布。</span>
+<span class="sd">    具体来说，中心点位于 `exp(-alpha*r)` 的空间中，而不是直接在 `r` 上。</span>
+<span class="sd">    这允许基函数在靠近原子核（r较小）的地方分布得更密集。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_basis_functions (int): 基函数的数量。</span>
+<span class="sd">        cutoff (torch.Tensor): 截断半径。</span>
+<span class="sd">        center (torch.Tensor): 高斯函数的中心点，在 [1, 0] 区间内线性分布。</span>
+<span class="sd">        width (torch.Tensor): 高斯函数的宽度。</span>
+<span class="sd">        _alpha (nn.Parameter): 可训练的指数衰减系数。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ini_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_basis_functions (int): 要使用的径向基函数的数量。</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">            ini_alpha (float, optional): `alpha` 参数的初始值。默认为 0.5。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ExponentialGaussianRadialBasisFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">=</span> <span class="n">num_basis_functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span> <span class="o">=</span> <span class="n">ini_alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;cutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="c1"># 中心点在 [1, 0] 区间内线性分布</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;_alpha&#39;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ExponentialGaussianRadialBasisFunctions.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化 `_alpha` 参数。&quot;&quot;&quot;</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">,</span> <span class="n">softplus_inverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ExponentialGaussianRadialBasisFunctions.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算给定距离 `r` 的径向基函数值。&quot;&quot;&quot;</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">)</span>
+        <span class="c1"># exp(-width * (exp(-alpha*r) - center)^2)</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">cutoff_function</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">computes radial basis functions with exponential Gaussians</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GaussianRadialBasisFunctions">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaussianRadialBasisFunctions</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用标准高斯函数计算径向基函数。</span>
+
+<span class="sd">    这是最常见的一种径向基函数，由一组在距离空间 `r` 上均匀分布的高斯函数构成。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_basis_functions (int): 基函数的数量。</span>
+<span class="sd">        cutoff (torch.Tensor): 截断半径。</span>
+<span class="sd">        center (torch.Tensor): 高斯函数的中心点，在 [0, cutoff] 区间内线性分布。</span>
+<span class="sd">        width (torch.Tensor): 高斯函数的宽度。</span>
+<span class="sd">        _alpha (nn.Parameter): 一个伪参数，仅为兼容性存在，不起实际作用。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_basis_functions (int): 要使用的径向基函数的数量。</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GaussianRadialBasisFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">=</span> <span class="n">num_basis_functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;cutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="c1"># 中心点在 [0, cutoff] 之间线性分布</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">/</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="c1"># 为了在 TensorBoard 上与其他基函数兼容而添加，但本身不起作用</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;_alpha&#39;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GaussianRadialBasisFunctions.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;此基函数没有可训练参数，因此该方法为空。&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="GaussianRadialBasisFunctions.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算给定距离 `r` 的径向基函数值。&quot;&quot;&quot;</span>
+        <span class="c1"># exp(-width * (r - center)^2)</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">cutoff_function</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">computes radial basis functions with overlap Bernstein polynomials</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="OverlapBernsteinRadialBasisFunctions">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OverlapBernsteinRadialBasisFunctions</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;使用一种重叠变体的伯恩斯坦多项式计算径向基函数。</span>
+
+<span class="sd">    与指数伯恩斯坦基函数类似，但也引入了一个可学习的参数 `alpha`，但其</span>
+<span class="sd">    对距离 `r` 的变换方式不同，旨在更好地描述原子轨道的重叠积分。</span>
+
+<span class="sd">    变量替换为 `x = log(1 + alpha*r) - alpha*r`。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ini_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_basis_functions (int): 要使用的径向基函数的数量。</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">            ini_alpha (float, optional): `alpha` 参数的初始值。默认为 0.5。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OverlapBernsteinRadialBasisFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_basis_functions</span> <span class="o">=</span> <span class="n">num_basis_functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span> <span class="o">=</span> <span class="n">ini_alpha</span>
+        <span class="c1"># 预计算对数化的二项式系数</span>
+        <span class="n">logfactorial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_basis_functions</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">):</span>
+            <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_basis_functions</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_basis_functions</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span>
+        <span class="n">logbinomial</span> <span class="o">=</span> <span class="n">logfactorial</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">logfactorial</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="c1"># 注册 buffer 和可训练参数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;cutoff&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;logc&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">logbinomial</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;_alpha&#39;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="OverlapBernsteinRadialBasisFunctions.reset_parameters">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化 `_alpha` 参数。&quot;&quot;&quot;</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">constant_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">,</span> <span class="n">softplus_inverse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_alpha</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="OverlapBernsteinRadialBasisFunctions.forward">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算给定距离 `r` 的径向基函数值。&quot;&quot;&quot;</span>
+        <span class="n">alpha_r</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span>
+        <span class="c1"># 使用不同的变量替换 x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">alpha_r</span><span class="p">)</span> <span class="o">-</span> <span class="n">alpha_r</span>
+        <span class="c1"># 同样使用数值稳定的方法计算对数伯恩斯坦多项式</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">cutoff_function</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.HamGNN.clebsch_gordan &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.HamGNN.clebsch_gordan</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.HamGNN.clebsch_gordan 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">permutations</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">存储CG系数的辅助类</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ClebschGordan">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClebschGordan</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。</span>
+
+<span class="sd">    CG系数在耦合角动量理论中至关重要，用于将两个角动量的状态分解为总角动量的状态。</span>
+<span class="sd">    这个类从一个预先计算好的 `.npz` 文件中加载 CG 系数张量。由于原始文件</span>
+<span class="sd">    只存储了满足 l1 &lt;= l2 &lt;= l3 的系数以减少冗余，该类在初始化时会</span>
+<span class="sd">    自动生成所有可能的 (l1, l2, l3) 排列组合，并将它们注册为 PyTorch 的</span>
+<span class="sd">    缓冲区 (buffers)，以便高效访问。</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        该类继承自 `torch.nn.Module`，这使得它可以被无缝集成到任何</span>
+<span class="sd">        PyTorch 模型中，并且通过 `register_buffer` 注册的张量会自动</span>
+<span class="sd">        随模型移动到正确的设备 (如 CPU 或 GPU)。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        (动态) cg_l1_l2_l3 (torch.Tensor):</span>
+<span class="sd">            注册的 CG 系数张量。例如，`self.cg_1_1_2` 存储了耦合 l1=1 和 l2=1</span>
+<span class="sd">            得到 l3=2 的 CG 系数。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化 ClebschGordan 类。</span>
+
+<span class="sd">        此构造函数执行以下操作：</span>
+<span class="sd">        1. 定位并加载 `clebsch_gordan_coefficients_L10.npz` 文件。</span>
+<span class="sd">        2. 从文件中提取存储在 &#39;cg&#39; 键下的系数字典。</span>
+<span class="sd">        3. 遍历字典中的每一个 (l1, l2, l3) 组合。</span>
+<span class="sd">        4. 为每种组合生成所有可能的轴排列 (permutations)。</span>
+<span class="sd">        5. 将原始张量和所有排列后的新张量注册为 PyTorch 缓冲区，</span>
+<span class="sd">           命名格式为 `cg_l1_l2_l3`。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ClebschGordan</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 加载预计算的CG系数，该文件位于当前脚本所在目录</span>
+        <span class="n">cg_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;clebsch_gordan_coefficients_L10.npz&#39;</span><span class="p">)</span>
+        <span class="c1"># allow_pickle=True 是为了兼容旧版Numpy创建的.npz文件</span>
+        <span class="c1"># [()] 用于从0维数组中提取出字典对象</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cg_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s1">&#39;cg&#39;</span><span class="p">][()]</span>
+
+        <span class="c1"># 原始 .npz 文件为了节省空间，只存储了 l1 &lt;= l2 &lt;= l3 的情况。</span>
+        <span class="c1"># 这里需要生成所有可能的 (l1, l2, l3) 组合的系数。</span>
+        <span class="k">for</span> <span class="n">l123</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># (0, 1, 2) 代表 (l1, l2, l3) 的索引</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
+                <span class="c1"># 根据排列组合动态生成缓冲区的名称，例如 &#39;cg_1_2_1&#39;</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;cg_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l123</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">l123</span><span class="p">[</span><span class="n">b</span><span class="p">],</span> <span class="n">l123</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+                <span class="c1"># 检查该名称是否已存在，避免重复注册</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="c1"># self.register_buffer() 将张量注册为模块的持久状态，但不是模型参数。</span>
+                    <span class="c1"># 它会被保存到 state_dict 中，并随模型移动到 GPU。</span>
+                    <span class="c1"># .transpose(a,b,c) 根据索引 (a,b,c) 调整张量的维度顺序。</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">l123</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="ClebschGordan.forward">
+<a class="viewcode-back" href="../../../../source/gnn_core.html#HamGNN_v_2_0.models.HamGNN.clebsch_gordan.ClebschGordan.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">l2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">l3</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取指定角动量组合的 Clebsch-Gordan 系数张量。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            l1 (int): 第一个角动量的量子数。</span>
+<span class="sd">            l2 (int): 第二个角动量的量子数。</span>
+<span class="sd">            l3 (int): 耦合后的总角动量的量子数。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 对应于 (l1, l2, l3) 组合的 CG 系数张量。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 使用 getattr() 动态地从 self 中获取名为 &#39;cg_l1_l2_l3&#39; 的属性</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;cg_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">l3</span><span class="p">))</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

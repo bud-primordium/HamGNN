@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据处理与输入 &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">数据处理与输入</a><ul>
+<li><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#config-parsing-py">配置解析 (<cite>config_parsing.py</cite>)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">数据处理与输入</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/data_processing.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>数据处理与输入<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本部分包含所有与数据预处理、图构建和配置解析相关的模块。</p>
+<section id="module-HamGNN_v_2_0.GraphData.graph_data">
+<span id="graph-data-py"></span><h2>图数据模块 (<cite>graph_data.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.GraphData.graph_data" title="Link to this heading"></a></h2>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-07 20:44:01</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-10-29 16:24:33</p></li>
+</ul>
+<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.graph_data.</span></span><span class="sig-name descname"><span class="pre">graph_data_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module" title="Link to this definition"></a></dt>
+<dd><p>继承自 pl.LightningDataModule，用于管理图数据集。</p>
+<p>该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的
+训练流程无缝集成。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module.setup"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup" title="Link to this definition"></a></dt>
+<dd><p>划分数据集为训练、验证和测试三部分。</p>
+<p>此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。
+其行为逻辑如下：
+1. 如果 <cite>self.split_file</cite> 存在，则从该文件加载预定义的索引来划分数据集。</p>
+<blockquote>
+<div><p>这确保了实验的可复现性。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>如果没有提供划分文件，则根据 <cite>train_ratio</cite>, <cite>val_ratio</cite>, <cite>test_ratio</cite>
+对数据集进行随机划分。划分是基于固定的随机种子（42），以保证每次运行的划分结果一致。</p></li>
+<li><p>根据 <cite>stage</cite> 参数（’fit’ 或 ‘test’）来决定执行哪部分逻辑。</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a><em>, </em><em>optional</em>) – 当前所处的阶段，由 Lightning 自动传入。可以是 ‘fit’、’test’ 等。默认为 None。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader">
+<span class="sig-name descname"><span class="pre">test_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module.test_dataloader"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader" title="Link to this definition"></a></dt>
+<dd><p>创建并返回测试数据加载器。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>用于测试集的数据加载器实例。</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader">
+<span class="sig-name descname"><span class="pre">train_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module.train_dataloader"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader" title="Link to this definition"></a></dt>
+<dd><p>创建并返回训练数据加载器。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>用于训练集的数据加载器实例。</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader">
+<span class="sig-name descname"><span class="pre">val_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/graph_data.html#graph_data_module.val_dataloader"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader" title="Link to this definition"></a></dt>
+<dd><p>创建并返回验证数据加载器。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>用于验证集的数据加载器实例。</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-HamGNN_v_2_0.GraphData.data_parsing">
+<span id="data-parsing-py"></span><h2>数据解析 (<cite>data_parsing.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.GraphData.data_parsing" title="Link to this heading"></a></h2>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-07 20:30:29</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-10-29 15:52:53</p></li>
+</ul>
+<p><a href="#id4"><span class="problematic" id="id5">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.data_parsing.build_config">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.data_parsing.</span></span><span class="sig-name descname"><span class="pre">build_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/data_parsing.html#build_config"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config" title="Link to this definition"></a></dt>
+<dd><p>扫描所有晶体文件，构建原子类型的 one-hot 编码配置。</p>
+<p>该函数会遍历指定路径下的所有晶体结构文件，统计出数据集中出现的所有
+原子类型（以原子序数 Z 表示），然后为每种原子创建一个 one-hot 编码向量。
+最终的配置信息将保存为一个 JSON 文件。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>easydict.EasyDict</em>) – <p>项目的主配置对象，需要包含以下路径信息：</p>
+<ul class="simple">
+<li><p><cite>dataset_params.csv_params.crystal_path</cite>: 晶体文件所在目录。</p></li>
+<li><p><cite>dataset_params.csv_params.file_type</cite>: 晶体文件类型 (‘poscar’ 或 ‘cif’)。</p></li>
+<li><p><cite>dataset_params.graph_data_path</cite>: one-hot 配置文件 <cite>config_onehot.json</cite> 的保存路径。</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>一个包含原子序数列表和对应 one-hot 编码矩阵的字典。
+例如： <cite>{‘atomic_numbers’: [1, 6, 8], ‘node_vectors’: [[1,0,0], [0,1,0], [0,0,1]]}</cite></p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.data_parsing.</span></span><span class="sig-name descname"><span class="pre">cal_shfit_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/data_parsing.html#cal_shfit_vec"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec" title="Link to this definition"></a></dt>
+<dd><p>计算周期性边界条件下，近邻原子相对于中心原子的偏移向量。</p>
+<p>在晶体中，一个原子的近邻可能位于相邻的晶胞中。这个函数通过晶格矢量
+和周期性偏移镜像（image）来计算这种跨晶胞的实际位移。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>np.array</em>) – 形状为 <cite>(3,)</cite> 的整数数组，表示近邻原子所在的晶胞相对于
+中心原子所在晶胞的周期性偏移（例如 <cite>[-1, 0, 1]</cite>）。</p></li>
+<li><p><strong>lattice</strong> (<em>np.array</em>) – 形状为 <cite>(3, 3)</cite> 的数组，表示晶胞的三个晶格矢量。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>形状为 <cite>(3,)</cite> 的实际偏移向量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.data_parsing.cif_parse">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.data_parsing.</span></span><span class="sig-name descname"><span class="pre">cif_parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/data_parsing.html#cif_parse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse" title="Link to this definition"></a></dt>
+<dd><p>解析所有晶体文件和属性文件，生成并保存图数据。</p>
+<p>这是数据预处理的核心函数。它执行以下步骤：
+1.  确定晶体文件的类型和路径。
+2.  加载或创建原子 one-hot 编码配置。
+3.  从 <cite>id_prop.csv</cite> 文件中读取每个晶体ID及其对应的目标属性。
+4.  遍历每个晶体ID，执行以下操作：</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>读取晶体结构。</p></li>
+<li><p>生成原子特征（node_attr）。</p></li>
+<li><p>寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。</p></li>
+<li><p>将所有信息（节点、边、属性等）组装成 <cite>torch_geometric.data.Data</cite> 对象。</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li><p>将所有图数据存储在一个字典中，并使用 <cite>np.savez</cite> 保存为压缩的 <cite>.npz</cite> 文件。</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>easydict.EasyDict</em>) – 项目的主配置对象，提供了所有必需的参数，例如文件路径、截断半径、
+最大近邻数以及目标属性的格式等。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.GraphData.data_parsing.</span></span><span class="sig-name descname"><span class="pre">get_init_atomfea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crystal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/GraphData/data_parsing.html#get_init_atomfea"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea" title="Link to this definition"></a></dt>
+<dd><p>根据 one-hot 配置文件为晶体中的每个原子生成初始特征向量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 由 <cite>build_config</cite> 生成的 one-hot 配置字典，包含 ‘atomic_numbers’ 和 ‘node_vectors’。</p></li>
+<li><p><strong>crystal</strong> (<em>Structure</em>) – 一个 <cite>pymatgen.core.structure.Structure</cite> 对象，代表单个晶体结构。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>形状为 <cite>(N, D)</cite> 的数组，其中 N 是晶体中的原子数，D 是 one-hot 向量的维度。
+每一行是对应原子的 one-hot 特征。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="config-parsing-py">
+<h2>配置解析 (<cite>config_parsing.py</cite>)<a class="headerlink" href="#config-parsing-py" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,720 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>模型通用组件 &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=beaddf03"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">模型通用组件</a><ul>
+<li><a class="reference internal" href="#outputs-py">输出模块 (<cite>outputs.py</cite>)</a></li>
+<li><a class="reference internal" href="#layers-py-e3-layers-py">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
+<li><a class="reference internal" href="#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.num_features"><code class="docutils literal notranslate"><span class="pre">Embedding.num_features</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.Zmax"><code class="docutils literal notranslate"><span class="pre">Embedding.Zmax</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.electron_config"><code class="docutils literal notranslate"><span class="pre">Embedding.electron_config</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.element_embedding"><code class="docutils literal notranslate"><span class="pre">Embedding.element_embedding</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.config_linear"><code class="docutils literal notranslate"><span class="pre">Embedding.config_linear</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.forward"><code class="docutils literal notranslate"><span class="pre">Embedding.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Embedding.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.cutoff</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.logc</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.n</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.v</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.cutoff</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions._alpha</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.cutoff</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.center</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.width</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions._alpha</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.cutoff</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.center</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.width</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions._alpha</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.forward()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.functional.cutoff_function"><code class="docutils literal notranslate"><span class="pre">cutoff_function()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.functional.shifted_softplus"><code class="docutils literal notranslate"><span class="pre">shifted_softplus()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.functional.softplus_inverse"><code class="docutils literal notranslate"><span class="pre">softplus_inverse()</span></code></a></li>
+<li><a class="reference internal" href="#HamGNN_v_2_0.models.functional.switch_function"><code class="docutils literal notranslate"><span class="pre">switch_function()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">模型通用组件</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/model_components.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>模型通用组件<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本部分包含组成 HamGNN 模型的各种通用组件。</p>
+<section id="outputs-py">
+<h2>输出模块 (<cite>outputs.py</cite>)<a class="headerlink" href="#outputs-py" title="Link to this heading"></a></h2>
+</section>
+<section id="layers-py-e3-layers-py">
+<h2>层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)<a class="headerlink" href="#layers-py-e3-layers-py" title="Link to this heading"></a></h2>
+</section>
+<section id="module-HamGNN_v_2_0.models.embedding">
+<span id="embedding-py"></span><h2>嵌入模块 (<cite>embedding.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.embedding" title="Link to this heading"></a></h2>
+<p>Descripttion:
+version:
+Author: Yang Zhong
+Date: 2024-06-20 21:33:29
+LastEditors: Yang Zhong
+LastEditTime: 2024-06-20 21:35:59</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.embedding.</span></span><span class="sig-name descname"><span class="pre">Embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">87</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/embedding.html#Embedding"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding" title="Link to this definition"></a></dt>
+<dd><p>嵌入层，将标量的原子序数 Z 转换为指定维度的特征向量。</p>
+<p>该模块结合了两种信息来生成每个元素的嵌入表示：
+1. 一个可学习的嵌入矩阵，针对每个原子序数进行优化。
+2. 基于元素电子结构的线性变换，提供物理上有意义的先验信息。
+这两种表示相加，形成最终的元素特征向量。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.num_features">
+<span class="sig-name descname"><span class="pre">num_features</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.num_features" title="Link to this definition"></a></dt>
+<dd><p>输出特征向量的维度。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.Zmax">
+<span class="sig-name descname"><span class="pre">Zmax</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.Zmax" title="Link to this definition"></a></dt>
+<dd><p>支持的最大原子序数。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.electron_config">
+<span class="sig-name descname"><span class="pre">electron_config</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.electron_config" title="Link to this definition"></a></dt>
+<dd><p>存储元素电子结构信息的张量，作为 buffer 注册。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.element_embedding">
+<span class="sig-name descname"><span class="pre">element_embedding</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.element_embedding" title="Link to this definition"></a></dt>
+<dd><p>可学习的元素嵌入矩阵，形状为 <cite>(Zmax, num_features)</cite>。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.config_linear">
+<span class="sig-name descname"><span class="pre">config_linear</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.config_linear" title="Link to this definition"></a></dt>
+<dd><p>将电子结构向量线性变换到特征空间的层。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Linear</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/embedding.html#Embedding.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.forward" title="Link to this definition"></a></dt>
+<dd><p>定义模型的前向传播逻辑。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Z</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入的原子序数张量，形状为 <cite>(N,)</cite>，其中 N 是原子数。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>返回每个原子对应的嵌入向量，形状为 <cite>(N, num_features)</cite>。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.embedding.Embedding.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/embedding.html#Embedding.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.embedding.Embedding.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>初始化或重置模型的参数。</p>
+<p>对元素嵌入矩阵使用均匀分布进行初始化，对线性层的权重使用正交初始化。</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-HamGNN_v_2_0.models.basis">
+<span id="basis-py-functional-py"></span><h2>基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.basis" title="Link to this heading"></a></h2>
+<p>Descripttion:
+version:
+Author: Yang Zhong
+Date: 2024-06-20 21:30:56
+LastEditors: Yang Zhong
+LastEditTime: 2024-06-20 21:32:28</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.basis.</span></span><span class="sig-name descname"><span class="pre">BernsteinRadialBasisFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#BernsteinRadialBasisFunctions"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions" title="Link to this definition"></a></dt>
+<dd><p>使用伯恩斯坦多项式计算径向基函数。</p>
+<p>这种基函数利用伯恩斯坦多项式作为基底，将距离 <cite>r</cite> 映射到 <cite>num_basis_functions</cite> 维
+的特征空间。为了数值稳定性，计算过程在对数空间中进行。</p>
+<p>原始的伯恩斯坦基函数定义为:
+B_v,n(x) = C(n,v) * x^v * (1-x)^(n-v)
+其中 x = r / cutoff。</p>
+<p>为了避免当 x 接近 0 或 1 时可能出现的数值下溢，本实现计算其对数：
+log(B_v,n(x)) = log(C(n,v)) + v*log(x) + (n-v)*log(1-x)
+并利用 <cite>torch.log(-torch.expm1(log(x)))</cite> 来精确计算 <cite>log(1-x)</cite>。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions">
+<span class="sig-name descname"><span class="pre">num_basis_functions</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions" title="Link to this definition"></a></dt>
+<dd><p>基函数的数量，即输出向量的维度。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.cutoff" title="Link to this definition"></a></dt>
+<dd><p>截断半径，超出此距离的相互作用将被忽略。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc">
+<span class="sig-name descname"><span class="pre">logc</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc" title="Link to this definition"></a></dt>
+<dd><p>预计算的对数化二项式系数 log(C(n,v))。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n" title="Link to this definition"></a></dt>
+<dd><p>伯恩斯坦多项式的次数 n = N-1-v，其中 N 是基函数数量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v">
+<span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v" title="Link to this definition"></a></dt>
+<dd><p>伯恩斯坦多项式的索引 v。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#BernsteinRadialBasisFunctions.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward" title="Link to this definition"></a></dt>
+<dd><p>计算给定距离 <cite>r</cite> 的径向基函数值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>r</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 原子间距离张量，形状为 (N_interactions, 1)。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>径向基函数的值，形状为 (N_interactions, num_basis_functions)。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#BernsteinRadialBasisFunctions.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>此基函数没有可训练参数，因此该方法为空。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.basis.</span></span><span class="sig-name descname"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ini_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialBernsteinRadialBasisFunctions"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions" title="Link to this definition"></a></dt>
+<dd><p>使用指数缩放的伯恩斯坦多项式计算径向基函数。</p>
+<p>该变体在标准的伯恩斯坦基函数上引入了一个可学习的指数衰减因子 <cite>alpha</cite>。
+这使得基函数能够更好地适应不同尺度上的相互作用。</p>
+<p>基函数的变量从 <cite>x = r / cutoff</cite> 替换为 <cite>x = exp(-alpha * r)</cite>。
+参数 <cite>alpha</cite> 通过 <cite>softplus</cite> 函数保证其为正值。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions">
+<span class="sig-name descname"><span class="pre">num_basis_functions</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions" title="Link to this definition"></a></dt>
+<dd><p>基函数的数量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.cutoff" title="Link to this definition"></a></dt>
+<dd><p>截断半径。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions._alpha">
+<span class="sig-name descname"><span class="pre">_alpha</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions._alpha" title="Link to this definition"></a></dt>
+<dd><p>可训练的衰减系数（softplus之前）。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialBernsteinRadialBasisFunctions.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward" title="Link to this definition"></a></dt>
+<dd><p>计算给定距离 <cite>r</cite> 的径向基函数值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialBernsteinRadialBasisFunctions.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>使用 softplus 的逆函数来初始化 <cite>_alpha</cite>，使其 softplus 后的值等于 <cite>ini_alpha</cite>。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.basis.</span></span><span class="sig-name descname"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ini_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialGaussianRadialBasisFunctions"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions" title="Link to this definition"></a></dt>
+<dd><p>使用指数缩放的高斯函数计算径向基函数。</p>
+<p>这种基函数由一组高斯函数构成，其中心点在指数空间上均匀分布。
+具体来说，中心点位于 <cite>exp(-alpha*r)</cite> 的空间中，而不是直接在 <cite>r</cite> 上。
+这允许基函数在靠近原子核（r较小）的地方分布得更密集。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.num_basis_functions">
+<span class="sig-name descname"><span class="pre">num_basis_functions</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.num_basis_functions" title="Link to this definition"></a></dt>
+<dd><p>基函数的数量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.cutoff" title="Link to this definition"></a></dt>
+<dd><p>截断半径。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center">
+<span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center" title="Link to this definition"></a></dt>
+<dd><p>高斯函数的中心点，在 [1, 0] 区间内线性分布。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width" title="Link to this definition"></a></dt>
+<dd><p>高斯函数的宽度。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions._alpha">
+<span class="sig-name descname"><span class="pre">_alpha</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions._alpha" title="Link to this definition"></a></dt>
+<dd><p>可训练的指数衰减系数。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialGaussianRadialBasisFunctions.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward" title="Link to this definition"></a></dt>
+<dd><p>计算给定距离 <cite>r</cite> 的径向基函数值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#ExponentialGaussianRadialBasisFunctions.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>初始化 <cite>_alpha</cite> 参数。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.basis.</span></span><span class="sig-name descname"><span class="pre">GaussianRadialBasisFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#GaussianRadialBasisFunctions"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions" title="Link to this definition"></a></dt>
+<dd><p>使用标准高斯函数计算径向基函数。</p>
+<p>这是最常见的一种径向基函数，由一组在距离空间 <cite>r</cite> 上均匀分布的高斯函数构成。</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.num_basis_functions">
+<span class="sig-name descname"><span class="pre">num_basis_functions</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.num_basis_functions" title="Link to this definition"></a></dt>
+<dd><p>基函数的数量。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff" title="Link to this definition"></a></dt>
+<dd><p>截断半径。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center">
+<span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center" title="Link to this definition"></a></dt>
+<dd><p>高斯函数的中心点，在 [0, cutoff] 区间内线性分布。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width" title="Link to this definition"></a></dt>
+<dd><p>高斯函数的宽度。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions._alpha">
+<span class="sig-name descname"><span class="pre">_alpha</span></span><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions._alpha" title="Link to this definition"></a></dt>
+<dd><p>一个伪参数，仅为兼容性存在，不起实际作用。</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Parameter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#GaussianRadialBasisFunctions.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward" title="Link to this definition"></a></dt>
+<dd><p>计算给定距离 <cite>r</cite> 的径向基函数值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#GaussianRadialBasisFunctions.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>此基函数没有可训练参数，因此该方法为空。</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.basis.</span></span><span class="sig-name descname"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ini_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#OverlapBernsteinRadialBasisFunctions"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions" title="Link to this definition"></a></dt>
+<dd><p>使用一种重叠变体的伯恩斯坦多项式计算径向基函数。</p>
+<p>与指数伯恩斯坦基函数类似，但也引入了一个可学习的参数 <cite>alpha</cite>，但其
+对距离 <cite>r</cite> 的变换方式不同，旨在更好地描述原子轨道的重叠积分。</p>
+<p>变量替换为 <cite>x = log(1 + alpha*r) - alpha*r</cite>。</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#OverlapBernsteinRadialBasisFunctions.forward"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward" title="Link to this definition"></a></dt>
+<dd><p>计算给定距离 <cite>r</cite> 的径向基函数值。</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters">
+<span class="sig-name descname"><span class="pre">reset_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/basis.html#OverlapBernsteinRadialBasisFunctions.reset_parameters"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters" title="Link to this definition"></a></dt>
+<dd><p>初始化 <cite>_alpha</cite> 参数。</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-HamGNN_v_2_0.models.functional">Descripttion:
+version:
+Author: Yang Zhong
+Date: 2024-06-20 21:29:58
+LastEditors: Yang Zhong
+LastEditTime: 2024-06-21 11:53:21</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.functional.cutoff_function">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.functional.</span></span><span class="sig-name descname"><span class="pre">cutoff_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/functional.html#cutoff_function"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.functional.cutoff_function" title="Link to this definition"></a></dt>
+<dd><p>一个在 [0, cutoff] 区间内从 1 平滑过渡到 0 的截断函数。</p>
+<p>该函数具有无限阶平滑导数，这对于基于梯度的优化至关重要。
+当 x &gt;= cutoff 时，函数值为 0。</p>
+<p>为了避免在 x=cutoff 处出现 0/0 导致梯度为 NaN 的问题，
+函数内部使用 <cite>torch.where</cite> 对输入 <cite>x</cite> 进行了掩码处理。</p>
+<p>函数表达式为: f(x) = exp(-x^2 / (cutoff^2 - x^2)) for x &lt; cutoff</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入张量，通常是距离。</p></li>
+<li><p><strong>cutoff</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 截断半径。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>施加截断效果后的输出张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.functional.shifted_softplus">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.functional.</span></span><span class="sig-name descname"><span class="pre">shifted_softplus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/functional.html#shifted_softplus"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.functional.shifted_softplus" title="Link to this definition"></a></dt>
+<dd><p>计算修正版的 Softplus 激活函数。</p>
+<p>标准的 Softplus(x) = log(1 + exp(x))。此版本将其向下平移 log(2)，
+即 Softplus(x) - log(2)，这使得函数图像恰好经过原点 (0, 0)。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入张量。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>经过修正版 Softplus 计算后的输出张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.functional.softplus_inverse">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.functional.</span></span><span class="sig-name descname"><span class="pre">softplus_inverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/functional.html#softplus_inverse"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.functional.softplus_inverse" title="Link to this definition"></a></dt>
+<dd><p>Softplus 函数的反函数。</p>
+<p>这在初始化需要保证为正值的参数时非常有用。例如，如果希望一个参数 <cite>alpha</cite>
+在通过 <cite>F.softplus(alpha)</cite> 后得到期望的初始值 <cite>alpha_init</cite>，那么
+可以将 <cite>alpha</cite> 初始化为 <cite>softplus_inverse(alpha_init)</cite>。</p>
+<p>反函数表达式为: f^-1(x) = x + log(-expm1(-x))</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 输入值，即 softplus 函数的输出。</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>对应的 softplus 函数的输入值。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.models.functional.switch_function">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.functional.</span></span><span class="sig-name descname"><span class="pre">switch_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cuton</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/functional.html#switch_function"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.functional.switch_function" title="Link to this definition"></a></dt>
+<dd><p>一个在 [cuton, cutoff] 区间内平滑对称地从 1 过渡到 0 的开关函数。</p>
+<p>该函数同样具有无限阶平滑导数。
+- 当 x &lt;= cuton 时，函数值为 1。
+- 当 x &gt;= cutoff 时，函数值为 0。
+- 如果 cuton &gt; cutoff，过渡方向会反转，从 0 过渡到 1。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）"><em>torch.Tensor</em></a>) – 输入张量。</p></li>
+<li><p><strong>cuton</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 开始过渡的边界。</p></li>
+<li><p><strong>cutoff</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) – 结束过渡的边界。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>施加开关效果后的输出张量。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="（在 PyTorch v2.7）">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.models.functional &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.models.functional</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.models.functional 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Descripttion: </span>
+<span class="sd">version: </span>
+<span class="sd">Author: Yang Zhong</span>
+<span class="sd">Date: 2024-06-20 21:29:58</span>
+<span class="sd">LastEditors: Yang Zhong</span>
+<span class="sd">LastEditTime: 2024-06-21 11:53:21</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;此模块提供了一系列在神经网络模型中常用的、可微的函数。</span>
+
+<span class="sd">这些函数包括特殊的激活函数、平滑的截断/开关函数以及用于参数初始化的</span>
+<span class="sd">反函数。模块中的函数都经过精心设计，以确保在自动微分过程中的数值稳定性。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="c1"># 重要的数值稳定性说明：</span>
+<span class="c1"># 下面的截断 (cutoff) 和开关 (switch) 函数在数值上需要一些技巧来处理。</span>
+<span class="c1"># 在这些函数的分段定义变化的连接点处，形式上会出现 0/0 的除法。</span>
+<span class="c1"># 这对于函数值本身没有问题，但当使用自动微分时，这种除法会导致梯度计算</span>
+<span class="c1"># 出现 NaN (Not a Number)。为了规避这个问题，函数的输入也需要被适当地掩码 (mask)。</span>
+<span class="c1"># （保留此英文注释以强调其重要性）</span>
+<span class="c1"># IMPORTANT NOTE: The cutoff and the switch function are numerically a bit tricky:</span>
+<span class="c1"># Right at the &quot;seems&quot; of these functions, i.e. where the piecewise definition changes,</span>
+<span class="c1"># there is formally a division by 0 (i.e. 0/0). This is of no issue for the function</span>
+<span class="c1"># itself, but when automatic differentiation is used, this division will lead to NaN</span>
+<span class="c1"># gradients. In order to circumvent this, the input needs to be masked as well.</span>
+
+
+<span class="n">_log2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<div class="viewcode-block" id="shifted_softplus">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.functional.shifted_softplus">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shifted_softplus</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算修正版的 Softplus 激活函数。</span>
+
+<span class="sd">    标准的 Softplus(x) = log(1 + exp(x))。此版本将其向下平移 log(2)，</span>
+<span class="sd">    即 Softplus(x) - log(2)，这使得函数图像恰好经过原点 (0, 0)。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor): 输入张量。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 经过修正版 Softplus 计算后的输出张量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">_log2</span></div>
+
+
+
+<div class="viewcode-block" id="cutoff_function">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.functional.cutoff_function">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cutoff_function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个在 [0, cutoff] 区间内从 1 平滑过渡到 0 的截断函数。</span>
+
+<span class="sd">    该函数具有无限阶平滑导数，这对于基于梯度的优化至关重要。</span>
+<span class="sd">    当 x &gt;= cutoff 时，函数值为 0。</span>
+
+<span class="sd">    为了避免在 x=cutoff 处出现 0/0 导致梯度为 NaN 的问题，</span>
+<span class="sd">    函数内部使用 `torch.where` 对输入 `x` 进行了掩码处理。</span>
+
+<span class="sd">    函数表达式为: f(x) = exp(-x^2 / (cutoff^2 - x^2)) for x &lt; cutoff</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor): 输入张量，通常是距离。</span>
+<span class="sd">        cutoff (float): 截断半径。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 施加截断效果后的输出张量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zeros</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># 当 x &gt;= cutoff 时，将 x 替换为 0，避免在分母中出现 (cutoff - x) &lt;= 0</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+    <span class="c1"># 核心计算：exp(-x_**2 / ( (cutoff-x_) * (cutoff+x_) ))</span>
+    <span class="c1"># 等价于 exp(-x_**2 / (cutoff**2 - x_**2))</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x_</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="n">cutoff</span> <span class="o">-</span> <span class="n">x_</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">cutoff</span> <span class="o">+</span> <span class="n">x_</span><span class="p">))),</span> <span class="n">zeros</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_switch_component</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">ones</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">zeros</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;switch_function 的辅助计算组件，不应直接调用。</span>
+
+<span class="sd">    该实现比简化版本在数值上更稳定，请勿修改。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 当 x &lt;= 0 时，将 x 替换为 1，避免在分母中出现 0</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="c1"># 核心计算：exp(-1/x_)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">ones</span> <span class="o">/</span> <span class="n">x_</span><span class="p">))</span>
+
+<div class="viewcode-block" id="switch_function">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.functional.switch_function">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">switch_function</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">cuton</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个在 [cuton, cutoff] 区间内平滑对称地从 1 过渡到 0 的开关函数。</span>
+
+<span class="sd">    该函数同样具有无限阶平滑导数。</span>
+<span class="sd">    - 当 x &lt;= cuton 时，函数值为 1。</span>
+<span class="sd">    - 当 x &gt;= cutoff 时，函数值为 0。</span>
+<span class="sd">    - 如果 cuton &gt; cutoff，过渡方向会反转，从 0 过渡到 1。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor): 输入张量。</span>
+<span class="sd">        cuton (float): 开始过渡的边界。</span>
+<span class="sd">        cutoff (float): 结束过渡的边界。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 施加开关效果后的输出张量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 将 x 标准化到 [0, 1] 区间</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">cuton</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">cutoff</span> <span class="o">-</span> <span class="n">cuton</span><span class="p">)</span>
+    <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">zeros</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">_switch_component</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+    <span class="n">fm</span> <span class="o">=</span> <span class="n">_switch_component</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span><span class="p">)</span>
+    <span class="c1"># 最终的开关函数形式为 f(1-x) / (f(x) + f(1-x))</span>
+    <span class="c1"># 通过 torch.where 保证在区间端点处的行为正确</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">fm</span> <span class="o">/</span> <span class="p">(</span><span class="n">fp</span> <span class="o">+</span> <span class="n">fm</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="softplus_inverse">
+<a class="viewcode-back" href="../../../source/model_components.html#HamGNN_v_2_0.models.functional.softplus_inverse">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">softplus_inverse</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Softplus 函数的反函数。</span>
+
+<span class="sd">    这在初始化需要保证为正值的参数时非常有用。例如，如果希望一个参数 `alpha`</span>
+<span class="sd">    在通过 `F.softplus(alpha)` 后得到期望的初始值 `alpha_init`，那么</span>
+<span class="sd">    可以将 `alpha` 初始化为 `softplus_inverse(alpha_init)`。</span>
+
+<span class="sd">    反函数表达式为: f^-1(x) = x + log(-expm1(-x))</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor | float): 输入值，即 softplus 函数的输出。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 对应的 softplus 函数的输入值。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># 使用 torch.log(-torch.expm1(-x)) 来稳定地计算 log(1 - exp(-x))</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
