@@ -377,7 +377,9 @@ def main():
     else:
         print('The graph data is saved in %s' % graph_data_path)
         graph_data_path = os.path.join(graph_data_path, 'graph_data.npz')
-        np.savez(graph_data_path, graph=graphs)
+        # np.savez(graph_data_path, graph=graphs)
+        # 使用 np.savez_compressed 压缩数据
+        np.savez_compressed(graph_data_path, graph=graphs)
 
 if __name__ == '__main__':
     main()

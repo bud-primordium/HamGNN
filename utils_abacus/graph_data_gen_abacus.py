@@ -519,7 +519,9 @@ def main():
 
     # Save graph data and cutoff radii
     graph_data_path = os.path.join(GRAPH_DATA_FOLDER, 'graph_data.npz')
-    np.savez(graph_data_path, graph=graph_data)
+    # np.savez(graph_data_path, graph=graph_data)
+    # 使用 np.savez_compressed 压缩数据
+    np.savez_compressed(graph_data_path, graph=graph_data)
 
 
 if __name__ == "__main__":

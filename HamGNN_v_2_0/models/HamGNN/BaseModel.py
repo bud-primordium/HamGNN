@@ -20,6 +20,19 @@ import numpy as np
 from pymatgen.core.periodic_table import Element
 from typing import List, Union
 
+"""
+HamGNN 模型的基类定义
+
+本模块提供了 `BaseModel` 类，作为所有 HamGNN 图表示学习模型的基类。
+它主要负责实现一个核心功能：在模型内部动态地构建计算图（邻居列表）。
+这与在数据预处理阶段固定图结构的方法不同，它允许模型根据原子种类和可调的缩放因子，
+为每个结构即时地、灵活地确定原子间的相互作用范围。
+
+该动态图构建功能对于处理多样化的化学环境和实现更具适应性的模型至关重要。
+"""
+
+# 不同 DFT 软件使用的原子半径 (单位：Angstrom，abacus 除外)
+# 这些半径用于在动态图构建时确定初始的邻居搜索范围
 ATOMIC_RADII = {
     'openmx': {
         'H': 6.0, 'He': 8.0, 'Li': 8.0, 'Be': 7.0, 'B': 7.0, 'C': 6.0,
@@ -58,27 +71,27 @@ ATOMIC_RADII = {
 }
 }
 
-DEFAULT_RADIUS = 10.0
+DEFAULT_RADIUS = 10.0 # 默认原子半径
 
 def get_radii_from_atomic_numbers(atomic_numbers: Union[torch.Tensor, List[int]], 
                                   radius_scale: float = 1.5, radius_type: str = 'openmx') -> List[float]:
     """
-    Retrieves the scaled atomic radii for a given list or tensor of atomic numbers.
+    根据原子序数列表检索缩放后的原子半径。
 
-    Parameters:
-    - atomic_numbers (Union[torch.Tensor, List[int]]): A list or tensor containing atomic numbers.
-    - radius_scale (float): A scaling factor to multiply the atomic radii. Default is 1.5.
-    - radius_type (str): The software, in which the atomic radius is utilized, originates from a specific source. Default is openmx.
+    Args:
+        atomic_numbers (Union[torch.Tensor, List[int]]): 包含原子序数的列表或张量。
+        radius_scale (float): 原子半径的缩放因子，默认为 1.5。
+        radius_type (str): 所用原子半径的来源软件，默认为 'openmx'。
 
     Returns:
-    - List[float]: A list of scaled atomic radii corresponding to the input atomic numbers.
+        List[float]: 与输入原子序数对应的缩放后的原子半径列表。
     """
     
     if isinstance(atomic_numbers, torch.Tensor):
         atomic_numbers = atomic_numbers.tolist()
 
-    # Convert atomic numbers to element symbols and then to scaled radii.
-    # Use 0.0 as a default value for elements not found in the dictionary.
+    # 将原子序数转换为元素符号，然后获取缩放后的半径。
+    # 如果在字典中找不到元素，则使用默认值 0.0。
     return [radius_scale * ATOMIC_RADII[radius_type].get(Element.from_Z(z).symbol, DEFAULT_RADIUS) for z in atomic_numbers]
 
 
@@ -90,29 +103,29 @@ def neighbor_list_and_relative_vec(
     cell=None,
     pbc=False,
 ):
-    """Create neighbor list and neighbor vectors based on radial cutoff.
+    """基于径向截断距离创建邻居列表和相对向量。
 
-    Edges are given by the following convention:
-    - ``edge_index[0]`` is the *source* (convolution center).
-    - ``edge_index[1]`` is the *target* (neighbor).
+    边的约定如下:
+    - `edge_index[0]` 是 *源* (卷积中心)。
+    - `edge_index[1]` 是 *目标* (邻居)。
 
     Args:
-        pos (shape [N, 3]): Positional coordinates; Tensor or numpy array.
-        r_max (float): Radial cutoff distance for neighbor finding.
-        cell (numpy shape [3, 3]): Cell for periodic boundary conditions.
-        pbc (bool or 3-tuple of bool): Periodicity in each of the three dimensions.
-        self_interaction (bool): Include same periodic image self-edges.
-        strict_self_interaction (bool): Include any self interaction edges.
+        pos (shape [N, 3]): 原子位置坐标；可以是 Tensor 或 numpy 数组。
+        r_max (float): 用于寻找邻居的径向截断距离。
+        cell (numpy shape [3, 3]): 周期性边界条件的晶胞矩阵。
+        pbc (bool or 3-tuple of bool): 三个维度上的周期性。
+        self_interaction (bool): 是否包括相同周期性镜像的自相互作用边。
+        strict_self_interaction (bool): 是否包括任何自相互作用边。
 
     Returns:
-        edge_index (torch.Tensor [2, num_edges]): List of edges.
-        shifts (torch.Tensor [num_edges, 3]): Relative cell shift vectors.
-        cell_tensor (torch.Tensor [3, 3]): Cell tensor.
+        edge_index (torch.Tensor [2, num_edges]): 边的列表。
+        shifts (torch.Tensor [num_edges, 3]): 相对晶胞平移向量。
+        cell_tensor (torch.Tensor [3, 3]): 晶胞张量。
     """
     if isinstance(pbc, bool):
         pbc = (pbc,) * 3
 
-    # Handle positional data
+    # 处理位置数据
     if isinstance(pos, torch.Tensor):
         temp_pos = pos.detach().cpu().numpy()
         out_device = pos.device
@@ -124,10 +137,10 @@ def neighbor_list_and_relative_vec(
 
     if out_device.type != "cpu":
         warnings.warn(
-            "Currently, neighborlists require a round trip to the CPU. Please pass CPU tensors if possible."
+            "当前，邻居列表计算需要 CPU 数据。如果可能，请传递 CPU 张量。"
         )
 
-    # Handle cell data
+    # 处理晶胞数据
     if isinstance(cell, torch.Tensor):
         temp_cell = cell.detach().cpu().numpy()
         cell_tensor = cell.to(device=out_device, dtype=out_dtype)
@@ -140,7 +153,7 @@ def neighbor_list_and_relative_vec(
 
     temp_cell = geometry.complete_cell(temp_cell)
 
-    # Generate neighbor list
+    # 生成邻居列表
     first_index, second_index, shifts = neighborlist.primitive_neighbor_list(
         "ijS",
         pbc,
@@ -151,18 +164,18 @@ def neighbor_list_and_relative_vec(
         use_scaled_positions=False,
     )
 
-    # Filter self-edges
+    # 过滤自相互作用的边
     if not self_interaction:
         bad_edge = first_index == second_index
         bad_edge &= np.all(shifts == 0, axis=1)
         keep_edge = ~bad_edge
         if not np.any(keep_edge):
-            raise ValueError("No edges remain after eliminating self-edges.")
+            raise ValueError("消除自相互作用的边后，没有边剩下。")
         first_index = first_index[keep_edge]
         second_index = second_index[keep_edge]
         shifts = shifts[keep_edge]
 
-    # Build output
+    # 构建输出
     edge_index = torch.vstack(
         (torch.LongTensor(first_index), torch.LongTensor(second_index))
     ).to(device=out_device)
@@ -177,43 +190,78 @@ def neighbor_list_and_relative_vec(
 
 def find_matching_columns_of_A_in_B(A, B):
     """
-    Finds matching columns between two matrices A and B.
+    在矩阵 B 中查找与矩阵 A 匹配的列。
 
-    Parameters:
-    - A (torch.Tensor): First matrix.
-    - B (torch.Tensor): Second matrix.
+    Args:
+        A (torch.Tensor): 第一个矩阵。
+        B (torch.Tensor): 第二个矩阵。
 
     Returns:
-    - torch.Tensor: Indices of matching columns in B.
+        torch.Tensor: 在 B 中匹配列的索引。
     """
-    assert A.shape[0] == B.shape[0], "The number of rows in A and B must be the same."
-    assert A.shape[-1] <= B.shape[-1], "Please increase radius_scale factor!"
+    assert A.shape[0] == B.shape[0], "A 和 B 的行数必须相同。"
+    assert A.shape[-1] <= B.shape[-1], "请增 `radius_scale` 因子！"
 
-    # Transpose A and B to treat columns as rows for comparison
-    A_rows = A.T.unsqueeze(1)  # Shape: (num_cols_A, 1, num_rows)
-    B_rows = B.T.unsqueeze(0)  # Shape: (1, num_cols_B, num_rows)
+    # 转置 A 和 B，将列视为行进行比较
+    A_rows = A.T.unsqueeze(1)  # 形状: (num_cols_A, 1, num_rows)
+    B_rows = B.T.unsqueeze(0)  # 形状: (1, num_cols_B, num_rows)
 
-    # Compare each row of A with each row of B
-    matches = torch.all(A_rows == B_rows, dim=-1)  # Shape: (num_cols_A, num_cols_B)
+    # 比较 A 的每一行与 B 的每一行
+    matches = torch.all(A_rows == B_rows, dim=-1)  # 形状: (num_cols_A, num_cols_B)
 
-    # Find the indices where the rows match
-    matching_indices = matches.nonzero(as_tuple=True)[1]  # Take the second element of the tuple
+    # 找到匹配的索引
+    matching_indices = matches.nonzero(as_tuple=True)[1]  # 取元组的第二个元素
 
     return matching_indices
 
 class BaseModel(nn.Module):
+    """所有 HamGNN 图学习模型的基类。
+
+    它封装了动态图构建的核心逻辑。
+
+    Attributes:
+        radius_type (str): 用于确定原子半径的来源类型 (e.g., 'openmx')。
+        radius_scale (float): 原子半径的缩放因子。
+    """
     def __init__(self, radius_type: str = 'openmx', radius_scale: float = 1.5) -> None:
+        """
+        Args:
+            radius_type (str): 原子半径的类型，默认为 'openmx'。
+            radius_scale (float): 原子半径的缩放因子，默认为 1.5。
+        """
         super().__init__()
         self.radius_type = radius_type
         self.radius_scale = radius_scale
 
     def forward(self, data):
+        """前向传播的占位符，应在子类中实现。"""
         raise NotImplementedError
 
     def generate_graph(
         self,
         data,
     ):
+        """
+        根据原子位置和种类动态生成计算图（邻居列表）。
+
+        此方法会忽略 `data` 中预先计算的 `edge_index`，并根据每种原子的
+        化学性质（半径）和 `radius_scale` 重新计算邻居关系。
+        它还会找到新生成的图的边与原始图的边的对应关系。
+
+        Args:
+            data (Data): 输入的图数据对象，必须包含 `pos`, `z`, `cell`, `batch` 等信息。
+
+        Returns:
+            EasyDict: 
+                一个包含新生成的图信息的字典。
+                - 'z': 原子序数。
+                - 'pos': 原子位置。
+                - 'edge_index': 新的边索引。
+                - 'cell_shift': 边的晶胞平移向量。
+                - 'nbr_shift': 邻居的相对位置向量。
+                - 'batch': 批处理索引。
+                - 'matching_edges': 新图的边在原始图中的匹配索引。
+        """
         graph = EasyDict()
 
         node_counts = scatter(torch.ones_like(data.batch), data.batch, dim=0).detach()
@@ -228,7 +276,9 @@ class BaseModel(nn.Module):
         edge_index = []
         cell_shift = []
 
+        # 遍历批处理中的每个晶体
         for idx_xtal, pos in enumerate(pos_batch):
+            # 基于原子半径动态计算邻居列表
             edge_index_temp, shifts_tmp, _ = neighbor_list_and_relative_vec(
                 pos,
                 r_max=get_radii_from_atomic_numbers(z_batch[idx_xtal], radius_scale=self.radius_scale, radius_type=self.radius_type),
@@ -237,8 +287,10 @@ class BaseModel(nn.Module):
                 cell=latt_batch[idx_xtal],
                 pbc=True,
             )
+            # 计算邻居的真实位移向量
             nbr_shift_temp = torch.einsum('ni, ij -> nj',  shifts_tmp.type_as(pos), latt_batch[idx_xtal])
             
+            # 调整边索引以适应批处理
             if idx_xtal > 0:
                 edge_index_temp += node_counts[idx_xtal - 1]
 
@@ -246,13 +298,16 @@ class BaseModel(nn.Module):
             cell_shift.append(shifts_tmp)
             nbr_shift.append(nbr_shift_temp)
 
+        # 拼接所有晶体的图信息
         edge_index = torch.cat(edge_index, dim=-1).type_as(data.edge_index)
         cell_shift = torch.cat(cell_shift, dim=0).type_as(data.cell_shift)
         nbr_shift = torch.cat(nbr_shift, dim=0).type_as(data.nbr_shift)
 
+        # 找到新生成的边与原始数据中边的对应关系
         matching_edges = find_matching_columns_of_A_in_B(torch.cat([data.edge_index, data.cell_shift.t()], dim=0), 
                                                       torch.cat([edge_index, cell_shift.t()], dim=0))
 
+        # 填充图字典
         graph['z'] = data.z
         graph['pos'] = data.pos
         graph['edge_index'] = edge_index
@@ -265,4 +320,5 @@ class BaseModel(nn.Module):
 
     @property
     def num_params(self) -> int:
+        """计算模型的总参数数量。"""
         return sum(p.numel() for p in self.parameters())
