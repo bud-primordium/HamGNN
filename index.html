@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>欢迎来到 HamGNN 的API文档! &mdash; HamGNN 2.0 文档</title>
+  <title>&lt;no title&gt; &mdash; HamGNN 2.0 文档</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -19,7 +19,8 @@
       <script src="_static/translations.js?v=beaddf03"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="索引" href="genindex.html" />
-    <link rel="search" title="搜索" href="search.html" /> 
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="主程序入口" href="source/main_entry.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,11 +42,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">欢迎来到 HamGNN 的API文档!</a></li>
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/utilities.html">通用工具函数</a></li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -60,7 +66,7 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">欢迎来到 HamGNN 的API文档!</li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> 查看页面源码</a>
       </li>
@@ -70,17 +76,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="hamgnn-api">
-<h1>欢迎来到 HamGNN 的API文档!<a class="headerlink" href="#hamgnn-api" title="Link to this heading"></a></h1>
-<p><strong>HamGNN</strong> 是一个用于预测材料哈密顿量的图神经网络框架。</p>
+  <hr class="docutils" />
+<p>欢迎来到 HamGNN 中文注释版的 API 文档！</p>
+<p>本文档基于 <a class="reference external" href="https://github.com/QuantumLab-ZY/HamGNN">QuantumLab-ZY/HamGNN</a> 项目生成，
+由社区贡献者添加了中文注释，旨在帮助中文开发者更好地理解和使用 HamGNN。</p>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/gnn_core.html">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#hamgnn-net-py">HamGNN 网络 (<cite>net.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#basemodel-py">基础模型 (<cite>BaseModel.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#kan-attention-kan-py">注意力与 KAN 层 (<cite>Attention_kan.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/gnn_core.html#module-HamGNN_v_2_0.models.HamGNN.wigner">物理工具 (<cite>wigner.py</cite>, <cite>clebsch_gordan.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/model_components.html">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#outputs-py">输出模块 (<cite>outputs.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#layers-py-e3-layers-py">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/model_components.html#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/data_processing.html">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/data_processing.html#config-parsing-py">配置解析 (<cite>config_parsing.py</cite>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/utilities.html">通用工具函数</a></li>
+</ul>
 </div>
-</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="source/main_entry.html" class="btn btn-neutral float-right" title="主程序入口" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
