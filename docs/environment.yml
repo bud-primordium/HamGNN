@@ -16,7 +16,7 @@ dependencies:
 
   # HamGNN 核心依赖
   - numpy
-  - pytorch
+  - pytorch=2.1.0
   - pytorch-lightning
   - torchmetrics
   - e3nn

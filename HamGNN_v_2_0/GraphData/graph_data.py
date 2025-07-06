@@ -32,6 +32,11 @@ class graph_data_module(pl.LightningDataModule):
 
     该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的
     训练流程无缝集成。
+
+    主要功能:
+
+    - 提供了 `graph_data_module` 类用于管理图数据。
+    - 包含 `collate_fn` 用于 `DataLoader`。
     """
     def __init__(self, dataset: Union[list, tuple, np.array] = None,
                  train_ratio: float = 0.6,
@@ -41,7 +46,7 @@ class graph_data_module(pl.LightningDataModule):
                  val_batch_size: int = None,
                  test_batch_size: int = None,
                  split_file : str = None):
-        """构造函数，初始化数据模块。
+        """初始化 `graph_data_module`。
 
         Args:
             dataset (Union[list, tuple, np.array], optional): 
@@ -78,6 +83,7 @@ class graph_data_module(pl.LightningDataModule):
 
         此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。
         其行为逻辑如下：
+        
         1. 如果 `self.split_file` 存在，则从该文件加载预定义的索引来划分数据集。
            这确保了实验的可复现性。
         2. 如果没有提供划分文件，则根据 `train_ratio`, `val_ratio`, `test_ratio` 
@@ -175,3 +181,4 @@ class graph_data_module(pl.LightningDataModule):
             return False
         # 回退到默认行为
         raise AttributeError(f"{self.__class__.__name__} object has no attribute '{item}'")
+

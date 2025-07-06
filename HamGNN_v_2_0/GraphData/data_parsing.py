@@ -121,14 +121,17 @@ def cif_parse(config):
     """解析所有晶体文件和属性文件，生成并保存图数据。
 
     这是数据预处理的核心函数。它执行以下步骤：
+
     1.  确定晶体文件的类型和路径。
     2.  加载或创建原子 one-hot 编码配置。
     3.  从 `id_prop.csv` 文件中读取每个晶体ID及其对应的目标属性。
     4.  遍历每个晶体ID，执行以下操作：
-        a. 读取晶体结构。
-        b. 生成原子特征（node_attr）。
-        c. 寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。
-        d. 将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。
+
+        a.  读取晶体结构。
+        b.  生成原子特征（node_attr）。
+        c.  寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。
+        d.  将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。
+    
     5.  将所有图数据存储在一个字典中，并使用 `np.savez` 保存为压缩的 `.npz` 文件。
 
     Args:
