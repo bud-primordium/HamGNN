@@ -45,7 +45,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">主程序入口</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">主程序入口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.main.HamGNN"><code class="docutils literal notranslate"><span class="pre">HamGNN()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.main.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.main.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HamGNN_v_2_0.main.train_and_eval"><code class="docutils literal notranslate"><span class="pre">train_and_eval()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
@@ -77,8 +83,106 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>主程序入口<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <section id="module-HamGNN_v_2_0.main">
+<span id="id1"></span><h1>主程序入口<a class="headerlink" href="#module-HamGNN_v_2_0.main" title="Link to this heading"></a></h1>
+<dl>
+<dt>/*</dt><dd><ul class="simple">
+<li><p>&#64;Author: Yang Zhong</p></li>
+<li><p>&#64;Date: 2021-10-12 23:42:11</p></li>
+<li><p>&#64;Last Modified by: Yang Zhong</p></li>
+<li><p>&#64;Last Modified time: 2021-11-07 19:15:27</p></li>
+</ul>
+<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.main.HamGNN">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.main.</span></span><span class="sig-name descname"><span class="pre">HamGNN</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/main.html#HamGNN"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.main.HamGNN" title="Link to this definition"></a></dt>
+<dd><p>程序主函数。</p>
+<p>解析命令行参数，读取配置，设置全局随机种子以保证可复现性，
+并调用 <cite>train_and_eval</cite> 启动整个训练或评估流程。</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.main.build_model">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.main.</span></span><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/main.html#build_model"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.main.build_model" title="Link to this definition"></a></dt>
+<dd><p>根据配置构建 GNN 模型。</p>
+<p>此函数动态地构建图表示网络 (GNN) 和特定于任务的输出模块。
+它首先根据配置选择 GNN 架构，然后根据要预测的物理属性（如力、介电张量、哈密顿量等）
+选择并初始化相应的输出层。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – <p>从 YAML 文件中读取并解析后的配置对象。该对象应包含以下关键属性：</p>
+<ul class="simple">
+<li><p>setup.GNN_Net (str): 要使用的 GNN 网络名称 (例如, ‘hamgnnconv’)。</p></li>
+<li><p>setup.property (str): 要预测的目标物理属性 (例如, ‘hamiltonian’)。</p></li>
+<li><p>representation_nets (dict): GNN 表示网络的超参数配置。</p></li>
+<li><p>output_nets (dict): 输出网络的超参数配置。</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>包含三个元素的元组:</p>
+<ul class="simple">
+<li><p>Gnn_net (torch.nn.Module): 图表示网络实例。</p></li>
+<li><p>output_module (torch.nn.Module): 任务输出网络实例。</p></li>
+<li><p>post_utility (None): 占位符，当前版本中未使用。</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="（在 Python v3.13）">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.main.prepare_data">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.main.</span></span><span class="sig-name descname"><span class="pre">prepare_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/main.html#prepare_data"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.main.prepare_data" title="Link to this definition"></a></dt>
+<dd><p>准备并封装图数据。</p>
+<p>该函数根据配置文件中的参数，加载预处理好的图数据，并将其封装到
+一个 PyTorch Lightning 的 DataModule 中，以便于后续的训练、验证和测试。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – <p>从 YAML 文件中读取并解析后的配置对象。该对象应包含 <cite>dataset_params</cite> 属性，
+其中包含以下键：</p>
+<ul class="simple">
+<li><p>train_ratio (float): 训练集在总数据集中的比例。</p></li>
+<li><p>val_ratio (float): 验证集在总数据集中的比例。</p></li>
+<li><p>test_ratio (float): 测试集在总数据集中的比例。</p></li>
+<li><p>batch_size (int): 每个批次的样本数量。</p></li>
+<li><p>split_file (str, optional): 用于加载/保存数据集划分索引的文件路径。</p></li>
+<li><p>graph_data_path (str): 包含图数据的 <cite>.npz</cite> 文件路径或其所在目录。</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>封装了训练、验证和测试数据集的 DataModule 实例。</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pytorch_lightning.LightningDataModule</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HamGNN_v_2_0.main.train_and_eval">
+<span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.main.</span></span><span class="sig-name descname"><span class="pre">train_and_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/main.html#train_and_eval"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.main.train_and_eval" title="Link to this definition"></a></dt>
+<dd><p>执行模型的训练、评估和测试流程。</p>
+<p>该函数协调整个工作流程：
+1. 准备数据。
+2. 构建模型。
+3. 设置数值精度。
+4. 根据配置（训练或测试）初始化 <cite>Model</cite> 实例。
+5. 配置并运行 PyTorch Lightning <cite>Trainer</cite>。
+6. 在训练结束后，记录超参数和评估结果。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="（在 Python v3.13）"><em>dict</em></a>) – 从 YAML 文件中读取并解析后的配置对象。</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

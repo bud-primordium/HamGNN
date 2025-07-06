@@ -1,0 +1,563 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_2_0.main &mdash; HamGNN 2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8ba3eb92"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HamGNN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/main_entry.html">主程序入口</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/model_components.html">模型通用组件</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/utilities.html">通用工具函数</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_2_0.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_2_0.main 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-10-12 23:42:11 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-11-07 19:15:27</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;HamGNN (v2.0) 的主入口脚本。</span>
+
+<span class="sd">该文件负责整个模型的生命周期管理，包括：</span>
+<span class="sd">1.  **数据准备**: 从配置文件中读取数据集参数，加载图结构数据，并使用 PyTorch Lightning 的 DataModule 进行封装。</span>
+<span class="sd">2.  **模型构建**: 根据配置动态选择并构建 GNN 表示网络 (如 HamGNNConvE3, HamGNNTransformer) 和相应的输出网络，以适应不同的物理属性预测任务（如总能量、原子力、介电张量等）。</span>
+<span class="sd">3.  **训练与评估**: 初始化 PyTorch Lightning 的 `Trainer`，配置回调函数（如学习率监控、早停、模型检查点），并启动训练、验证和测试流程。</span>
+<span class="sd">4.  **命令行接口**: 使用 `argparse` 解析命令行参数，允许用户指定配置文件，并启动整个流程。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">e3nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">e3nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">o3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.GraphData.graph_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph_data_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.input.config_parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.outputs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Born</span><span class="p">,</span> <span class="n">Born_node_vec</span><span class="p">,</span> <span class="n">scalar</span><span class="p">,</span> <span class="n">trivial_scalar</span><span class="p">,</span> <span class="n">Force</span><span class="p">,</span> 
+                            <span class="n">Force_node_vec</span><span class="p">,</span> <span class="n">crystal_tensor</span><span class="p">,</span> <span class="n">piezoelectric</span><span class="p">,</span> <span class="n">total_energy_and_atomic_forces</span><span class="p">,</span> <span class="n">EPC_output</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.Model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">soft_logo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorBoardLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.HamGNN.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamGNNTransformer</span><span class="p">,</span> <span class="n">HamGNNConvE3</span><span class="p">,</span> <span class="n">HamGNNPlusPlusOut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_hparam_dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+
+
+<div class="viewcode-block" id="prepare_data">
+<a class="viewcode-back" href="../../source/main_entry.html#HamGNN_v_2_0.main.prepare_data">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;准备并封装图数据。</span>
+
+<span class="sd">    该函数根据配置文件中的参数，加载预处理好的图数据，并将其封装到</span>
+<span class="sd">    一个 PyTorch Lightning 的 DataModule 中，以便于后续的训练、验证和测试。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): </span>
+<span class="sd">            从 YAML 文件中读取并解析后的配置对象。该对象应包含 `dataset_params` 属性，</span>
+<span class="sd">            其中包含以下键：</span>
+<span class="sd">            </span>
+<span class="sd">            - train_ratio (float): 训练集在总数据集中的比例。</span>
+<span class="sd">            - val_ratio (float): 验证集在总数据集中的比例。</span>
+<span class="sd">            - test_ratio (float): 测试集在总数据集中的比例。</span>
+<span class="sd">            - batch_size (int): 每个批次的样本数量。</span>
+<span class="sd">            - split_file (str, optional): 用于加载/保存数据集划分索引的文件路径。</span>
+<span class="sd">            - graph_data_path (str): 包含图数据的 `.npz` 文件路径或其所在目录。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pytorch_lightning.LightningDataModule: 封装了训练、验证和测试数据集的 DataModule 实例。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">train_ratio</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">train_ratio</span>
+    <span class="n">val_ratio</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">val_ratio</span>
+    <span class="n">test_ratio</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">test_ratio</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">batch_size</span>
+    <span class="n">split_file</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">split_file</span>
+    <span class="n">graph_data_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">graph_data_path</span>
+    
+    <span class="c1"># 如果提供的路径是目录而非文件，则自动附加默认文件名 `graph_data.npz`</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">)</span>
+        <span class="n">graph_data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">,</span> <span class="s1">&#39;graph_data.npz&#39;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading graph data from </span><span class="si">{</span><span class="n">graph_data_path</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The graph_data.npz file was not found in </span><span class="si">{</span><span class="n">graph_data_path</span><span class="si">}</span><span class="s1">!&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 从 .npz 文件加载图数据字典</span>
+    <span class="n">graph_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">graph_data</span> <span class="o">=</span> <span class="n">graph_data</span><span class="p">[</span><span class="s1">&#39;graph&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">graph_dataset</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graph_data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="c1"># 初始化数据模块���它将处理数据集的划分、加载和批处理</span>
+    <span class="n">graph_dataset</span> <span class="o">=</span> <span class="n">graph_data_module</span><span class="p">(</span><span class="n">graph_dataset</span><span class="p">,</span> <span class="n">train_ratio</span><span class="o">=</span><span class="n">train_ratio</span><span class="p">,</span> <span class="n">val_ratio</span><span class="o">=</span><span class="n">val_ratio</span><span class="p">,</span> <span class="n">test_ratio</span><span class="o">=</span><span class="n">test_ratio</span><span class="p">,</span> 
+                                        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">split_file</span><span class="o">=</span><span class="n">split_file</span><span class="p">)</span>
+    <span class="c1"># 根据当前阶段（如 &#39;fit&#39; 或 &#39;test&#39;）设置数据模块</span>
+    <span class="n">graph_dataset</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">stage</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">stage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph_dataset</span></div>
+
+
+<div class="viewcode-block" id="build_model">
+<a class="viewcode-back" href="../../source/main_entry.html#HamGNN_v_2_0.main.build_model">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_model</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;根据配置构建 GNN 模型。</span>
+
+<span class="sd">    此函数动态地构建图表示网络 (GNN) 和特定于任务的输出模块。</span>
+<span class="sd">    它首先根据配置选择 GNN 架构，然后根据要预测的物理属性（如力、介电张量、哈密顿量等）</span>
+<span class="sd">    选择并初始化相应的输出层。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): </span>
+<span class="sd">            从 YAML 文件中读取并解析后的配置对象。该对象应包含以下关键属性：</span>
+<span class="sd">        </span>
+<span class="sd">            - setup.GNN_Net (str): 要使用的 GNN 网络名称 (例如, &#39;hamgnnconv&#39;)。</span>
+<span class="sd">            - setup.property (str): 要预测的目标物理属性 (例如, &#39;hamiltonian&#39;)。</span>
+<span class="sd">            - representation_nets (dict): GNN 表示网络的超参数配置。</span>
+<span class="sd">            - output_nets (dict): 输出网络的超参数配置。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: </span>
+<span class="sd">            包含三个元素的元组:</span>
+
+<span class="sd">            - Gnn_net (torch.nn.Module): 图表示网络实例。</span>
+<span class="sd">            - output_module (torch.nn.Module): 任务输出网络实例。</span>
+<span class="sd">            - post_utility (None): 占位符，当前版本中未使用。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Building model&quot;</span><span class="p">)</span>
+    <span class="c1"># 确保表示网络和输出网络在哈密顿量类型上达成一致</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">HamGNN_pre</span><span class="o">.</span><span class="n">radius_type</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output_nets</span><span class="o">.</span><span class="n">HamGNN_out</span><span class="o">.</span><span class="n">ham_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    
+    <span class="c1"># --- 1. 构建图表示网络 (GNN) ---</span>
+    <span class="c1"># 根据配置文件选择并实例化核心的图表示学习网络。</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;hamgnnconv&#39;</span><span class="p">,</span> <span class="s1">&#39;hamgnnpre&#39;</span><span class="p">,</span> <span class="s1">&#39;hamgnn_pre&#39;</span><span class="p">]:</span>
+        <span class="c1"># 为保证旧配置文件的兼容性，如果未指定 `use_corr_prod`，则默认为 True</span>
+        <span class="k">if</span> <span class="s1">&#39;use_corr_prod&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">HamGNN_pre</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">HamGNN_pre</span><span class="o">.</span><span class="n">use_corr_prod</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">Gnn_net</span> <span class="o">=</span> <span class="n">HamGNNConvE3</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hamgnntransformer&#39;</span><span class="p">:</span>
+        <span class="n">Gnn_net</span> <span class="o">=</span> <span class="n">HamGNNTransformer</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The network: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="si">}</span><span class="s2"> is not yet supported!&quot;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+
+    <span class="c1"># --- 2. 根据目标属性构建输出网络 ---</span>
+    <span class="c1"># 不同的物理属性具有不同的数据结构（标量、矢量、张量），因此需要匹配专门的输出模块。</span>
+    
+    <span class="c1"># 任务: 预测二阶张量 (如 Born 有效电荷, 介电常数)</span>
+    <span class="c1"># Born 有效电荷和介电常数都是二阶张量，因此使用 `crystal_tensor` 输出模块进行预测。</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;born&#39;</span><span class="p">,</span> <span class="s1">&#39;dielectric&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_edge&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">crystal_tensor</span><span class="p">(</span><span class="n">l_pred_atomwise_tensor</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">,</span> <span class="n">include_triplet</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">export_triplet</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">nbr_fea_len</span><span class="p">,</span> 
+                                <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">triplet_feature_len</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;edge_gnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">crystal_tensor</span><span class="p">(</span><span class="n">l_pred_atomwise_tensor</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">,</span> <span class="n">include_triplet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_pooling_features</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_edge_pooling_features</span><span class="p">,</span> <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">in_features_three_body</span><span class="p">,</span>
+                                           <span class="n">activation</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">Softplus</span><span class="p">(),</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;painn&#39;</span><span class="p">:</span>
+            <span class="c1">#output_module = Born_node_vec(num_node_features=Gnn_net.num_scaler_out, activation=Gnn_net.activation, use_bath_norm=Gnn_net.use_batch_norm, bias=Gnn_net.lnode_bias,n_h=3)</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">crystal_tensor</span><span class="p">(</span><span class="n">l_pred_atomwise_tensor</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">,</span> <span class="n">include_triplet</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">luse_triplet</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">n_edge_features</span><span class="p">,</span> 
+                                            <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">triplet_feature_len</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">crystal_tensor</span><span class="p">(</span><span class="n">l_pred_atomwise_tensor</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">,</span> <span class="n">include_triplet</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">nbr_fea_len</span><span class="p">,</span> 
+                                           <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">triplet_feature_len</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">crystal_tensor</span><span class="p">(</span><span class="n">l_pred_atomwise_tensor</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span><span class="p">,</span> <span class="n">include_triplet</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">export_triplet</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">hidden_channels</span><span class="p">,</span> 
+                                           <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_triplet_features</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimenet_triplet</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">,</span> <span class="n">l_minus_mean</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">l_minus_mean</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+
+    <span class="c1"># 任务: 预测原子力</span>
+    <span class="c1"># 原子力是作用在每个原子上的矢量 (一阶张量)，因此使用 `Force` 输出模块。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;force&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">Force</span><span class="p">(</span><span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+
+    <span class="c1"># 任务: 预测压电张量</span>
+    <span class="c1"># 压电张量是三阶张量，描述应力与电极化之间的关系，使用 `piezoelectric` 模块处理。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;piezoelectric&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">piezoelectric</span><span class="p">(</span><span class="n">include_triplet</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">export_triplet</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">num_edge_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">hidden_channels</span><span class="p">,</span>
+                                          <span class="n">num_triplet_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_triplet_features</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">,</span> <span class="n">use_bath_norm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cutoff_triplet</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimenet_triplet</span><span class="o">.</span><span class="n">cutoff_triplet</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+            
+    <span class="c1"># 任务: 预测原子级标量属性 (例如, 形成能), 使用 &#39;mean&#39; 聚合</span>
+    <span class="c1"># 对于原子级标量属性，模型需要对每个节点的输出进行预测，然后通过 &#39;mean&#39; 池化得到体系的平均值。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;scalar_per_atom&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;edge_gnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;schnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_edge&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span>
+                                   <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_edge</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span>
+                                   <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_triplet</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;painn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+    
+    <span class="c1"># 任务: 预测原子级标量属性, 使用 &#39;max&#39; 聚合</span>
+    <span class="c1"># 与 &#39;mean&#39; 类似，但使用 &#39;max&#39; 池化，适用于需要关注最大值的场景。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;scalar_max&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;edge_gnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span>
+                <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;schnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span>
+                                   <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_edge&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span>
+                                   <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_edge</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span>
+                                   <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_triplet</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;painn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span>
+                <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+    
+    <span class="c1"># 任务: 预测体系级标量属性 (例如, 总能量), 使用 &#39;sum&#39; 聚合</span>
+    <span class="c1"># 对于总能量这类广延量，通常使用 &#39;sum&#39; 池化将所有原子或节点的贡献加和。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;scalar&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;edge_gnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;schnet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_edge&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span>
+                                   <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_edge</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">classification</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">atom_fea_len</span><span class="p">,</span>
+                                   <span class="n">n_h</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_triplet</span><span class="o">.</span><span class="n">n_h</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;painn&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">trivial_scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+            <span class="n">output_module</span> <span class="o">=</span> <span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">num_node_features</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">num_node_features</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">Gnn_net</span><span class="o">.</span><span class="n">act</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quit</span><span class="p">()</span>
+        
+    <span class="c1"># 任务: 预测哈密顿量矩阵</span>
+    <span class="c1"># 核心任务：预测哈密顿量矩阵。使用专门设计的 `HamGNNPlusPlusOut` 模块，该模块能够处理复杂的等变性和对称性约束。</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hamiltonian&#39;</span><span class="p">:</span>
+        <span class="n">output_params</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output_nets</span><span class="o">.</span><span class="n">HamGNN_out</span>
+        <span class="c1"># 为保证旧配置文件的兼容性，设置默认参数</span>
+        <span class="k">if</span> <span class="s1">&#39;add_H_nonsoc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+            <span class="n">output_params</span><span class="o">.</span><span class="n">add_H_nonsoc</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;get_nonzero_mask_tensor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+            <span class="n">output_params</span><span class="o">.</span><span class="n">get_nonzero_mask_tensor</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;zero_point_shift&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+            <span class="n">output_params</span><span class="o">.</span><span class="n">zero_point_shift</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="n">output_module</span> <span class="o">=</span> <span class="n">HamGNNPlusPlusOut</span><span class="p">(</span><span class="n">irreps_in_node</span> <span class="o">=</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">irreps_node_features</span><span class="p">,</span> <span class="n">irreps_in_edge</span> <span class="o">=</span> <span class="n">Gnn_net</span><span class="o">.</span><span class="n">irreps_node_features</span><span class="p">,</span> <span class="n">nao_max</span><span class="o">=</span> <span class="n">output_params</span><span class="o">.</span><span class="n">nao_max</span><span class="p">,</span> <span class="n">ham_type</span><span class="o">=</span> <span class="n">output_params</span><span class="o">.</span><span class="n">ham_type</span><span class="p">,</span>
+                                         <span class="n">ham_only</span><span class="o">=</span> <span class="n">output_params</span><span class="o">.</span><span class="n">ham_only</span><span class="p">,</span> <span class="n">symmetrize</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">symmetrize</span><span class="p">,</span><span class="n">calculate_band_energy</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">calculate_band_energy</span><span class="p">,</span><span class="n">num_k</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">num_k</span><span class="p">,</span><span class="n">k_path</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">k_path</span><span class="p">,</span>
+                                         <span class="n">band_num_control</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">band_num_control</span><span class="p">,</span> <span class="n">soc_switch</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">soc_switch</span><span class="p">,</span> <span class="n">nonlinearity_type</span> <span class="o">=</span> <span class="n">output_params</span><span class="o">.</span><span class="n">nonlinearity_type</span><span class="p">,</span> <span class="n">add_H0</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">add_H0</span><span class="p">,</span> 
+                                         <span class="n">spin_constrained</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">spin_constrained</span><span class="p">,</span> <span class="n">collinear_spin</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">collinear_spin</span><span class="p">,</span> <span class="n">minMagneticMoment</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">minMagneticMoment</span><span class="p">,</span> <span class="n">add_H_nonsoc</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">add_H_nonsoc</span><span class="p">,</span>
+                                         <span class="n">get_nonzero_mask_tensor</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">get_nonzero_mask_tensor</span><span class="p">,</span> <span class="n">zero_point_shift</span><span class="o">=</span><span class="n">output_params</span><span class="o">.</span><span class="n">zero_point_shift</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Evaluation of this property is not supported!&#39;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+    
+    <span class="c1"># 初始化后处理工具 (当前版本未使用)</span>
+    <span class="n">post_utility</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">return</span> <span class="n">Gnn_net</span><span class="p">,</span> <span class="n">output_module</span><span class="p">,</span> <span class="n">post_utility</span></div>
+
+
+<div class="viewcode-block" id="train_and_eval">
+<a class="viewcode-back" href="../../source/main_entry.html#HamGNN_v_2_0.main.train_and_eval">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">train_and_eval</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;执行模型的训练、评估和测试流程。</span>
+
+<span class="sd">    该函数协调整个工作流程：</span>
+<span class="sd">    1. 准备数据。</span>
+<span class="sd">    2. 构建模型。</span>
+<span class="sd">    3. 设置数值精度。</span>
+<span class="sd">    4. 根据配置（训练或测试）初始化 `Model` 实例。</span>
+<span class="sd">    5. 配置并运行 PyTorch Lightning `Trainer`。</span>
+<span class="sd">    6. 在训练结束后，记录超参数和评估结果。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): 从 YAML 文件中读取并解析后的配置对象。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">prepare_data</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">graph_representation</span><span class="p">,</span> <span class="n">output_module</span><span class="p">,</span> <span class="n">post_utility</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="c1"># 根据配置设置全局的 PyTorch 数值精度 (float32 或 float64)</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">precision</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">set_default_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    
+    <span class="n">graph_representation</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">output_module</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># 从配置中获取损失函数和评估指标的定义</span>
+    <span class="n">losses</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">losses_metrics</span><span class="o">.</span><span class="n">losses</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">losses_metrics</span><span class="o">.</span><span class="n">metrics</span>
+    
+    <span class="c1"># --- 训练阶段 (`stage` == &#39;fit&#39;) ---</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="s1">&#39;fit&#39;</span><span class="p">:</span>
+        <span class="c1"># 如果指定了检查点但不是断点续训，则从检查点加载模型权重进行微调或评估</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">load_from_checkpoint</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">resume</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">load_from_checkpoint</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">checkpoint_path</span><span class="p">,</span>
+            <span class="n">representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output_module</span><span class="p">,</span>
+            <span class="n">post_processing</span><span class="o">=</span><span class="n">post_utility</span><span class="p">,</span>
+            <span class="n">losses</span><span class="o">=</span><span class="n">losses</span><span class="p">,</span>
+            <span class="n">validation_metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">lr_decay</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_decay</span><span class="p">,</span>
+            <span class="n">lr_patience</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_patience</span>
+            <span class="p">)</span>   
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="c1"># 否则，初始化一个新模型用于从头训练或断点续训</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+            <span class="n">representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output_module</span><span class="p">,</span>
+            <span class="n">post_processing</span><span class="o">=</span><span class="n">post_utility</span><span class="p">,</span>
+            <span class="n">losses</span><span class="o">=</span><span class="n">losses</span><span class="p">,</span>
+            <span class="n">validation_metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">lr_decay</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_decay</span><span class="p">,</span>
+            <span class="n">lr_patience</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_patience</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 计算并打印模型的可训练参数数量</span>
+        <span class="n">model_parameters</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model_parameters</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The model you built has </span><span class="si">%d</span><span class="s2"> parameters.&quot;</span> <span class="o">%</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># 配置 PyTorch Lightning 的回调函数</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">pl</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">LearningRateMonitor</span><span class="p">(),</span>  <span class="c1"># 监控并记录学习率</span>
+            <span class="n">pl</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>  <span class="c1"># 在验证损失不再改善时提前终止训练</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;training/total_loss&quot;</span><span class="p">,</span>
+                <span class="n">patience</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">stop_patience</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">pl</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>  <span class="c1"># 在训练过程中保存最佳模型</span>
+                <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{epoch}</span><span class="s2">-</span><span class="si">{val_loss:.6f}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">save_top_k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;validation/total_loss&#39;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># 配置 TensorBoard 日志记录器</span>
+        <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">TensorBoardLogger</span><span class="p">(</span>
+            <span class="n">save_dir</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">profiler_params</span><span class="o">.</span><span class="n">train_dir</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">default_hp_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>    
+
+        <span class="c1"># 初始化并配置 PyTorch Lightning Trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+            <span class="n">gpus</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">num_gpus</span><span class="p">,</span>
+            <span class="n">precision</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">precision</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
+            <span class="n">progress_bar_refresh_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">tb_logger</span><span class="p">,</span>
+            <span class="n">gradient_clip_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">gradient_clip_val</span><span class="p">,</span>
+            <span class="n">max_epochs</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">max_epochs</span><span class="p">,</span>
+            <span class="n">default_root_dir</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">profiler_params</span><span class="o">.</span><span class="n">train_dir</span><span class="p">,</span>
+            <span class="n">min_epochs</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">min_epochs</span><span class="p">,</span>
+            <span class="c1"># 如果 `resume` 为 True, 则从指定的检查点路径恢复训练状态</span>
+            <span class="n">resume_from_checkpoint</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">checkpoint_path</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">resume</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start training.&quot;</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training done.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># --- 评估阶段 (`stage` == &#39;fit&#39; 结束后) ---</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start eval.&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test_dataloader</span><span class="p">())</span>
+        
+        <span class="c1"># 训练和测试结束后，将模型的超参数和对应的性能指标记录到 TensorBoard，便于实验跟踪和比较。</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">get_hparam_dict</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">metric_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> 
+        <span class="k">for</span> <span class="n">result_dict</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">metric_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">result_dict</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">add_hparams</span><span class="p">(</span><span class="n">hparam_dict</span><span class="p">,</span> <span class="n">metric_dict</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eval done.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># --- 预测/测试阶段 (`stage` == &#39;test&#39;) ---</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> 
+        <span class="c1"># 从指定的检查点加载训练好的模型</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">load_from_checkpoint</span><span class="p">(</span><span class="n">checkpoint_path</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">checkpoint_path</span><span class="p">,</span>
+            <span class="n">representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output_module</span><span class="p">,</span>
+            <span class="n">post_processing</span><span class="o">=</span><span class="n">post_utility</span><span class="p">,</span>
+            <span class="n">losses</span><span class="o">=</span><span class="n">losses</span><span class="p">,</span>
+            <span class="n">validation_metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+            <span class="n">lr</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span>
+            <span class="n">lr_decay</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_decay</span><span class="p">,</span>
+            <span class="n">lr_patience</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">optim_params</span><span class="o">.</span><span class="n">lr_patience</span>
+            <span class="p">)</span> 
+        <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">TensorBoardLogger</span><span class="p">(</span>
+            <span class="n">save_dir</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">profiler_params</span><span class="o">.</span><span class="n">train_dir</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">default_hp_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="n">gpus</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">num_gpus</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">precision</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">tb_logger</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HamGNN">
+<a class="viewcode-back" href="../../source/main_entry.html#HamGNN_v_2_0.main.HamGNN">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">HamGNN</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;程序主函数。</span>
+
+<span class="sd">    解析命令行参数，读取配置，设置全局随机种子以保证可复现性，</span>
+<span class="sd">    并调用 `train_and_eval` 启动整个训练或评估流程。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># torch.autograd.set_detect_anomaly(True) # 用于调试，检测并报告反向传播中的数值问题</span>
+    
+    <span class="c1"># 固定全局随机数种子以保证实验的可复现性。</span>
+    <span class="c1"># `seed_everything` 是 PyTorch Lightning 的一个实用函数。</span>
+    <span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="mi">666</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">soft_logo</span><span class="p">)</span>
+    
+    <span class="c1"># --- 命令行参数解析 ---</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Deep Hamiltonian&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to the configuration file (default: config.yaml)&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># --- 配置加载与处理 ---</span>
+    <span class="n">configure</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">(</span><span class="n">config_file_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getfqdn</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">())</span>
+    <span class="n">configure</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span> <span class="c1"># 打印最终使用的配置信息，便于调试��记录</span>
+    
+    <span class="c1"># 根据配置决定是否忽略运行时警告</span>
+    <span class="k">if</span> <span class="n">configure</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">ignore_warnings</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># --- 启动核心流程 ---</span>
+    <span class="n">train_and_eval</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">HamGNN</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
