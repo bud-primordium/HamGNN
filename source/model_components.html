@@ -45,79 +45,35 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">模型通用组件</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#outputs-py">输出模块 (<cite>outputs.py</cite>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#layers-py-e3-layers-py">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.num_features"><code class="docutils literal notranslate"><span class="pre">Embedding.num_features</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.Zmax"><code class="docutils literal notranslate"><span class="pre">Embedding.Zmax</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.electron_config"><code class="docutils literal notranslate"><span class="pre">Embedding.electron_config</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.element_embedding"><code class="docutils literal notranslate"><span class="pre">Embedding.element_embedding</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.config_linear"><code class="docutils literal notranslate"><span class="pre">Embedding.config_linear</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.forward"><code class="docutils literal notranslate"><span class="pre">Embedding.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Embedding.reset_parameters()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">模型通用组件</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-py">输出模块 (<cite>outputs.py</cite>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layers-py-e3-layers-py">层定义 (<cite>layers.py</cite>, <cite>e3_layers.py</cite>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.models.embedding">嵌入模块 (<cite>embedding.py</cite>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.embedding.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.cutoff_function"><code class="docutils literal notranslate"><span class="pre">cutoff_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.shifted_softplus"><code class="docutils literal notranslate"><span class="pre">shifted_softplus()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.softplus_inverse"><code class="docutils literal notranslate"><span class="pre">softplus_inverse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.switch_function"><code class="docutils literal notranslate"><span class="pre">switch_function()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.models.basis">基函数与物理函数 (<cite>basis.py</cite>, <cite>functional.py</cite>)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.logc"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.logc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.n"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.n</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.v"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.v</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.BernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">BernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.num_basis_functions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions._alpha</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.center</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.width</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions._alpha</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.ExponentialGaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">ExponentialGaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.num_basis_functions"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.num_basis_functions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.cutoff"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.center"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.center</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.width"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.width</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions._alpha"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions._alpha</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.GaussianRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">GaussianRadialBasisFunctions.reset_parameters()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.forward"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.models.basis.OverlapBernsteinRadialBasisFunctions.reset_parameters"><code class="docutils literal notranslate"><span class="pre">OverlapBernsteinRadialBasisFunctions.reset_parameters()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.cutoff_function"><code class="docutils literal notranslate"><span class="pre">cutoff_function()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.shifted_softplus"><code class="docutils literal notranslate"><span class="pre">shifted_softplus()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.softplus_inverse"><code class="docutils literal notranslate"><span class="pre">softplus_inverse()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.models.functional.switch_function"><code class="docutils literal notranslate"><span class="pre">switch_function()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="data_processing.html">数据处理与输入</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -134,6 +90,7 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">模型通用组件</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/model_components.rst.txt" rel="nofollow"> 查看页面源码</a>

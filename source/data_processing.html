@@ -45,32 +45,29 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
               <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">数据处理与输入</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="core.html">HamGNN 中文文档</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="main_entry.html">主程序入口</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_structure.html">模型顶层结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnn_core.html">GNN 核心层</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model_components.html">模型通用组件</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">数据处理与输入</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.graph_data">图数据模块 (<cite>graph_data.py</cite>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-HamGNN_v_2_0.GraphData.data_parsing">数据解析 (<cite>data_parsing.py</cite>)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#HamGNN_v_2_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-parsing-py">配置解析 (<cite>config_parsing.py</cite>)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#config-parsing-py">配置解析 (<cite>config_parsing.py</cite>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">通用工具函数</a></li>
 </ul>
 
         </div>
@@ -87,6 +84,7 @@
           <div role="navigation" aria-label="页面导航">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="core.html">HamGNN 中文文档</a></li>
       <li class="breadcrumb-item active">数据处理与输入</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/data_processing.rst.txt" rel="nofollow"> 查看页面源码</a>
