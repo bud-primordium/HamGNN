@@ -10,5 +10,10 @@
    :maxdepth: 2
    :caption: API 文档
 
-   source/core
+   source/main_entry
+   source/model_structure
+   source/gnn_core
+   source/model_components
+   source/data_processing
+   source/utilities
 
