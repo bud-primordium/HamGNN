@@ -40,3 +40,22 @@ intersphinx_mapping = {
     'torch': ('https://pytorch.org/docs/stable/', None),
     'pytorch_lightning': ('https://lightning.ai/docs/pytorch/stable/', None),
 }
+
+# -- Custom event handler to skip specific headers -----------------------------
+
+def remove_custom_header(app, what, name, obj, options, lines):
+    """
+    在 Sphinx 处理文档字符串时被调用，用于移除特定的文件头部。
+    """
+    header_signature = "Descripttion:"
+    
+    # 检查文档字符串的第一行是否包含我们的头部标记
+    if lines and header_signature in lines[0]:
+        # 如果是，就清空整个文档字符串列表，使其不被渲染
+        lines.clear()
+
+def setup(app):
+    """
+    将我们的自定义处理器注册到 Sphinx 的事件管理器中。
+    """
+    app.connect('autodoc-process-docstring', remove_custom_header)
