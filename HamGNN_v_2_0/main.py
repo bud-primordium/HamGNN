@@ -82,7 +82,7 @@ def prepare_data(config):
     graph_data = graph_data['graph'].item()
     graph_dataset = list(graph_data.values())
 
-    # 初始化数据模块���它将处理数据集的划分、加载和批处理
+    # 初始化数据模块,它将处理数据集的划分、加载和批处理
     graph_dataset = graph_data_module(graph_dataset, train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio, 
                                         batch_size=batch_size, split_file=split_file)
     # 根据当前阶段（如 'fit' 或 'test'）设置数据模块
