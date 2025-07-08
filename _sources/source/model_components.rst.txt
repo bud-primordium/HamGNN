@@ -9,13 +9,10 @@
 .. automodule:: HamGNN_v_2_0.models.outputs
    :members:
 
-层定义 (`layers.py`, `e3_layers.py`)
--------------------------------------
+层定义 (`layers.py`)
+---------------------
 
 .. automodule:: HamGNN_v_2_0.models.layers
-   :members:
-
-.. automodule:: HamGNN_v_2_0.models.e3_layers
    :members:
 
 嵌入模块 (`embedding.py`)
