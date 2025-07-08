@@ -47,12 +47,24 @@ def remove_custom_header(app, what, name, obj, options, lines):
     """
     在 Sphinx 处理文档字符串时被调用，用于移除特定的文件头部。
     """
-    header_signature = "Descripttion:"
+    # 定义一个元组，包含所有需要被识别和移除的头部“指纹”
+    header_signatures = (
+        "Descripttion:",
+        "/*",
+        "@Author:"
+    )
     
-    # 检查文档字符串的第一行是否包含我们的头部标记
-    if lines and header_signature in lines[0]:
-        # 如果是，就清空整个文档字符串列表，使其不被渲染
-        lines.clear()
+    if not lines:
+        return
+
+    # 检查前几行内容是否包含任何一个“指纹”
+    # 我们将前5行拼接起来检查，以应对各种格式
+    docstring_head = "".join(lines[:5])
+    for signature in header_signatures:
+        if signature in docstring_head:
+            lines.clear()
+            # 一旦匹配成功，就清空并立即返回
+            return
 
 def setup(app):
     """
