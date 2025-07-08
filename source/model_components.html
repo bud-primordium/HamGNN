@@ -235,16 +235,6 @@
 <p>本部分包含组成 HamGNN 模型的各种通用组件。</p>
 <section id="module-HamGNN_v_2_0.models.outputs">
 <span id="outputs-py"></span><h2>输出模块 (<cite>outputs.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.outputs" title="Link to this heading"></a></h2>
-<p>/*
-* &#64;Author: Yang Zhong
-* &#64;Date: 2021-10-08 22:38:15</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>&#64;Last Modified by: Yang Zhong</p></li>
-<li><p>&#64;Last Modified time: 2021-11-07 10:54:51</p></li>
-</ul>
-</div></blockquote>
-<p><a href="#id2"><span class="problematic" id="id3">*</span></a>/</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="HamGNN_v_2_0.models.outputs.Born">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.outputs.</span></span><span class="sig-name descname"><span class="pre">Born</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_node_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_edge_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_triplet_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Softplus(beta=1,</span> <span class="pre">threshold=20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bath_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_triplet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_minus_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/outputs.html#Born"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.outputs.Born" title="Link to this definition"></a></dt>
@@ -587,16 +577,6 @@ EPC 矩阵描述了电子与晶格振动（声子）之间的相互作用强度�
 </section>
 <section id="module-HamGNN_v_2_0.models.layers">
 <span id="layers-py"></span><h2>层定义 (<cite>layers.py</cite>)<a class="headerlink" href="#module-HamGNN_v_2_0.models.layers" title="Link to this heading"></a></h2>
-<dl>
-<dt>/*</dt><dd><ul class="simple">
-<li><p>&#64;Author: Yang Zhong</p></li>
-<li><p>&#64;Date: 2021-10-09 10:18:50</p></li>
-<li><p>&#64;Last Modified by: Yang Zhong</p></li>
-<li><p>&#64;Last Modified time: 2021-10-28 20:19:52</p></li>
-</ul>
-<p><a href="#id4"><span class="problematic" id="id5">*</span></a>/</p>
-</dd>
-</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="HamGNN_v_2_0.models.layers.BesselBasis">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HamGNN_v_2_0.models.layers.</span></span><span class="sig-name descname"><span class="pre">BesselBasis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_rbf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HamGNN_v_2_0/models/layers.html#BesselBasis"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#HamGNN_v_2_0.models.layers.BesselBasis" title="Link to this definition"></a></dt>
