@@ -95,7 +95,7 @@ class Embedding_block_q(GraphModuleMixin, torch.nn.Module):
         
         # embed the charge attr
         if self.apply_charge_doping:
-            q_num = data.doping_charge.long() + 9 # 假设背景电荷只取-5到5之间
+            q_num = data['doping_charge'].long() + 9 # 假设背景电荷只取-5到5之间
             q_attrs = self.emb_q(q_num)
             node_attrs = self.mlp_node(node_attrs) + self.mlp_q(q_attrs)
         
