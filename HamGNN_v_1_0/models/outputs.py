@@ -264,9 +264,13 @@ class scalar(nn.Module):
         if self.classification:
             crys_fea = self.dropout(crys_fea)
 
-        if hasattr(self, 'fcs') and hasattr(self, 'softpluses'):
-            for fc, softplus in zip(self.fcs, self.softpluses):
+        try:
+            fcs = self.fcs
+            softpluses = self.softpluses
+            for fc, softplus in zip(fcs, softpluses):
                 crys_fea = softplus(fc(crys_fea))
+        except AttributeError:
+            pass
 
         out = self.fc_out(crys_fea)
         if self.aggr.lower() == 'max':

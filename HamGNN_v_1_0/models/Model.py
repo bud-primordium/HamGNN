@@ -77,9 +77,9 @@ class Model(pl.LightningModule):
                 loss_i = loss_fn(result[loss_dict["prediction"]])
             loss += loss_dict["loss_weight"] * loss_i
 
-            if hasattr(loss_fn, "name"):
+            try:
                 lossname = loss_fn.name
-            else:
+            except AttributeError:
                 lossname = type(loss_fn).__name__.split(".")[-1]
 
             self.log(
@@ -245,9 +245,9 @@ class Model(pl.LightningModule):
                 loss_i = loss_fn(
                     result[metric_dict["prediction"]]).detach().item()
 
-            if hasattr(loss_fn, "name"):
+            try:
                 lossname = loss_fn.name
-            else:
+            except AttributeError:
                 lossname = type(loss_fn).__name__.split(".")[-1]
 
             self.log(

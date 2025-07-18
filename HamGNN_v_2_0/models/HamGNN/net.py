@@ -1402,11 +1402,18 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             torch.Tensor: 索引调整后的哈密顿量。
         """
-        if self.index_change is not None or hasattr(self, 'minus_index'):
+        has_minus_index = False
+        try:
+            _ = self.minus_index
+            has_minus_index = True
+        except AttributeError:
+            pass
+        
+        if self.index_change is not None or has_minus_index:
             hamiltonian = hamiltonian.reshape(-1, self.nao_max, self.nao_max)   
             if self.index_change is not None:
                 hamiltonian = hamiltonian[:, self.index_change[:,None], self.index_change[None,:]] 
-            if hasattr(self, 'minus_index'):
+            if has_minus_index:
                 # 对某些 m!=0 的轨道乘以 -1，以匹配 siesta 等软件的 Condon-Shortley 相位约定
                 hamiltonian[:,self.minus_index,:] = -hamiltonian[:,self.minus_index,:]
                 hamiltonian[:,:,self.minus_index] = -hamiltonian[:,:,self.minus_index]

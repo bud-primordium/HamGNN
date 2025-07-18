@@ -139,9 +139,9 @@ class Model(pl.LightningModule):
             loss += loss_dict["loss_weight"] * loss_i
 
             # 获取损失函数的名称用于日志记录
-            if hasattr(loss_fn, "name"):
+            try:
                 lossname = loss_fn.name
-            else:
+            except AttributeError:
                 lossname = type(loss_fn).__name__.split(".")[-1]
 
             # 记录单个损失项
@@ -385,9 +385,9 @@ class Model(pl.LightningModule):
                 loss_i = loss_fn(
                     result[metric_dict["prediction"]]).detach().item()
 
-            if hasattr(loss_fn, "name"):
+            try:
                 lossname = loss_fn.name
-            else:
+            except AttributeError:
                 lossname = type(loss_fn).__name__.split(".")[-1]
 
             self.log(

@@ -117,9 +117,9 @@ class Batch(Data):
                             torch.full((size,), i, dtype=torch.long, device=device)
                         )
 
-            if hasattr(data, "__num_nodes__"):
-                num_nodes_list.append(data.__num_nodes__)
-            else:
+            try:
+                num_nodes_list.append(data["__num_nodes__"])
+            except KeyError:
                 num_nodes_list.append(None)
 
             num_nodes = data['num_nodes']

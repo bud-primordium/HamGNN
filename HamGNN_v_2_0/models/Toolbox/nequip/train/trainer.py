@@ -432,12 +432,15 @@ class Trainer:
                 use_num_updates=self.ema_use_num_updates,
             )
 
-        if hasattr(self.model, "irreps_out"):
+        try:
+            irreps_out = self.model.irreps_out
             for key in self.train_on_keys:
-                if key not in self.model.irreps_out:
+                if key not in irreps_out:
                     raise RuntimeError(
-                        f"Loss function include fields {key} that are not predicted by the model {self.model.irreps_out}"
+                        f"Loss function include fields {key} that are not predicted by the model {irreps_out}"
                     )
+        except AttributeError:
+            pass
 
     @property
     def init_keys(self):
@@ -515,8 +518,11 @@ class Trainer:
             dictionary["progress"]["best_model_path"] = self.best_model_path
             dictionary["progress"]["last_model_path"] = self.last_model_path
             dictionary["progress"]["trainer_save_path"] = self.trainer_save_path
-            if hasattr(self, "config_save_path"):
-                dictionary["progress"]["config_save_path"] = self.config_save_path
+            try:
+                config_save_path = self.config_save_path
+                dictionary["progress"]["config_save_path"] = config_save_path
+            except AttributeError:
+                pass
 
         return dictionary
 
@@ -707,9 +713,15 @@ class Trainer:
 
         self.rescale_layers = []
         outer_layer = self.model
-        while hasattr(outer_layer, "unscale"):
-            self.rescale_layers.append(outer_layer)
-            outer_layer = getattr(outer_layer, "model", None)
+        while True:
+            try:
+                _ = outer_layer.unscale
+                self.rescale_layers.append(outer_layer)
+                outer_layer = getattr(outer_layer, "model", None)
+                if outer_layer is None:
+                    break
+            except AttributeError:
+                break
 
         self.init_objects()
 
@@ -862,9 +874,15 @@ class Trainer:
     def stop_cond(self):
         """kill the training early"""
 
-        if self.early_stopping_conds is not None and hasattr(self, "mae_dict"):
+        try:
+            mae_dict = self.mae_dict
+            has_mae_dict = True
+        except AttributeError:
+            has_mae_dict = False
+        
+        if self.early_stopping_conds is not None and has_mae_dict:
             early_stop, early_stop_args, debug_args = self.early_stopping_conds(
-                self.mae_dict
+                mae_dict
             )
             if debug_args is not None:
                 self.logger.debug(debug_args)

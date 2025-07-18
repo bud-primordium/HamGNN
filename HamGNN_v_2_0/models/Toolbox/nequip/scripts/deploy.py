@@ -94,8 +94,13 @@ def load_deployed_model(
     # Make sure we're in eval mode
     model.eval()
     # Freeze on load:
-    if freeze and hasattr(model, "training"):
-        # hasattr is how torch checks whether model is unfrozen
+    try:
+        has_training = model.training is not None
+    except AttributeError:
+        has_training = False
+    
+    if freeze and has_training:
+        # has_training is how torch checks whether model is unfrozen
         # only freeze if already unfrozen
         model = torch.jit.freeze(model)
     # Everything we store right now is ASCII, so decode for printing

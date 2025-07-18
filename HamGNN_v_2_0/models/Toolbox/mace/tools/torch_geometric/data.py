@@ -210,14 +210,20 @@ class Data(object):
             explicitly via :obj:`data.num_nodes = ...`.
             You will be given a warning that requests you to do so.
         """
-        if hasattr(self, "__num_nodes__"):
-            return self.__num_nodes__
+        try:
+            return self["__num_nodes__"]
+        except KeyError:
+            pass
         for key, item in self("x", "pos", "normal", "batch"):
             return item.size(self.__cat_dim__(key, item))
-        if hasattr(self, "adj"):
-            return self.adj.size(0)
-        if hasattr(self, "adj_t"):
-            return self.adj_t.size(1)
+        try:
+            return self['adj'].size(0)
+        except KeyError:
+            pass
+        try:
+            return self['adj_t'].size(1)
+        except KeyError:
+            pass
         # if self.face is not None:
         #     logging.warning(__num_nodes_warn_msg__.format("face"))
         #     return maybe_num_nodes(self.face)

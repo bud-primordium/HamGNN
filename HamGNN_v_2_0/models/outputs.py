@@ -463,9 +463,13 @@ class scalar(nn.Module):
             crys_fea = self.dropout(crys_fea)
 
         # 步骤 2: MLP
-        if hasattr(self, 'fcs') and hasattr(self, 'softpluses'):
-            for fc, softplus in zip(self.fcs, self.softpluses):
+        try:
+            fcs = self.fcs
+            softpluses = self.softpluses
+            for fc, softplus in zip(fcs, softpluses):
                 crys_fea = softplus(fc(crys_fea))
+        except AttributeError:
+            pass
 
         # 步骤 3: 输出层
         out = self.fc_out(crys_fea)

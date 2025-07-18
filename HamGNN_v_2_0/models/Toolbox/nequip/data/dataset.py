@@ -147,11 +147,13 @@ class AtomicInMemoryDataset(AtomicDataset):
             # the type mapper is applied after saving, not before, so doesn't matter to cache validity
             "type_mapper"
         }
-        params = {
-            k: getattr(self, k)
-            for k in pnames
-            if k not in IGNORE_KEYS and hasattr(self, k)
-        }
+        params = {}
+        for k in pnames:
+            if k not in IGNORE_KEYS:
+                try:
+                    params[k] = getattr(self, k)
+                except AttributeError:
+                    pass
         # Add other relevant metadata:
         params["dtype"] = str(torch.get_default_dtype())
         #params["nequip_version"] = nequip.__version__
@@ -194,7 +196,12 @@ class AtomicInMemoryDataset(AtomicDataset):
         raise NotImplementedError
 
     def download(self):
-        if (not hasattr(self, "url")) or (self.url is None):
+        try:
+            has_url = self.url is not None
+        except AttributeError:
+            has_url = False
+        
+        if not has_url:
             # Don't download, assume present. Later could have FileNotFound if the files don't actually exist
             pass
         else:

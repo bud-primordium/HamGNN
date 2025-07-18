@@ -133,9 +133,11 @@ class LossStat:
         self.ignore_nan = {}
         if loss_instance is not None:
             for key, func in loss_instance.funcs.items():
-                self.ignore_nan[key] = (
-                    func.ignore_nan if hasattr(func, "ignore_nan") else False
-                )
+                try:
+                    ignore_nan = func.ignore_nan
+                except AttributeError:
+                    ignore_nan = False
+                self.ignore_nan[key] = ignore_nan
 
     def __call__(self, loss, loss_contrib):
         """

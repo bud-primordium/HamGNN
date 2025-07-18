@@ -32,8 +32,13 @@ class Collater:
             return batch
         elif isinstance(elem, Mapping):
             return {key: self([data[key] for data in batch]) for key in elem}
-        elif isinstance(elem, tuple) and hasattr(elem, "_fields"):
-            return type(elem)(*(self(s) for s in zip(*batch)))
+        elif isinstance(elem, tuple):
+            try:
+                _ = elem._fields
+                return type(elem)(*(self(s) for s in zip(*batch)))
+            except AttributeError:
+                # Regular tuple without _fields
+                return tuple(self(s) for s in zip(*batch))
         elif isinstance(elem, Sequence) and not isinstance(elem, str):
             return [self(s) for s in zip(*batch)]
 
