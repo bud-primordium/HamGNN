@@ -717,7 +717,11 @@ class Trainer:
             try:
                 _ = outer_layer.unscale
                 self.rescale_layers.append(outer_layer)
-                outer_layer = getattr(outer_layer, "model", None)
+                # TorchScript兼容的属性访问
+                if hasattr(outer_layer, "model"):
+                    outer_layer = outer_layer.model
+                else:
+                    outer_layer = None
                 if outer_layer is None:
                     break
             except AttributeError:
@@ -756,7 +760,7 @@ class Trainer:
     def train(self):
 
         """Training"""
-        if getattr(self, "dl_train", None) is None:
+        if not hasattr(self, "dl_train") or self.dl_train is None:
             raise RuntimeError("You must call `set_dataset()` before calling `train()`")
         if not self._initialized:
             self.init()

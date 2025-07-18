@@ -124,7 +124,8 @@ class Data(object):
 
     def __getitem__(self, key):
         r"""Gets the data of the attribute :obj:`key`."""
-        return getattr(self, key, None)
+        # 使用字典访问替代getattr，以支持TorchScript
+        return self.__dict__.get(key, None)
 
     def __setitem__(self, key, value):
         """Sets the attribute :obj:`key` to :obj:`value`."""

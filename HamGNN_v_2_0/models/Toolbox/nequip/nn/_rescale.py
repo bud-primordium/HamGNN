@@ -122,11 +122,13 @@ class RescaleOutput(GraphModuleMixin, torch.nn.Module):
         # Note that .modules() walks the full tree, including self
         for mod in self.get_inner_model().modules():
             if isinstance(mod, GraphModuleMixin):
-                callback = getattr(mod, "update_for_rescale", None)
-                if callable(callback):
-                    # It gets the `RescaleOutput` as an argument,
-                    # since that contains all relevant information
-                    callback(self)
+                # TorchScript兼容的属性检查和调用
+                if hasattr(mod, "update_for_rescale"):
+                    callback = mod.update_for_rescale
+                    if callable(callback):
+                        # It gets the `RescaleOutput` as an argument,
+                        # since that contains all relevant information
+                        callback(self)
 
     def get_inner_model(self):
         """Get the outermost child module that is not another ``RescaleOutput``"""

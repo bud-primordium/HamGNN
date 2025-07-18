@@ -255,10 +255,19 @@ class OverlapExpand(nn.Module):
         return data
 
 @compile_mode("script")
+class TensorWrapper(nn.Module):
+    """包装张量以便在ModuleDict中使用，确保TorchScript兼容性"""
+    def __init__(self, tensor: torch.Tensor):
+        super().__init__()
+        # 将张量注册为buffer，自动处理设备移动
+        self.register_buffer('data', tensor)
+
 class ClebschGordanCoefficients(nn.Module):
     """
     A PyTorch module for pre-computing and storing Clebsch-Gordan coefficients,
     which can then be accessed during the forward pass.
+    
+    使用ModuleDict存储系数以确保TorchScript兼容性，避免使用getattr()动态属性访问。
     """
 
     def __init__(self, max_l=8):
@@ -268,13 +277,17 @@ class ClebschGordanCoefficients(nn.Module):
         :param max_l: Maximum angular momentum value for which to compute coefficients.
         """
         super().__init__()
+        
+        # 使用ModuleDict存储CG系数，这是TorchScript友好的
+        self.coefficients = nn.ModuleDict()
 
         # Pre-compute and store all necessary Clebsch-Gordan coefficients
         for l1 in range(max_l + 1):
             for l2 in range(max_l + 1):
                 for l3 in range(abs(l1 - l2), l1 + l2 + 1):
                     buffer_name = f'cg_{l1}_{l2}_{l3}'
-                    self.register_buffer(buffer_name, o3.wigner_3j(l1, l2, l3))
+                    # 使用TensorWrapper包装张量以便在ModuleDict中存储
+                    self.coefficients[buffer_name] = TensorWrapper(o3.wigner_3j(l1, l2, l3))
 
     def forward(self, l1, l2, l3):
         """
@@ -286,7 +299,8 @@ class ClebschGordanCoefficients(nn.Module):
         :return: The Clebsch-Gordan coefficient tensor.
         """
         buffer_name = f'cg_{l1}_{l2}_{l3}'
-        return getattr(self, buffer_name)
+        # 通过ModuleDict访问，避免使用getattr()
+        return self.coefficients[buffer_name].data
 
 @compile_mode("script")
 class LinearScaleWithWeights(nn.Module):

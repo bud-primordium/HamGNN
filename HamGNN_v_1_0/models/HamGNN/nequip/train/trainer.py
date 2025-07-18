@@ -717,7 +717,11 @@ class Trainer:
             try:
                 _ = outer_layer.unscale
                 self.rescale_layers.append(outer_layer)
-                outer_layer = getattr(outer_layer, "model", None)
+                # TorchScript兼容的属性访问
+                if hasattr(outer_layer, "model"):
+                    outer_layer = outer_layer.model
+                else:
+                    outer_layer = None
                 if outer_layer is None:
                     break
             except AttributeError:

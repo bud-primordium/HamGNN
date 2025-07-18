@@ -472,12 +472,13 @@ class AtomicData(Data):
                 "AtomicData.to_ase(): self didn't contain atomic numbers... using atom_type as atomic numbers instead, but this means the chemical symbols in ASE (outputs) will be wrong"
             )
             atomic_nums = self[AtomicDataDict.ATOM_TYPE_KEY]
-        pbc = getattr(self, AtomicDataDict.PBC_KEY, None)
-        cell = getattr(self, AtomicDataDict.CELL_KEY, None)
-        batch = getattr(self, AtomicDataDict.BATCH_KEY, None)
-        energy = getattr(self, AtomicDataDict.TOTAL_ENERGY_KEY, None)
-        energies = getattr(self, AtomicDataDict.PER_ATOM_ENERGY_KEY, None)
-        force = getattr(self, AtomicDataDict.FORCE_KEY, None)
+        # 使用字典访问替代getattr，以支持TorchScript
+        pbc = self.get(AtomicDataDict.PBC_KEY, None)
+        cell = self.get(AtomicDataDict.CELL_KEY, None)
+        batch = self.get(AtomicDataDict.BATCH_KEY, None)
+        energy = self.get(AtomicDataDict.TOTAL_ENERGY_KEY, None)
+        energies = self.get(AtomicDataDict.PER_ATOM_ENERGY_KEY, None)
+        force = self.get(AtomicDataDict.FORCE_KEY, None)
         do_calc = energy is not None or force is not None
 
         # exclude those that are special for ASE and that we process seperately
