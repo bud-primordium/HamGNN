@@ -267,7 +267,8 @@ class ClebschGordanCoefficients(nn.Module):
     A PyTorch module for pre-computing and storing Clebsch-Gordan coefficients,
     which can then be accessed during the forward pass.
     
-    使用ModuleDict存储系数以确保TorchScript兼容性，避免使用getattr()动态属性访问。
+    此版本经过重构，以实现完整的JIT兼容性和新旧模型双向兼容。
+    所有兼容性逻辑都被封装在此类内部，对外部代码完全透明。
     """
 
     def __init__(self, max_l=8):
@@ -301,6 +302,46 @@ class ClebschGordanCoefficients(nn.Module):
         buffer_name = f'cg_{l1}_{l2}_{l3}'
         # 通过ModuleDict访问，避免使用getattr()
         return self.coefficients[buffer_name].data
+
+    def state_dict(self, *args, **kwargs):
+        """
+        在保存时，将内部的嵌套键名伪装成旧版的平铺键名，以确保向前兼容。
+        """
+        original_dict = super().state_dict(*args, **kwargs)
+        prefix = kwargs.get('prefix', '')
+        new_dict = OrderedDict()
+        
+        for key, value in original_dict.items():
+            stripped_key = key[len(prefix):]
+            if stripped_key.startswith('coefficients.') and stripped_key.endswith('.data'):
+                # 'coefficients.cg_0_1_1.data' -> 'cg_0_1_1'
+                new_key_part = stripped_key.replace('coefficients.', '').replace('.data', '')
+                new_dict[prefix + new_key_part] = value
+            else:
+                new_dict[key] = value
+        return new_dict
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
+                              missing_keys, unexpected_keys, error_msgs):
+        """
+        在加载时，能自动识别旧版的平铺键名，并将其无缝转换为新版内部所需的嵌套格式。
+        *** 这是解决问题的关键 ***
+        """
+        # 查找所有属于此模块的、且是旧格式的键
+        keys_to_remap = [
+            k for k in state_dict 
+            if k.startswith(prefix) and 'cg_' in k and not k.startswith(prefix + 'coefficients.')
+        ]
+        
+        for old_key in keys_to_remap:
+            cg_part = old_key[len(prefix):]
+            if cg_part.startswith('cg_'):
+                # 'cg_0_1_1' -> 'coefficients.cg_0_1_1.data'
+                new_key = prefix + 'coefficients.' + cg_part + '.data'
+                state_dict[new_key] = state_dict.pop(old_key)
+        
+        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict,
+                                      missing_keys, unexpected_keys, error_msgs)
 
 @compile_mode("script")
 class LinearScaleWithWeights(nn.Module):
