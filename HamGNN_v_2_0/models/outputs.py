@@ -59,9 +59,9 @@ class Force(nn.Module):
             dict: 包含计算出的原子受力 `force` 的字典。
         """
         edge_attr = graph_representation['edge_attr']  # 边特征张量mji
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         # 计算从原子 j 指向原子 i 的方向矢量 (考虑周期性边界条件)
         edge_dir = (pos[i]+nbr_shift) - pos[j] # j->i: ri - rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
@@ -169,12 +169,12 @@ class Born(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
             idx_i, idx_j, idx_k, idx_kj, idx_ji = graph_representation['triplet_index']
-        pos = data.pos
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j] # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji 形状(N_edges, 3)
@@ -204,7 +204,7 @@ class Born(nn.Module):
         
         # 可选：减去批次均值以满足某些约束
         if self.l_minus_mean:
-            born_tensor = born_tensor - global_mean_pool(born_tensor, data.batch)[data.batch]
+            born_tensor = born_tensor - global_mean_pool(born_tensor, data['batch'])[data['batch']]
         return born_tensor # 形状 (N_nodes, 9)
 
 class Born_node_vec(nn.Module):
@@ -265,9 +265,9 @@ class piezoelectric(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)
@@ -279,7 +279,7 @@ class piezoelectric(nn.Module):
             edge_attr) * dyad_ji_ji_ji  # mji*eji@eji@eji
         pz_tensor_atom = scatter(temp_sym, i, dim=0)
 
-        pz_tensor = global_mean_pool(pz_tensor_atom, data.batch)
+        pz_tensor = global_mean_pool(pz_tensor_atom, data['batch'])
         return pz_tensor  # shape (N, 27)
 """
 
@@ -329,12 +329,12 @@ class piezoelectric(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # m_ji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
             idx_i, idx_j, idx_k, idx_kj, idx_ji = graph_representation['triplet_index']
-        pos = data.pos
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # e_ji 形状(N_edges, 3)
@@ -367,7 +367,7 @@ class piezoelectric(nn.Module):
         else:
             pzt = pzt_sym
         # 对一个晶格内的所有原子贡献进行平均池化，得到晶体的压电张量
-        pzt = global_mean_pool(pzt, data.batch)
+        pzt = global_mean_pool(pzt, data['batch'])
         return {'piezoelectric': pzt}  # 形状 (N_batch, 27)
 
 class trivial_scalar(nn.Module):
@@ -396,11 +396,11 @@ class trivial_scalar(nn.Module):
             dict: 包含预测标量 `scalar` 的字典。
         """
         if self.aggr == 'mean':
-            x = global_mean_pool(graph_representation['node_attr'], data.batch)
+            x = global_mean_pool(graph_representation['node_attr'], data['batch'])
         elif self.aggr == 'sum' or self.aggr == 'add':
-            x = global_add_pool(graph_representation['node_attr'], data.batch)
+            x = global_add_pool(graph_representation['node_attr'], data['batch'])
         elif self.aggr == 'max':
-            x = global_max_pool(graph_representation['node_attr'], data.batch)
+            x = global_max_pool(graph_representation['node_attr'], data['batch'])
         else:
             raise ValueError(f"不支持的聚合类型: {self.aggr}")
         return {'scalar': x.view(-1)}
@@ -450,9 +450,9 @@ class scalar(nn.Module):
         """
         # 步骤 1: 全局池化
         if self.aggr.lower() == 'mean':
-            crys_fea = global_mean_pool(graph_representation['node_attr'], data.batch)
+            crys_fea = global_mean_pool(graph_representation['node_attr'], data['batch'])
         elif self.aggr.lower() == 'sum':
-            crys_fea = global_add_pool(graph_representation['node_attr'], data.batch)
+            crys_fea = global_add_pool(graph_representation['node_attr'], data['batch'])
         elif self.aggr.lower() == 'max':
             # 对于 'max' 池化，MLP 在池化之前应用
             crys_fea = graph_representation['node_attr']
@@ -471,7 +471,7 @@ class scalar(nn.Module):
         out = self.fc_out(crys_fea)
         if self.aggr.lower() == 'max':
             # 在 MLP 之后应用最大池化
-            out = global_max_pool(out, data.batch)
+            out = global_max_pool(out, data['batch'])
         
         if self.classification:
             out = self.logsoftmax(out)
@@ -512,7 +512,7 @@ class crystal_tensor(nn.Module):
         if self.l_pred_atomwise_tensor:
             return {'atomic_tensor': atom_tensors}
         else:
-            output = global_mean_pool(atom_tensors, data.batch)
+            output = global_mean_pool(atom_tensors, data['batch'])
             return {'crystal_tensor': output}
 
 class total_energy_and_atomic_forces(nn.Module):
@@ -531,7 +531,7 @@ class total_energy_and_atomic_forces(nn.Module):
             derivative (bool, optional): 是否计算力的解析导数。默认为 `False`。
         """
         super().__init__()
-        self.derivative = derivative # 在模型中设置 data.pos 的梯度
+        self.derivative = derivative # 在模型中设置 data['pos'] 的梯度
         #self.energy = scalar(aggr='sum', classification=False, num_node_features=num_node_features, n_h=n_h, activation=activation)
 
         self.atom_regression = denseRegression(in_features=num_node_features, out_features=1, bias=True,
@@ -551,10 +551,10 @@ class total_energy_and_atomic_forces(nn.Module):
         # 计算每个原子的能量贡献
         atomic_energy = self.atom_regression(graph_representation['node_attr'])
         # 对一个晶格内的所有原子能量求和，得到总能量
-        energy = global_add_pool(atomic_energy, data.batch).reshape(-1)
+        energy = global_add_pool(atomic_energy, data['batch']).reshape(-1)
         if self.derivative:
             # 通过自动微分计算力
-            forces = -torch.autograd.grad(energy, data.pos,
+            forces = -torch.autograd.grad(energy, data['pos'],
                                         grad_outputs=torch.ones_like(energy),
                                         create_graph=self.training)[0]
         else:
@@ -612,13 +612,13 @@ class EPC_output:
             dict: 一个包含哈密顿量 `hamiltonian` 和 EPC 矩阵 `epc_mat` 的字典。
                   `epc_mat` 的形状为 [N_batch, n_k, n_bands, n_bands, n_atoms, 3]。
         """
-        Nbatch = data.cell.shape[0]
+        Nbatch = data['cell'].shape[0]
         # 约束：批处理中每个晶体的原子数必须相同
-        natoms = int(len(data.z)/Nbatch)
+        natoms = int(len(data['z'])/Nbatch)
         
         # --- 步骤 1: 构建轨道到原子的索引映射 (orb2atom_idx) ---
         # 这个索引将每个原子轨道映射到其所属原子的索引。
-        atomic_nums = data.z.view(-1, natoms) # shape: [Nbatch, natoms]
+        atomic_nums = data['z'].view(-1, natoms) # shape: [Nbatch, natoms]
         orb2atom_idx  = []
         for ib in range(Nbatch):
             # 根据每个原子的类型，从基组定义中获取其轨道数量
@@ -637,7 +637,7 @@ class EPC_output:
         
         def wrapper(pos: torch.Tensor) -> torch.Tensor:
             nonlocal data, HK, SK, wavefunction, hamiltonian, dSK
-            data.pos = pos
+            data['pos'] = pos
             graph_representation = self.representation(data)
             out = self.output(data, graph_representation)
             # 在前向传播过程中，保存所有需要的中间结果
@@ -648,7 +648,7 @@ class EPC_output:
         with torch.autograd.detect_anomaly():          
             # 核心计算：自动微分得到雅可比矩阵 d(HK)/d(pos)
             # nabla_HK 形状: [Nbatch, num_k, norbs, norbs, natoms, 3]
-            nabla_HK = torch.autograd.functional.jacobian(func=wrapper, inputs=data.pos, create_graph=False, vectorize=False)
+            nabla_HK = torch.autograd.functional.jacobian(func=wrapper, inputs=data['pos'], create_graph=False, vectorize=False)
 
         # --- 步骤 3: 计算 EPC 矩阵元素 ---
         # EPC 矩阵 g_{mn} = <ψ_m| dH/dR |ψ_n>

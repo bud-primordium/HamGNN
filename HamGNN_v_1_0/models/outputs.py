@@ -29,9 +29,9 @@ class Force(nn.Module):
 
     def forward(self, data, graph_representation: dict = None):
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j] # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)
@@ -80,12 +80,12 @@ class Born(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
             idx_i, idx_j, idx_k, idx_kj, idx_ji = graph_representation['triplet_index']
-        pos = data.pos
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j] # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)
@@ -106,7 +106,7 @@ class Born(nn.Module):
         else:
             born_tensor = born_tensor_sym
         if self.l_minus_mean:
-            born_tensor = born_tensor - global_mean_pool(born_tensor, data.batch)[data.batch]
+            born_tensor = born_tensor - global_mean_pool(born_tensor, data['batch'])[data['batch']]
         return born_tensor # shape (N_nodes, 9)
 
 class Born_node_vec(nn.Module):
@@ -143,9 +143,9 @@ class piezoelectric(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)
@@ -157,7 +157,7 @@ class piezoelectric(nn.Module):
             edge_attr) * dyad_ji_ji_ji  # mji*eji@eji@eji
         pz_tensor_atom = scatter(temp_sym, i, dim=0)
 
-        pz_tensor = global_mean_pool(pz_tensor_atom, data.batch)
+        pz_tensor = global_mean_pool(pz_tensor_atom, data['batch'])
         return pz_tensor  # shape (N, 27)
 """
 
@@ -180,12 +180,12 @@ class piezoelectric(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
             idx_i, idx_j, idx_k, idx_kj, idx_ji = graph_representation['triplet_index']
-        pos = data.pos
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         edge_dir = edge_dir/edge_length.unsqueeze(-1)  # eji Shape(Nedges, 3)
@@ -211,7 +211,7 @@ class piezoelectric(nn.Module):
             pzt = pzt_sym + pzt_cross
         else:
             pzt = pzt_sym
-        pzt = global_mean_pool(pzt, data.batch)
+        pzt = global_mean_pool(pzt, data['batch'])
         return {'piezoelectric': pzt}  # shape (N, 27)
 
 class trivial_scalar(nn.Module):
@@ -221,11 +221,11 @@ class trivial_scalar(nn.Module):
 
     def forward(self, data, graph_representation: dict = None):
         if self.aggr == 'mean':
-            x = global_mean_pool(graph_representation.node_attr, data.batch)
+            x = global_mean_pool(graph_representation.node_attr, data['batch'])
         elif self.aggr == 'sum' or 'add':
-            x = global_add_pool(graph_representation.node_attr, data.batch)
+            x = global_add_pool(graph_representation.node_attr, data['batch'])
         elif self.aggr == 'max':
-            x = global_max_pool(graph_representation.node_attr, data.batch)
+            x = global_max_pool(graph_representation.node_attr, data['batch'])
         else:
             print(f"Wrong parameter 'aggr': {self.aggr}")
             exit()
@@ -253,9 +253,9 @@ class scalar(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         # MEAN cat MAX POOL
         if self.aggr.lower() == 'mean':
-            crys_fea = global_mean_pool(graph_representation.node_attr, data.batch)
+            crys_fea = global_mean_pool(graph_representation.node_attr, data['batch'])
         elif self.aggr.lower() == 'sum':
-            crys_fea = global_add_pool(graph_representation.node_attr, data.batch)
+            crys_fea = global_add_pool(graph_representation.node_attr, data['batch'])
         elif self.aggr.lower() == 'max':
             crys_fea = graph_representation.node_attr
         else:
@@ -270,7 +270,7 @@ class scalar(nn.Module):
 
         out = self.fc_out(crys_fea)
         if self.aggr.lower() == 'max':
-            out = global_max_pool(out, data.batch)
+            out = global_max_pool(out, data['batch'])
         if self.classification:
             out = self.logsoftmax(out)
         else:
@@ -289,13 +289,13 @@ class crystal_tensor(nn.Module):
         if self.l_pred_atomwise_tensor:
             return {'atomic_tensor': atom_tensors}
         else:
-            output = global_mean_pool(atom_tensors, data.batch)
+            output = global_mean_pool(atom_tensors, data['batch'])
             return {'crystal_tensor': output}
 
 class total_energy_and_atomic_forces(nn.Module):
     def __init__(self, num_node_features:int=None, n_h:int=3, activation:callable=nn.Softplus(), derivative:bool=False):
         super().__init__()
-        self.derivative = derivative # Set the gradient of data.pos in Model
+        self.derivative = derivative # Set the gradient of data['pos'] in Model
         #self.energy = scalar(aggr='sum', classification=False, num_node_features=num_node_features, n_h=n_h, activation=activation)
         
         self.atom_regression = denseRegression(in_features=num_node_features, out_features=1, bias=True,
@@ -304,9 +304,9 @@ class total_energy_and_atomic_forces(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         #energy = self.energy(data, graph_representation)['scalar']
         atomic_energy = self.atom_regression(graph_representation.node_attr)
-        energy = global_add_pool(atomic_energy, data.batch).reshape(-1)
+        energy = global_add_pool(atomic_energy, data['batch']).reshape(-1)
         if self.derivative:
-            forces = -torch.autograd.grad(energy, data.pos,
+            forces = -torch.autograd.grad(energy, data['pos'],
                                         grad_outputs=torch.ones_like(energy),
                                         create_graph=self.training)[0]
         else:
@@ -325,11 +325,11 @@ class EPC_output():
         return out
 
     def forward(self, data):
-        Nbatch = data.cell.shape[0]
-        natoms = int(len(data.z)/Nbatch) # The number of atoms in each crystal must be equal, otherwise batch_size can only be 1.
+        Nbatch = data['cell'].shape[0]
+        natoms = int(len(data['z'])/Nbatch) # The number of atoms in each crystal must be equal, otherwise batch_size can only be 1.
         
         # 初始化orb2atom_idx
-        atomic_nums = data.z.view(-1, natoms) # shape: [Nbatch, natoms]
+        atomic_nums = data['z'].view(-1, natoms) # shape: [Nbatch, natoms]
         orb2atom_idx  = []
         for ib in range(Nbatch):
             repeats = []
@@ -345,7 +345,7 @@ class EPC_output():
         
         def wrapper(pos: torch.Tensor) -> torch.Tensor:
             nonlocal data, HK, SK, wavefunction, hamiltonian, dSK
-            data.pos = pos
+            data['pos'] = pos
             graph_representation = self.representation(data)
             out = self.output(data, graph_representation)
             HK, SK, wavefunction, hamiltonian, dSK = out['HK'], out['SK'], out['wavefunction'], out['hamiltonian'], out['dSK']
@@ -353,7 +353,7 @@ class EPC_output():
         
         with torch.autograd.detect_anomaly():          
             # shape: [Nbatch, num_k, norbs, norbs, natoms, 3]
-            nabla_HK = torch.autograd.functional.jacobian(func=wrapper, inputs=data.pos, create_graph=False, vectorize=False)
+            nabla_HK = torch.autograd.functional.jacobian(func=wrapper, inputs=data['pos'], create_graph=False, vectorize=False)
 
         norbs = HK.shape[-1]
         m = torch.arange(0, norbs)

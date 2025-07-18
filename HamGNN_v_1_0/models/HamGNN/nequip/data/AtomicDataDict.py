@@ -46,7 +46,7 @@ def _irreps_compatible(ir1: Dict[str, o3.Irreps], ir2: Dict[str, o3.Irreps]):
 def with_edge_vectors(data: Type, with_lengths: bool = True) -> Type:
     """Compute the edge displacement vectors for a graph.
 
-    If ``data.pos.requires_grad`` and/or ``data.cell.requires_grad``, this
+    If ``data['pos'].requires_grad`` and/or ``data['cell'].requires_grad``, this
     method will return edge vectors correctly connected in the autograd graph.
 
     Returns:

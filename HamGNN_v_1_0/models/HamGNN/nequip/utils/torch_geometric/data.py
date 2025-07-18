@@ -11,7 +11,7 @@ __num_nodes_warn_msg__ = (
     "indices, and hence may result in unexpected batch-wise behavior, e.g., "
     "in case there exists isolated nodes. Please consider explicitly setting "
     "the number of nodes for this data object by assigning it to "
-    "data.num_nodes."
+    "data['num_nodes']."
 )
 
 
@@ -60,8 +60,8 @@ class Data(object):
     Example::
 
         data = Data(x=x, edge_index=edge_index)
-        data.train_idx = torch.tensor([...], dtype=torch.long)
-        data.test_mask = torch.tensor([...], dtype=torch.bool)
+        data['train_idx'] = torch.tensor([...], dtype=torch.long)
+        data['test_mask'] = torch.tensor([...], dtype=torch.bool)
     """
 
     def __init__(
@@ -207,7 +207,7 @@ class Data(object):
             exists isolated nodes, this number has not to be correct and can
             therefore result in unexpected batch-wise behavior.
             Thus, we recommend to set the number of nodes in your data object
-            explicitly via :obj:`data.num_nodes = ...`.
+            explicitly via :obj:`data['num_nodes'] = ...`.
             You will be given a warning that requests you to do so.
         """
         if hasattr(self, "__num_nodes__"):

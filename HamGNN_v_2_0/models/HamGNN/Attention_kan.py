@@ -236,8 +236,8 @@ class OverlapExpand(nn.Module):
         Returns:
             Updated data object with expanded 'Son' and 'Soff'.
         """
-        data['Son_expand'] = self.tensor_expansion(data.Son)
-        data['Soff_expand'] = self.tensor_expansion(data.Soff)
+        data['Son_expand'] = self.tensor_expansion(data['Son'])
+        data['Soff_expand'] = self.tensor_expansion(data['Soff'])
         return data
 
 @compile_mode("script")
@@ -1296,9 +1296,9 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
         :param data: A dictionary containing graph data.
         :return: Updated graph data with encoded edge features.
         """
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
 
         # Calculate edge directions and lengths
         edge_dir = (pos[i] + nbr_shift) - pos[j]

@@ -465,18 +465,18 @@ class BOTNet(torch.nn.Module):
 
     def forward(self, data: AtomicData, training=False) -> Dict[str, Any]:
         # Setup
-        data.positions.requires_grad = True
+        data['positions'].requires_grad = True
 
         # Atomic energies
-        node_e0 = self.atomic_energies_fn(data.node_attrs)
+        node_e0 = self.atomic_energies_fn(data['node_attrs'])
         e0 = scatter_sum(
-            src=node_e0, index=data.batch, dim=-1, dim_size=data.num_graphs
+            src=node_e0, index=data['batch'], dim=-1, dim_size=data['num_graphs']
         )  # [n_graphs,]
 
         # Embeddings
-        node_feats = self.node_embedding(data.node_attrs)
+        node_feats = self.node_embedding(data['node_attrs'])
         vectors, lengths = get_edge_vectors_and_lengths(
-            positions=data.positions, edge_index=data.edge_index, shifts=data.shifts
+            positions=data['positions'], edge_index=data['edge_index'], shifts=data['shifts']
         )
         edge_attrs = self.spherical_harmonics(vectors)
         edge_feats = self.radial_embedding(lengths)
@@ -485,15 +485,15 @@ class BOTNet(torch.nn.Module):
         energies = [e0]
         for interaction, readout in zip(self.interactions, self.readouts):
             node_feats = interaction(
-                node_attrs=data.node_attrs,
+                node_attrs=data['node_attrs'],
                 node_feats=node_feats,
                 edge_attrs=edge_attrs,
                 edge_feats=edge_feats,
-                edge_index=data.edge_index,
+                edge_index=data['edge_index'],
             )
             node_energies = readout(node_feats).squeeze(-1)  # [n_nodes, ]
             energy = scatter_sum(
-                src=node_energies, index=data.batch, dim=-1, dim_size=data.num_graphs
+                src=node_energies, index=data['batch'], dim=-1, dim_size=data['num_graphs']
             )  # [n_graphs,]
             energies.append(energy)
 
@@ -505,7 +505,7 @@ class BOTNet(torch.nn.Module):
             "energy": total_energy,
             "contributions": contributions,
             "forces": compute_forces(
-                energy=total_energy, positions=data.positions, training=training
+                energy=total_energy, positions=data['positions'], training=training
             ),
         }
 
@@ -526,18 +526,18 @@ class ScaleShiftBOTNet(BOTNet):
 
     def forward(self, data: AtomicData, training=False) -> Dict[str, Any]:
         # Setup
-        data.positions.requires_grad = True
+        data['positions'].requires_grad = True
 
         # Atomic energies
-        node_e0 = self.atomic_energies_fn(data.node_attrs)
+        node_e0 = self.atomic_energies_fn(data['node_attrs'])
         e0 = scatter_sum(
-            src=node_e0, index=data.batch, dim=-1, dim_size=data.num_graphs
+            src=node_e0, index=data['batch'], dim=-1, dim_size=data['num_graphs']
         )  # [n_graphs,]
 
         # Embeddings
-        node_feats = self.node_embedding(data.node_attrs)
+        node_feats = self.node_embedding(data['node_attrs'])
         vectors, lengths = get_edge_vectors_and_lengths(
-            positions=data.positions, edge_index=data.edge_index, shifts=data.shifts
+            positions=data['positions'], edge_index=data['edge_index'], shifts=data['shifts']
         )
         edge_attrs = self.spherical_harmonics(vectors)
         edge_feats = self.radial_embedding(lengths)
@@ -546,11 +546,11 @@ class ScaleShiftBOTNet(BOTNet):
         node_es_list = []
         for interaction, readout in zip(self.interactions, self.readouts):
             node_feats = interaction(
-                node_attrs=data.node_attrs,
+                node_attrs=data['node_attrs'],
                 node_feats=node_feats,
                 edge_attrs=edge_attrs,
                 edge_feats=edge_feats,
-                edge_index=data.edge_index,
+                edge_index=data['edge_index'],
             )
 
             node_es_list.append(readout(node_feats).squeeze(-1))  # {[n_nodes, ], }
@@ -563,7 +563,7 @@ class ScaleShiftBOTNet(BOTNet):
 
         # Sum over nodes in graph
         inter_e = scatter_sum(
-            src=node_inter_es, index=data.batch, dim=-1, dim_size=data.num_graphs
+            src=node_inter_es, index=data['batch'], dim=-1, dim_size=data['num_graphs']
         )  # [n_graphs,]
 
         # Add E_0 and (scaled) interaction energy
@@ -572,7 +572,7 @@ class ScaleShiftBOTNet(BOTNet):
         output = {
             "energy": total_e,
             "forces": compute_forces(
-                energy=inter_e, positions=data.positions, training=training
+                energy=inter_e, positions=data['positions'], training=training
             ),
         }
 

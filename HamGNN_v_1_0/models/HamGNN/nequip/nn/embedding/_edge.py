@@ -50,9 +50,9 @@ class SphericalHarmonicEdgeAttrs(GraphModuleMixin, torch.nn.Module):
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         edge_vec = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_vec = torch.nn.functional.normalize(edge_vec, dim=-1) # eji Shape(Nedges, 3)
         edge_sh = self.sh(edge_vec[:, self.coord_change])
@@ -84,9 +84,9 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:        
-        j, i = data.edge_index
-        nbr_shift = data.nbr_shift
-        pos = data.pos
+        j, i = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
         edge_length = edge_dir.pow(2).sum(dim=-1).sqrt()
         

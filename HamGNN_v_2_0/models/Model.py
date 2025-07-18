@@ -430,7 +430,7 @@ class Model(pl.LightningModule):
         一个辅助函数，用于在需要计算导数时，为原子位置启用梯度计算。
         """
         if self.requires_dr:
-            data.pos.requires_grad_()
+            data['pos'].requires_grad_()
 
     def check_param(self):
         """

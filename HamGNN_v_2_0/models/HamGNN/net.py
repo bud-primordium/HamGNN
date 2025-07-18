@@ -1427,34 +1427,34 @@ class HamGNNPlusPlusOut(nn.Module):
             torch.Tensor: 组装后的完整哈密顿量。
         """
         # 获取每个晶胞中的原子数
-        max_atoms = torch.max(data.node_counts).item()
+        max_atoms = torch.max(data['node_counts']).item()
                 
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         basis_def_temp = copy.deepcopy(self.basis_def)
         # key 是原子序数, value 是占据的轨道
         for k in self.basis_def.keys():
             basis_def_temp[k] = [num-1 for num in self.basis_def[k]]
             basis_definition[k][basis_def_temp[k]] = 1
             
-        orb_mask = basis_definition[data.z].view(-1, max_atoms*self.nao_max) # 形状: [N_batch, max_atoms*nao_max]  
+        orb_mask = basis_definition[data['z']].view(-1, max_atoms*self.nao_max) # 形状: [N_batch, max_atoms*nao_max]  
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # 形状: [N_batch, max_atoms*nao_max, max_atoms*nao_max]
         orb_mask = orb_mask.view(-1, max_atoms*self.nao_max) # 形状: [N_atoms*nao_max, max_atoms*nao_max]
         
-        atom_idx = torch.arange(data.z.shape[0]).type_as(data.z)
-        H = torch.zeros([data.z.shape[0], max_atoms, self.nao_max**2]).type_as(Hon) # 形状: [N_atoms, max_atoms, nao_max**2]
+        atom_idx = torch.arange(data['z'].shape[0]).type_as(data['z'])
+        H = torch.zeros([data['z'].shape[0], max_atoms, self.nao_max**2]).type_as(Hon) # 形状: [N_atoms, max_atoms, nao_max**2]
         H[atom_idx, atom_idx%max_atoms] = Hon
-        H[data.edge_index[0], data.edge_index[1]%max_atoms] = Hoff
+        H[data['edge_index'][0], data['edge_index'][1]%max_atoms] = Hoff
         H = H.reshape(
-            data.z.shape[0], max_atoms, self.nao_max, self.nao_max) # 形状: [N_atoms, max_atoms, nao_max, nao_max]
+            data['z'].shape[0], max_atoms, self.nao_max, self.nao_max) # 形状: [N_atoms, max_atoms, nao_max, nao_max]
 
         # 重塑哈密顿量的维度
         H = H.permute((0, 2, 1, 3))
-        H = H.reshape(data.z.shape[0] * self.nao_max, max_atoms * self.nao_max)
+        H = H.reshape(data['z'].shape[0] * self.nao_max, max_atoms * self.nao_max)
 
         # 掩码填充的轨道
         H = torch.masked_select(H, orb_mask > 0)
-        orbs = int(math.sqrt(H.shape[0] / (data.z.shape[0]/max_atoms)))
+        orbs = int(math.sqrt(H.shape[0] / (data['z'].shape[0]/max_atoms)))
         H = H.reshape(-1, orbs)              
         return H
     
@@ -1471,12 +1471,12 @@ class HamGNNPlusPlusOut(nn.Module):
             torch.Tensor: 拼接后的矩阵块。
         """
         # 获取每个晶胞中的节点数
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
         #
-        j, i = data.edge_index
+        j, i = data['edge_index']
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
         #
         H = []
@@ -1578,53 +1578,53 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             tuple: 包含能带能量、波函数、带隙等信息的元组。
         """
-        j, i = data.edge_index
-        cell = data.cell # 形状:(N_batch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key 是原子序数, value 是占据轨道的索引。
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # 形状: [N_atoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # 形状: [n_atoms, nao_max]
+        orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # 形状: [n_atoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # 形状: [n_atoms*nao_max, n_atoms*nao_max]
         
         # 设置价电子数
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # 形状: [N_atoms]
-        num_val = scatter(num_val, data.batch, dim=0) # 形状: [N_batch]
+        num_val = num_val[data['z']] # 形状: [N_atoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
                 
         # 初始化 band_num_win
         if self.band_num_control is not None:
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # 形状: [N_atoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # 形状: (N_batch,)
+            band_num_win = band_num_win[data['z']] # 形状: [N_atoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # 形状: (N_batch,)
              
         # 按 batch 分离 Hon 和 Hoff
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         node_counts_shift = torch.cumsum(node_counts, dim=0) - node_counts
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son, node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'], node_counts.tolist(), dim=0)
         Son_pred_split = torch.split(Son, node_counts.tolist(), dim=0)
         #
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0) # 形状: (N_batch,)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0) # 形状: (N_batch,)
         edge_num_shift = torch.cumsum(edge_num, dim=0) - edge_num
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff, edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'], edge_num.tolist(), dim=0)
         Soff_pred_split = torch.split(Soff, edge_num.tolist(), dim=0)
         if export_reciprocal_values:
-            dSon_split = torch.split(data.dSon, node_counts.tolist(), dim=0)
-            dSoff_split = torch.split(data.dSoff, edge_num.tolist(), dim=0)
+            dSon_split = torch.split(data['dSon'], node_counts.tolist(), dim=0)
+            dSoff_split = torch.split(data['dSoff'], edge_num.tolist(), dim=0)
         
         band_energy = []
         wavefunction = []
@@ -1634,12 +1634,12 @@ class HamGNNPlusPlusOut(nn.Module):
         dS_reciprocal = []
         gap = []
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx]
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx]
             
             # 初始化 H(k) 和 S(k)       
             # 傅里叶变换的相位因子
-            coe = torch.exp(2j*torch.pi*torch.sum(data.nbr_shift[edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (n_edges, 1, 3)*(1, num_k, 3) -> (n_edges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (n_edges, 1, 3)*(1, num_k, 3) -> (n_edges, num_k)     
             
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
             SK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))  
@@ -1726,7 +1726,7 @@ class HamGNNPlusPlusOut(nn.Module):
             lamda = np.einsum('nai, nij, naj -> na', np.conj(eigen_vecs), SK_t, eigen_vecs).real
             lamda = 1/np.sqrt(lamda) # shape: (numk, norbs)
             eigen_vecs = eigen_vecs*lamda[:,:,None]  
-            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data.pos), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
+            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data['pos']), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
             """
             
             if export_reciprocal_values:
@@ -1786,53 +1786,53 @@ class HamGNNPlusPlusOut(nn.Module):
                 如果 `export_reciprocal_values` 为 `False`，返回 `(band_energy, wavefunction, gap, H_sym)`。
                 如果 `export_reciprocal_values` 为 `True`，返回 `(band_energy, wavefunction, HK, SK, dSK, gap)`。
         """
-        j, i = data.edge_index
-        cell = data.cell # 形状:(N_batch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
         # --- 步骤 1: 解析和准备掩码及参数 ---
         # 解析原子轨道基组定义，用于后续的掩码操作
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key 是原子序数, value 是占据轨道的索引。
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # 形状: [N_atoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # 形状: [n_atoms, nao_max]
+        orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # 形状: [n_atoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             # 为每个晶体创建轨道掩码，用于从 full-nao 矩阵中提取有效轨道
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # 形状: [n_atoms*nao_max, n_atoms*nao_max]
         
         # 设置每个晶体的价电子数
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # 形状: [N_atoms]
-        num_val = scatter(num_val, data.batch, dim=0) # 形状: [N_batch]
+        num_val = num_val[data['z']] # 形状: [N_atoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
                 
         # 初始化能带窗口控制参数
         if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # 形状: [N_atoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # 形状: (N_batch,)   
+            band_num_win = band_num_win[data['z']] # 形状: [N_atoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # 形状: (N_batch,)   
              
         # --- 步骤 2: 按批次分离输入张量 ---
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         node_counts_shift = torch.cumsum(node_counts, dim=0) - node_counts
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son, node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'], node_counts.tolist(), dim=0)
         
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0) # 形状: (N_batch,)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0) # 形状: (N_batch,)
         edge_num_shift = torch.cumsum(edge_num, dim=0) - edge_num
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff, edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'], edge_num.tolist(), dim=0)
         if export_reciprocal_values:
-            dSon_split = torch.split(data.dSon, node_counts.tolist(), dim=0)
-            dSoff_split = torch.split(data.dSoff, edge_num.tolist(), dim=0)
+            dSon_split = torch.split(data['dSon'], node_counts.tolist(), dim=0)
+            dSoff_split = torch.split(data['dSoff'], edge_num.tolist(), dim=0)
         
         band_energy = []
         wavefunction = []
@@ -1844,12 +1844,12 @@ class HamGNNPlusPlusOut(nn.Module):
         
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx]
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx]
             
             # --- 3a: 构建 k 点依赖的矩阵 HK 和 SK ---
             # 计算傅里叶变换的相位因子
-            coe = torch.exp(2j*torch.pi*torch.sum(data.nbr_shift[edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
             
             # 初始化 k 点矩阵
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
@@ -1928,7 +1928,7 @@ class HamGNNPlusPlusOut(nn.Module):
             lamda = np.einsum('nai, nij, naj -> na', np.conj(eigen_vecs), SK_t, eigen_vecs).real
             lamda = 1/np.sqrt(lamda) # shape: (numk, norbs)
             eigen_vecs = eigen_vecs*lamda[:,:,None]  
-            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data.pos), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
+            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data['pos']), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
             """
             
             # --- 3d: 后处理和存储结果 ---
@@ -2000,8 +2000,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             tuple: 返回一个包含能带能量 `band_energy` 和扁平化的波函数 `wavefunction` 的元组。
         """
-        j, i = data.edge_index
-        cell = data.cell # shape:(Nbatch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
         # --- 步骤 1: 重塑输入并准备掩码 ---
@@ -2011,47 +2011,47 @@ class HamGNNPlusPlusOut(nn.Module):
         Hsoc_off_imag = Hsoc_off_imag.reshape(-1, 2*self.nao_max, 2*self.nao_max)
         
         # 解析原子轨道基组
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key 是原子序数, value 是占据轨道的索引。
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # shape: [Natoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # shape: [natoms, nao_max]
+        orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # shape: [natoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # 设置价电子数
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # shape: [Natoms]
-        num_val = scatter(num_val, data.batch, dim=0) # shape: [Nbatch]
+        num_val = num_val[data['z']] # shape: [Natoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
                 
         # 初始化能带窗口
         if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # shape: [Natoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # shape: (Nbatch,)       
+            band_num_win = band_num_win[data['z']] # shape: [Natoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # shape: (Nbatch,)       
             
         # --- 步骤 2: 按批次分离输入张量 ---
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         Hon_split = torch.split(Hsoc_on_real, node_counts.tolist(), dim=0)
         iHon_split = torch.split(Hsoc_on_imag, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son.reshape(-1, self.nao_max, self.nao_max), node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'].reshape(-1, self.nao_max, self.nao_max), node_counts.tolist(), dim=0)
         
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hsoc_off_real, edge_num.tolist(), dim=0)
         iHoff_split = torch.split(Hsoc_off_imag, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff.reshape(-1, self.nao_max, self.nao_max), edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'].reshape(-1, self.nao_max, self.nao_max), edge_num.tolist(), dim=0)
         
-        cell_shift_split = torch.split(data.cell_shift, edge_num.tolist(), dim=0)
-        nbr_shift_split = torch.split(data.nbr_shift, edge_num.tolist(), dim=0)
-        edge_index_split = torch.split(data.edge_index, edge_num.tolist(), dim=1)
+        cell_shift_split = torch.split(data['cell_shift'], edge_num.tolist(), dim=0)
+        nbr_shift_split = torch.split(data['nbr_shift'], edge_num.tolist(), dim=0)
+        edge_index_split = torch.split(data['edge_index'], edge_num.tolist(), dim=1)
         node_num = torch.cumsum(node_counts, dim=0) - node_counts
         edge_index_split = [edge_index_split[idx]-node_num[idx] for idx in range(len(node_num))]
         
@@ -2059,8 +2059,8 @@ class HamGNNPlusPlusOut(nn.Module):
         wavefunction = []
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx].item() 
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx].item() 
             
             # --- 3a: 构建 k 点依赖的 SOC 重叠矩阵 SK ---
             # 初始化晶胞索引
@@ -2068,15 +2068,15 @@ class HamGNNPlusPlusOut(nn.Module):
             cell_shift_set = set(cell_shift_tuple)
             cell_shift_list = list(cell_shift_set)
             cell_index = [cell_shift_list.index(icell) for icell in cell_shift_tuple]
-            cell_index = torch.LongTensor(cell_index).type_as(data.edge_index)
+            cell_index = torch.LongTensor(cell_index).type_as(data['edge_index'])
             ncells = len(cell_shift_set)
             
             # 初始化 SK
-            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(data.Son))
+            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(data['Son']))
             phase[:, cell_index] = torch.exp(2j*torch.pi*torch.sum(nbr_shift_split[idx][None,:,:]*k_vec[:,None,:], dim=-1))
             na = torch.arange(natoms).type_as(j)
 
-            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data.Son))
+            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
             S_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Soff_split[idx]
 
             SK = torch.einsum('ijklm, ni->njklm', S_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2088,7 +2088,7 @@ class HamGNNPlusPlusOut(nn.Module):
             norbs = int(math.sqrt(SK.numel()/self.num_k))
             SK = SK.reshape(self.num_k, norbs, norbs)
             # 构建 SOC 基下的重叠矩阵 (对角块)
-            I = torch.eye(2).type_as(data.Hon)
+            I = torch.eye(2).type_as(data['Hon'])
             SK = torch.kron(I, SK)
             
             # --- 3b: 构建 k 点依赖的 SOC 哈密顿量 HK ---
@@ -2109,7 +2109,7 @@ class HamGNNPlusPlusOut(nn.Module):
             HK_list = []
             # 分别为 H11, H12, H21, H22 构建 k 点哈密顿量
             for Hon, Hoff in zip(Hon_soc, Hoff_soc):
-                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data.Son))
+                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
                 H_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Hoff    
 
                 HK = torch.einsum('ijklm, ni->njklm', H_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2165,7 +2165,7 @@ class HamGNNPlusPlusOut(nn.Module):
             tuple: 返回一个元组，包含掩码后的 `(Hon, Hoff)`。
         """
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key is the atomic number, value is the index of the occupied orbits.
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
@@ -2180,7 +2180,7 @@ class HamGNNPlusPlusOut(nn.Module):
             Hoff = Hoff.reshape(original_shape_off[0], -1)
         
         # 首先掩码 on-site 矩阵
-        orb_mask = basis_definition[data.z].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
+        orb_mask = basis_definition[data['z']].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
         # 通过外积创建 (i, j) 轨道对的掩码
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # shape: [Natoms, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Natoms, nao_max*nao_max]
@@ -2189,9 +2189,9 @@ class HamGNNPlusPlusOut(nn.Module):
         Hon_mask[orb_mask>0] = Hon[orb_mask>0]
         
         # 接着掩码 off-site 矩阵
-        j, i = data.edge_index        
-        orb_mask_j = basis_definition[data.z[j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
-        orb_mask_i = basis_definition[data.z[i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
+        j, i = data['edge_index']        
+        orb_mask_j = basis_definition[data['z'][j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
+        orb_mask_i = basis_definition[data['z'][i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
         # 通过外积创建 (i, j) 轨道对的掩码
         orb_mask = orb_mask_j[:,:,None] * orb_mask_i[:,None,:]       # shape: [Nedges, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Nedges, nao_max*nao_max]
@@ -2294,7 +2294,7 @@ class HamGNNPlusPlusOut(nn.Module):
             tuple: 返回 `(unique_cell_shift, cell_shift_indices, cell_index_map)`。
         """
         # 匹配 cell_shift 在 unique_cell_shift 中的行索引
-        cell_shift = data.cell_shift
+        cell_shift = data['cell_shift']
         unique_cell_shift = torch.unique(cell_shift, dim=0)
         
         zero_vector = torch.tensor([[0, 0, 0]]).type_as(unique_cell_shift)
@@ -2321,12 +2321,12 @@ class HamGNNPlusPlusOut(nn.Module):
 
     def edge_hunter(self, data, inv_edge_idx=None):
         # ... (此函数逻辑复杂且高度特化，保持原有注释风格)
-        src, tar = data.edge_index
-        unique_cell_shift = data.unique_cell_shift
-        cell_shift_indices = data.cell_shift_indices
-        cell_index_map = data.cell_index_map
+        src, tar = data['edge_index']
+        unique_cell_shift = data['unique_cell_shift']
+        cell_shift_indices = data['cell_shift_indices']
+        cell_index_map = data['cell_index_map']
 
-        num_nodes = len(data.z)
+        num_nodes = len(data['z'])
         num_shifts = len(unique_cell_shift)
 
         edge_matcher_src = [torch.where(src == ia)[0] for ia in range(num_nodes)]
@@ -2371,8 +2371,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             torch.Tensor: 拼接后的 on-site 和 off-site 掩码。
         """
-        j, i = data.edge_index
-        z = data.z
+        j, i = data['edge_index']
+        z = data['z']
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
         mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).bool()
@@ -2394,8 +2394,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             torch.Tensor: 适用于共线自旋计算的拼接掩码。
         """
-        j, i = data.edge_index
-        z = data.z
+        j, i = data['edge_index']
+        z = data['z']
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
         mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).bool()
@@ -2420,8 +2420,8 @@ class HamGNNPlusPlusOut(nn.Module):
             tuple: 返回一个元组 `(mask_real_imag, mask_all)`，
                    分别对应 SOC 哈密顿量的实部/虚部掩码和总掩码。
         """
-        j, i = data.edge_index
-        z = data.z
+        j, i = data['edge_index']
+        z = data['z']
         basis_definition = self.get_basis_definition(z)
 
         # 计算基础掩码
@@ -2458,31 +2458,31 @@ class HamGNNPlusPlusOut(nn.Module):
 
         # To be compatible with the format of Hongyu yu
         if 'H0_u' in data:
-            Hon_u0 = data.H0_u[:len(data.z)].flatten(1)
-            Hon_d0 = data.H0_d[:len(data.z)].flatten(1)
-            Hoff_u0 = data.H0_u[len(data.z):].flatten(1)
-            Hoff_d0 = data.H0_d[len(data.z):].flatten(1)
-            data.Hon0 = torch.stack([Hon_u0, Hon_d0], dim=1)
-            data.Hoff0 = torch.stack([Hoff_u0, Hoff_d0], dim=1)
-            data.Hon = torch.stack([data.H_u[:len(data.z)], data.H_d[:len(data.z)]], dim=1).flatten(2)
-            data.Hoff = torch.stack([data.H_u[len(data.z):], data.H_d[len(data.z):]], dim=1).flatten(2)
+            Hon_u0 = data['H0_u'][:len(data['z'])].flatten(1)
+            Hon_d0 = data['H0_d'][:len(data['z'])].flatten(1)
+            Hoff_u0 = data['H0_u'][len(data['z']):].flatten(1)
+            Hoff_d0 = data['H0_d'][len(data['z']):].flatten(1)
+            data['Hon0'] = torch.stack([Hon_u0, Hon_d0], dim=1)
+            data['Hoff0'] = torch.stack([Hoff_u0, Hoff_d0], dim=1)
+            data['Hon'] = torch.stack([data['H_u'][:len(data['z'])], data['H_d'][:len(data['z'])]], dim=1).flatten(2)
+            data['Hoff'] = torch.stack([data['H_u'][len(data['z']):], data['H_d'][len(data['z']):]], dim=1).flatten(2)
     
-        # prepare data.hamiltonian & data.overlap
+        # prepare data['hamiltonian'] & data['overlap']
         if 'hamiltonian' not in data:
-            data.hamiltonian = self.cat_onsite_and_offsite(data, data.Hon, data.Hoff)
+            data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
         if 'overlap' not in data:
-            data.overlap = self.cat_onsite_and_offsite(data, data.Son, data.Soff)
+            data['overlap'] = self.cat_onsite_and_offsite(data, data['Son'], data['Soff'])
         
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data.edge_index
+        j, i = data['edge_index']
         
         # Calculate inv_edge_index in batch
-        inv_edge_idx = data.inv_edge_idx
+        inv_edge_idx = data['inv_edge_idx']
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         edge_num = torch.cumsum(edge_num, dim=0) - edge_num
-        inv_edge_idx = inv_edge_idx + edge_num[data.batch[j]]
+        inv_edge_idx = inv_edge_idx + edge_num[data['batch'][j]]
         
         # Calculate the on-site Hamiltonian 
         self.ham_irreps_dim = self.ham_irreps_dim.type_as(j)  
@@ -2515,7 +2515,7 @@ class HamGNNPlusPlusOut(nn.Module):
                 # build Hsoc
                 if self.soc_basis == 'so3':
                     if self.add_H_nonsoc:
-                        Hon, Hoff = data.Hon_nonsoc, data.Hoff_nonsoc
+                        Hon, Hoff = data['Hon_nonsoc'], data['Hoff_nonsoc']
                         
                         # Load the on-site and off-site Hamiltonian matrices
                         Hon0, Hoff0 = data['Hon0'], data['Hoff0']
@@ -2571,30 +2571,30 @@ class HamGNNPlusPlusOut(nn.Module):
 
                     Hsoc_on_real = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
                     Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_real = Hsoc_on_real.reshape(-1, (2*self.nao_max)**2)
 
                     Hsoc_on_imag = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
-                    Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data.Lon[:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data.Lon[:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_imag = Hsoc_on_imag.reshape(-1, (2*self.nao_max)**2)
 
                     Hsoc_off_real = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
                     Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_real = Hsoc_off_real.reshape(-1, (2*self.nao_max)**2)
 
                     Hsoc_off_imag = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
-                    Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data.Loff[:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data.Loff[:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                    Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_imag = Hsoc_off_imag.reshape(-1, (2*self.nao_max)**2)
 
                 elif self.soc_basis == 'su2':
@@ -2646,24 +2646,24 @@ class HamGNNPlusPlusOut(nn.Module):
                 Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
                 
                 if not self.collinear_spin:
-                    Hsoc_on_real = torch.zeros_like(data.Hon).reshape(Hon.shape[0], 2*self.nao_max, 2*self.nao_max)
+                    Hsoc_on_real = torch.zeros_like(data['Hon']).reshape(Hon.shape[0], 2*self.nao_max, 2*self.nao_max)
                     Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_real = Hsoc_on_real.reshape(Hon.shape[0], (2*self.nao_max)**2)
                     
-                    Hsoc_off_real = torch.zeros_like(data.Hoff).reshape(Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)
+                    Hsoc_off_real = torch.zeros_like(data['Hoff']).reshape(Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)
                     Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_real = Hsoc_off_real.reshape(Hoff.shape[0], (2*self.nao_max)**2)
                     
-                    Hsoc_on_imag = torch.zeros_like(data.iHon) 
-                    Hsoc_off_imag = torch.zeros_like(data.iHoff)
+                    Hsoc_on_imag = torch.zeros_like(data['iHon']) 
+                    Hsoc_off_imag = torch.zeros_like(data['iHoff'])
             
             if self.spin_constrained:
-                magnetic_atoms = (data.spin_length > self.minMagneticMoment)
-                data.unique_cell_shift, data.cell_shift_indices, data.cell_index_map = self.get_unique_cell_shift_and_cell_shift_indices(data)
-                cell_shift_indices = data.cell_shift_indices.tolist()
-                cell_index_map = data.cell_index_map
+                magnetic_atoms = (data['spin_length'] > self.minMagneticMoment)
+                data['unique_cell_shift'], data['cell_shift_indices'], data['cell_index_map'] = self.get_unique_cell_shift_and_cell_shift_indices(data)
+                cell_shift_indices = data['cell_shift_indices'].tolist()
+                cell_index_map = data['cell_index_map']
                 
                 # learn a weight matrix
                 if self.use_learned_weight:
@@ -2688,8 +2688,8 @@ class HamGNNPlusPlusOut(nn.Module):
                     
                     weight_on, weight_off = self.mask_Ham(weight_on, weight_off, data)
                     weight_on, weight_off = weight_on.reshape(-1, self.nao_max, self.nao_max), weight_off.reshape(-1, self.nao_max, self.nao_max)
-                    data.weight_on = weight_on
-                    data.weight_off = weight_off
+                    data['weight_on'] = weight_on
+                    data['weight_off'] = weight_off
 
                 if self.soc_switch:
                     J_on = self.onsitenet_J(node_attr)     
@@ -2710,7 +2710,7 @@ class HamGNNPlusPlusOut(nn.Module):
                     sigma[1] = torch.complex(real=torch.zeros((2,2)), imag=torch.Tensor([[0.0, -1.0],[1.0, 0.0]])).type_as(sigma) 
                     sigma[2] = torch.Tensor([[1.0, 0.0],[0.0, -1.0]]).type_as(sigma) 
 
-                    spin_vec = data.spin_vec
+                    spin_vec = data['spin_vec']
 
                     # brodcast shape: (Natoms/Nedges, Natoms/Nedges, 2, nao_max, 2, nao_max)
                     H_heisen_J_on = torch.zeros(len(J_on), 2, self.nao_max, 2, self.nao_max).type_as(sigma)
@@ -2747,7 +2747,7 @@ class HamGNNPlusPlusOut(nn.Module):
                         if magnetic_atoms[ia]:
                             Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
                             H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                            if cell_shift_indices[i_edge] == data.cell_index_map[(0,0,0)]:
+                            if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                 Won = weight_on[ja]
                                 H_heisen_J_on[ja] += oe.contract('ijkl, ij, lop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))   
                 else:
@@ -2767,7 +2767,7 @@ class HamGNNPlusPlusOut(nn.Module):
                     if self.collinear_spin:
                         sigma_z = torch.Tensor([[1.0, 0.0],[0.0, -1.0]]).type_as(J_on) 
 
-                        spin_vec = data.spin_vec
+                        spin_vec = data['spin_vec']
 
                         # brodcast shape: (Natoms/Nedges, Natoms/Nedges, 2, nao_max, 2, nao_max)
                         H_heisen_J_on = torch.zeros(len(J_on), 2, self.nao_max, 2, self.nao_max).type_as(J_on) 
@@ -2802,7 +2802,7 @@ class HamGNNPlusPlusOut(nn.Module):
                             if magnetic_atoms[ia]:
                                 Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
                                 H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
-                                if cell_shift_indices[i_edge] == data.cell_index_map[(0,0,0)]:
+                                if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += oe.contract('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ia,2]
 
@@ -2812,7 +2812,7 @@ class HamGNNPlusPlusOut(nn.Module):
                         sigma[1] = torch.complex(real=torch.zeros((2,2)), imag=torch.Tensor([[0.0, -1.0],[1.0, 0.0]])).type_as(sigma) 
                         sigma[2] = torch.complex(real=torch.zeros((2,2)), imag=torch.Tensor([[1.0, 0.0],[0.0, -1.0]])).type_as(sigma) 
 
-                        spin_vec = data.spin_vec
+                        spin_vec = data['spin_vec']
 
                         # brodcast shape: (Natoms/Nedges, Natoms/Nedges, 2, nao_max, 2, nao_max)
                         H_heisen_J_on = torch.zeros(len(J_on), 2, self.nao_max, 2, self.nao_max).type_as(sigma)
@@ -2847,7 +2847,7 @@ class HamGNNPlusPlusOut(nn.Module):
                             if magnetic_atoms[ia]:
                                 Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
                                 H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                                if cell_shift_indices[i_edge] == data.cell_index_map[(0,0,0)]:
+                                if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += oe.contract('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))                                
 
@@ -2868,28 +2868,28 @@ class HamGNNPlusPlusOut(nn.Module):
                     
             if self.add_H0:
                 if not self.collinear_spin:
-                    Hsoc_on_real =  Hsoc_on_real + data.Hon0
-                    Hsoc_off_real = Hsoc_off_real + data.Hoff0
-                    Hsoc_on_imag = Hsoc_on_imag + data.iHon0
-                    Hsoc_off_imag = Hsoc_off_imag + data.iHoff0
+                    Hsoc_on_real =  Hsoc_on_real + data['Hon0']
+                    Hsoc_off_real = Hsoc_off_real + data['Hoff0']
+                    Hsoc_on_imag = Hsoc_on_imag + data['iHon0']
+                    Hsoc_off_imag = Hsoc_off_imag + data['iHoff0']
                 else:
-                    Hcol_on =  Hcol_on + data.Hon0
-                    Hcol_off = Hcol_off + data.Hoff0   
+                    Hcol_on =  Hcol_on + data['Hon0']
+                    Hcol_off = Hcol_off + data['Hoff0']   
 
             if not self.collinear_spin:
                 Hsoc_real = self.cat_onsite_and_offsite(data, Hsoc_on_real, Hsoc_off_real)
                 Hsoc_imag = self.cat_onsite_and_offsite(data, Hsoc_on_imag, Hsoc_off_imag)
 
-                data.hamiltonian_real = self.cat_onsite_and_offsite(data, data.Hon, data.Hoff)
-                data.hamiltonian_imag = self.cat_onsite_and_offsite(data, data.iHon, data.iHoff)
+                data['hamiltonian_real'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
+                data['hamiltonian_imag'] = self.cat_onsite_and_offsite(data, data['iHon'], data['iHoff'])
 
                 Hsoc = torch.cat((Hsoc_real, Hsoc_imag), dim=0)
-                data.hamiltonian = torch.cat((data.hamiltonian_real, data.hamiltonian_imag), dim=0)
+                data['hamiltonian'] = torch.cat((data['hamiltonian_real'], data['hamiltonian_imag']), dim=0)
 
                 if self.calculate_band_energy:
                     k_vecs = []
-                    for idx in range(data.batch[-1]+1):
-                        cell = data.cell
+                    for idx in range(data['batch'][-1]+1):
+                        cell = data['cell']
                         # Generate K point path
                         if self.k_path is not None:
                             kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
@@ -2901,22 +2901,22 @@ class HamGNNPlusPlusOut(nn.Module):
                         k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
                         k_vec = torch.Tensor(k_vec).type_as(Hon)
                         k_vecs.append(k_vec)  
-                    data.k_vecs = torch.stack(k_vecs, dim=0)
+                    data['k_vecs'] = torch.stack(k_vecs, dim=0)
                     band_energy, wavefunction = self.cal_band_energy_soc(Hsoc_on_real, Hsoc_on_imag, Hsoc_off_real, Hsoc_off_imag, data) 
                     with torch.no_grad():
-                        data.band_energy, data.wavefunction = self.cal_band_energy_soc(data.Hon, data.iHon, data.Hoff, data.iHoff, data)
+                        data['band_energy'], data['wavefunction'] = self.cal_band_energy_soc(data['Hon'], data['iHon'], data['Hoff'], data['iHoff'], data)
                 else:
                     band_energy = None
                     wavefunction = None
             else:                
                 Hcol = self.cat_onsite_and_offsite(data, Hcol_on, Hcol_off)
-                data.hamiltonian = self.cat_onsite_and_offsite(data, data.Hon, data.Hoff)
+                data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
                 
                 # cal band energy
                 if self.calculate_band_energy:
                     k_vecs = []
-                    for idx in range(data.batch[-1]+1):
-                        cell = data.cell
+                    for idx in range(data['batch'][-1]+1):
+                        cell = data['cell']
                         # Generate K point path
                         if isinstance(self.k_path, list):
                             kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
@@ -2924,8 +2924,8 @@ class HamGNNPlusPlusOut(nn.Module):
                         elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
                             # build crystal structure
                             latt = cell[idx].detach().cpu().numpy()*au2ang
-                            pos = torch.split(data.pos, data.node_counts.tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
-                            species = torch.split(data.z, data.node_counts.tolist(), dim=0)[idx]
+                            pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
+                            species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
                             struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
                             # Initialize k_path and label
                             kpath_seek = KPathSeek(structure = struct)
@@ -2950,7 +2950,7 @@ class HamGNNPlusPlusOut(nn.Module):
                         k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
                         k_vec = torch.Tensor(k_vec).type_as(Hon)
                         k_vecs.append(k_vec)  
-                    data.k_vecs = torch.stack(k_vecs, dim=0)
+                    data['k_vecs'] = torch.stack(k_vecs, dim=0)
                     if self.export_reciprocal_values:
                         band_energy_up, wavefunction_up, HK_up, SK_up, dSK_up, gap_up = self.cal_band_energy(Hcol_on[:,0,:], Hcol_off[:,0,:], data, True)
                         band_energy_down, wavefunction_down, HK_down, SK_down, dSK_down, gap_down = self.cal_band_energy(Hcol_on[:,1,:], Hcol_off[:,1,:], data, True)
@@ -2966,10 +2966,10 @@ class HamGNNPlusPlusOut(nn.Module):
                         wavefunction = torch.cat([wavefunction_up, wavefunction_down])
                         gap = torch.cat([gap_up, gap_down])
                     with torch.no_grad():
-                        data.band_energy_up, data.wavefunction, data.band_gap_up, data.H_sym = self.cal_band_energy(data.Hon[:,0,:], data.Hoff[:,0,:], data)
-                        data.band_energy_down, data.wavefunction, data.band_gap_down, data.H_sym = self.cal_band_energy(data.Hon[:,1,:], data.Hoff[:,1,:], data)
-                        data.band_energy = torch.cat([data.band_energy_up, data.band_energy_down])
-                        data.band_gap = torch.cat([data.band_gap_up, data.band_gap_down])
+                        data['band_energy_up'], data['wavefunction'], data['band_gap_up'], data['H_sym'] = self.cal_band_energy(data['Hon'][:,0,:], data['Hoff'][:,0,:], data)
+                        data['band_energy_down'], data['wavefunction'], data['band_gap_down'], data['H_sym'] = self.cal_band_energy(data['Hon'][:,1,:], data['Hoff'][:,1,:], data)
+                        data['band_energy'] = torch.cat([data['band_energy_up'], data['band_energy_down']])
+                        data['band_gap'] = torch.cat([data['band_gap_up'], data['band_gap_down']])
                 else:
                     band_energy = None
                     wavefunction = None
@@ -2987,7 +2987,7 @@ class HamGNNPlusPlusOut(nn.Module):
             # Impose Hermitian symmetry for Hon
             Hon = self.symmetrize_Hon(Hon)
             if self.add_H0:
-                Hon = Hon + data.Hon0
+                Hon = Hon + data['Hon0']
 
             # Calculate the off-site Hamiltonian
             # Calculate the contribution of the edges       
@@ -2999,15 +2999,15 @@ class HamGNNPlusPlusOut(nn.Module):
             # Impose Hermitian symmetry for Hoff
             Hoff = self.symmetrize_Hoff(Hoff, inv_edge_idx)
             if self.add_H0:
-                Hoff = Hoff + data.Hoff0
+                Hoff = Hoff + data['Hoff0']
         
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
                 Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
         
             if self.calculate_band_energy:
                 k_vecs = []
-                for idx in range(data.batch[-1]+1):
-                    cell = data.cell
+                for idx in range(data['batch'][-1]+1):
+                    cell = data['cell']
                     # Generate K point path
                     if isinstance(self.k_path, list):
                         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
@@ -3015,8 +3015,8 @@ class HamGNNPlusPlusOut(nn.Module):
                     elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
                         # build crystal structure
                         latt = cell[idx].detach().cpu().numpy()*au2ang
-                        pos = torch.split(data.pos, data.node_counts.tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
-                        species = torch.split(data.z, data.node_counts.tolist(), dim=0)[idx]
+                        pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
+                        species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
                         struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
                         # Initialize k_path and label
                         kpath_seek = KPathSeek(structure = struct)
@@ -3041,7 +3041,7 @@ class HamGNNPlusPlusOut(nn.Module):
                     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
                     k_vec = torch.Tensor(k_vec).type_as(Hon)
                     k_vecs.append(k_vec)  
-                data.k_vecs = torch.stack(k_vecs, dim=0)
+                data['k_vecs'] = torch.stack(k_vecs, dim=0)
                 if self.export_reciprocal_values:
                     if self.ham_only:
                         band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(Hon, Hoff, data, True)
@@ -3052,7 +3052,7 @@ class HamGNNPlusPlusOut(nn.Module):
                 else:
                     band_energy, wavefunction, gap, H_sym = self.cal_band_energy(Hon, Hoff, data)
                 with torch.no_grad():
-                    data.band_energy, data.wavefunction, data.band_gap, data.H_sym = self.cal_band_energy(data.Hon, data.Hoff, data)
+                    data['band_energy'], data['wavefunction'], data['band_gap'], data['H_sym'] = self.cal_band_energy(data['Hon'], data['Hoff'], data)
             else:
                 band_energy = None
                 wavefunction = None
@@ -3066,14 +3066,14 @@ class HamGNNPlusPlusOut(nn.Module):
                 if not self.collinear_spin:
                     if self.zero_point_shift:
                         # calculate miu
-                        S = data.overlap.reshape(-1, self.nao_max, self.nao_max)                        
+                        S = data['overlap'].reshape(-1, self.nao_max, self.nao_max)                        
                         S_soc = blockwise_2x2_concat(S, torch.zeros_like(S), torch.zeros_like(S), S).reshape(-1, (2*self.nao_max)**2)
                         sum_S_soc = 2*torch.sum(S[S > 1e-6])                        
-                        miu_real = torch.sum(extract_elements_above_threshold(S_soc, Hsoc_real-data.hamiltonian_real, 1e-6))/sum_S_soc
+                        miu_real = torch.sum(extract_elements_above_threshold(S_soc, Hsoc_real-data['hamiltonian_real'], 1e-6))/sum_S_soc
                         # shift Hamiltonian and band_energy
                         Hsoc_real = Hsoc_real-miu_real*S_soc
                         Hsoc = torch.cat((Hsoc_real, Hsoc_imag), dim=0)
-                        band_energy = band_energy-torch.mean(band_energy-data.band_energy) if band_energy is not None else band_energy
+                        band_energy = band_energy-torch.mean(band_energy-data['band_energy']) if band_energy is not None else band_energy
                     
                     result = {'hamiltonian': Hsoc, 'hamiltonian_real':Hsoc_real, 'hamiltonian_imag':Hsoc_imag, 
                               'band_energy': band_energy, 'wavefunction': wavefunction}
@@ -3085,13 +3085,13 @@ class HamGNNPlusPlusOut(nn.Module):
                 else: # collinear_spin
                     if self.zero_point_shift:
                         # calculate miu
-                        S = data.overlap
+                        S = data['overlap']
                         S_col = torch.stack([S, S], dim=1) # (Nbatchs, 2, nao_max**2)
                         sum_S_col = 2*torch.sum(S[S > 1e-6]) 
-                        miu = torch.sum(extract_elements_above_threshold(S_col, Hcol-data.hamiltonian, 1e-6))/sum_S_col
+                        miu = torch.sum(extract_elements_above_threshold(S_col, Hcol-data['hamiltonian'], 1e-6))/sum_S_col
                         # shift Hamiltonian and band_energy
                         Hcol = Hcol - miu*S_col
-                        band_energy = band_energy-torch.mean(band_energy-data.band_energy) if band_energy is not None else band_energy
+                        band_energy = band_energy-torch.mean(band_energy-data['band_energy']) if band_energy is not None else band_energy
                     result = {'hamiltonian': Hcol, 'band_energy': band_energy, 'wavefunction': wavefunction}
                     
                     if self.get_nonzero_mask_tensor:
@@ -3101,12 +3101,12 @@ class HamGNNPlusPlusOut(nn.Module):
                 H = self.cat_onsite_and_offsite(data, Hon, Hoff)
                 if self.zero_point_shift:
                     # calculate miu
-                    S = data.overlap  
+                    S = data['overlap']  
                     sum_S = torch.sum(S[S > 1e-6]) 
-                    miu = torch.sum(extract_elements_above_threshold(S, H-data.hamiltonian, 1e-6))/sum_S
+                    miu = torch.sum(extract_elements_above_threshold(S, H-data['hamiltonian'], 1e-6))/sum_S
                     # shift Hamiltonian and band_energy
-                    H = H-miu*data.overlap
-                    band_energy = band_energy-torch.mean(band_energy-data.band_energy) if band_energy is not None else band_energy                
+                    H = H-miu*data['overlap']
+                    band_energy = band_energy-torch.mean(band_energy-data['band_energy']) if band_energy is not None else band_energy                
                 
                 result = {'hamiltonian': H, 'band_energy': band_energy, 'wavefunction': wavefunction, 'band_gap':gap, 'H_sym': H_sym}
                 if self.export_reciprocal_values:

@@ -121,7 +121,7 @@ class Batch(Data):
             else:
                 num_nodes_list.append(None)
 
-            num_nodes = data.num_nodes
+            num_nodes = data['num_nodes']
             if num_nodes is not None:
                 item = torch.full((num_nodes,), i, dtype=torch.long, device=device)
                 batch.batch.append(item)

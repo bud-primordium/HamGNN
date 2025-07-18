@@ -134,7 +134,7 @@ class AtomicInMemoryDataset(AtomicDataset):
     def len(self):
         if self.data is None:
             return 0
-        return self.data.num_graphs
+        return self.data['num_graphs']
 
     @property
     def raw_file_names(self):
@@ -356,11 +356,11 @@ class AtomicInMemoryDataset(AtomicDataset):
             # note that self._indices is _not_ necessarily in order,
             # while self.data --- which we take our arrays from ---
             # is always in the original order.
-            # In particular, the values of `self.data.batch`
+            # In particular, the values of `self.data['batch']`
             # are indexes in the ORIGINAL order
             # thus we need graph level properties to also be in the original order
             # so that batch values index into them correctly
-            # since self.data.batch is always sorted & contiguous
+            # since self.data['batch'] is always sorted & contiguous
             # (because of Batch.from_data_list)
             # we sort it:
             graph_selector, _ = torch.sort(graph_selector)
@@ -369,7 +369,7 @@ class AtomicInMemoryDataset(AtomicDataset):
         num_graphs = len(graph_selector)
 
         node_selector = torch.as_tensor(
-            np.in1d(self.data.batch.numpy(), graph_selector.numpy())
+            np.in1d(self.data['batch'].numpy(), graph_selector.numpy())
         )
         num_nodes = node_selector.sum()
 

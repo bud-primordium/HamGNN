@@ -542,11 +542,11 @@ class Triplet_builder(GraphModuleMixin, torch.nn.Module):
         return col, row, idx_i, idx_j, idx_k, idx_kj, idx_ji
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
-        z = data.z
-        pos = data.pos
-        edge_index = data.edge_index
-        nbr_shift = data.nbr_shift
-        cell_shift = data.cell_shift # shape(Nedges, 3)
+        z = data['z']
+        pos = data['pos']
+        edge_index = data['edge_index']
+        nbr_shift = data['nbr_shift']
+        cell_shift = data['cell_shift'] # shape(Nedges, 3)
 
         i, j, idx_i, idx_j, idx_k, idx_kj, idx_ji = self.triplets(edge_index, z.size(0), cell_shift)
         
@@ -1550,45 +1550,45 @@ class HamGNN_out(nn.Module):
     
     def convert_to_mole_Ham(self, data, Hon, Hoff):
         # Get the number of nodes in each crystal
-        max_atoms = torch.max(data.node_counts).item()
+        max_atoms = torch.max(data['node_counts']).item()
                 
         # parse the Atomic Orbital Basis Sets
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         basis_def_temp = copy.deepcopy(self.basis_def)
         # key is the atomic number, value is the occupied orbits.
         for k in self.basis_def.keys():
             basis_def_temp[k] = [num-1 for num in self.basis_def[k]]
             basis_definition[k][basis_def_temp[k]] = 1
             
-        orb_mask = basis_definition[data.z].view(-1, max_atoms*self.nao_max) # shape: [Nbatch, max_atoms*nao_max]  
+        orb_mask = basis_definition[data['z']].view(-1, max_atoms*self.nao_max) # shape: [Nbatch, max_atoms*nao_max]  
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # shape: [Nbatch, max_atoms*nao_max, max_atoms*nao_max]
         orb_mask = orb_mask.view(-1, max_atoms*self.nao_max) # shape: [Natoms*nao_max, max_atoms*nao_max]
         
-        atom_idx = torch.arange(data.z.shape[0]).type_as(data.z)
-        H = torch.zeros([data.z.shape[0], max_atoms, self.nao_max**2]).type_as(Hon) # shape: [Natoms, max_atoms, nao_max**2]
+        atom_idx = torch.arange(data['z'].shape[0]).type_as(data['z'])
+        H = torch.zeros([data['z'].shape[0], max_atoms, self.nao_max**2]).type_as(Hon) # shape: [Natoms, max_atoms, nao_max**2]
         H[atom_idx, atom_idx%max_atoms] = Hon
-        H[data.edge_index[0], data.edge_index[1]%max_atoms] = Hoff
+        H[data['edge_index'][0], data['edge_index'][1]%max_atoms] = Hoff
         H = H.reshape(
-            data.z.shape[0], max_atoms, self.nao_max, self.nao_max) # shape: [Natoms, max_atoms, nao_max, nao_max]
+            data['z'].shape[0], max_atoms, self.nao_max, self.nao_max) # shape: [Natoms, max_atoms, nao_max, nao_max]
 
         # reshape the dimension of the hamiltonian.
         H = H.permute((0, 2, 1, 3))
-        H = H.reshape(data.z.shape[0] * self.nao_max, max_atoms * self.nao_max)
+        H = H.reshape(data['z'].shape[0] * self.nao_max, max_atoms * self.nao_max)
 
         # mask padded orbitals
         H = torch.masked_select(H, orb_mask > 0)
-        orbs = int(math.sqrt(H.shape[0] / (data.z.shape[0]/max_atoms)))
+        orbs = int(math.sqrt(H.shape[0] / (data['z'].shape[0]/max_atoms)))
         H = H.reshape(-1, orbs)              
         return H
     
     def cat_onsite_and_offsite(self, data, Hon, Hoff):
         # Get the number of nodes in each crystal
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
         #
-        j, i = data.edge_index
+        j, i = data['edge_index']
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
         #
         H = []
@@ -1626,53 +1626,53 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data.edge_index
-        cell = data.cell # shape:(Nbatch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
         # parse the Atomic Orbital Basis Sets
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key is the atomic number, value is the index of the occupied orbits.
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # shape: [Natoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # shape: [natoms, nao_max]
+        orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # shape: [natoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # set the number of valence electrons
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # shape: [Natoms]
-        num_val = scatter(num_val, data.batch, dim=0) # shape: [Nbatch]
+        num_val = num_val[data['z']] # shape: [Natoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
                 
         # Initialize band_num_win
         if self.band_num_control is not None:
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # shape: [Natoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # shape: (Nbatch,)
+            band_num_win = band_num_win[data['z']] # shape: [Natoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # shape: (Nbatch,)
              
         # Separate Hon and Hoff for each batch
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         node_counts_shift = torch.cumsum(node_counts, dim=0) - node_counts
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son, node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'], node_counts.tolist(), dim=0)
         Son_pred_split = torch.split(Son, node_counts.tolist(), dim=0)
         #
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0) # shape: (Nbatch,)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0) # shape: (Nbatch,)
         edge_num_shift = torch.cumsum(edge_num, dim=0) - edge_num
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff, edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'], edge_num.tolist(), dim=0)
         Soff_pred_split = torch.split(Soff, edge_num.tolist(), dim=0)
         if export_reciprocal_values:
-            dSon_split = torch.split(data.dSon, node_counts.tolist(), dim=0)
-            dSoff_split = torch.split(data.dSoff, edge_num.tolist(), dim=0)
+            dSon_split = torch.split(data['dSon'], node_counts.tolist(), dim=0)
+            dSoff_split = torch.split(data['dSoff'], edge_num.tolist(), dim=0)
         
         band_energy = []
         wavefunction = []
@@ -1682,11 +1682,11 @@ class HamGNN_out(nn.Module):
         dS_reciprocal = []
         gap = []
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx]
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx]
             
             # Initialize HK and SK       
-            coe = torch.exp(2j*torch.pi*torch.sum(data.nbr_shift[edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
             
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
             SK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))  
@@ -1771,7 +1771,7 @@ class HamGNN_out(nn.Module):
             lamda = np.einsum('nai, nij, naj -> na', np.conj(eigen_vecs), SK_t, eigen_vecs).real
             lamda = 1/np.sqrt(lamda) # shape: (numk, norbs)
             eigen_vecs = eigen_vecs*lamda[:,:,None]  
-            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data.pos), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
+            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data['pos']), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
             """
             
             if export_reciprocal_values:
@@ -1813,51 +1813,51 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data.edge_index
-        cell = data.cell # shape:(Nbatch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
         # parse the Atomic Orbital Basis Sets
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key is the atomic number, value is the index of the occupied orbits.
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # shape: [Natoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # shape: [natoms, nao_max]
+        orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # shape: [natoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # set the number of valence electrons
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # shape: [Natoms]
-        num_val = scatter(num_val, data.batch, dim=0) # shape: [Nbatch]
+        num_val = num_val[data['z']] # shape: [Natoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
                 
         # Initialize band_num_win
         if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # shape: [Natoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # shape: (Nbatch,)   
+            band_num_win = band_num_win[data['z']] # shape: [Natoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # shape: (Nbatch,)   
              
         # Separate Hon and Hoff for each batch
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         node_counts_shift = torch.cumsum(node_counts, dim=0) - node_counts
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son, node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'], node_counts.tolist(), dim=0)
         #
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0) # shape: (Nbatch,)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0) # shape: (Nbatch,)
         edge_num_shift = torch.cumsum(edge_num, dim=0) - edge_num
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff, edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'], edge_num.tolist(), dim=0)
         if export_reciprocal_values:
-            dSon_split = torch.split(data.dSon, node_counts.tolist(), dim=0)
-            dSoff_split = torch.split(data.dSoff, edge_num.tolist(), dim=0)
+            dSon_split = torch.split(data['dSon'], node_counts.tolist(), dim=0)
+            dSoff_split = torch.split(data['dSoff'], edge_num.tolist(), dim=0)
         
         band_energy = []
         wavefunction = []
@@ -1867,11 +1867,11 @@ class HamGNN_out(nn.Module):
         dS_reciprocal = []
         gap = []
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx]
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx]
             
             # Initialize HK and SK       
-            coe = torch.exp(2j*torch.pi*torch.sum(data.nbr_shift[edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
             
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
             SK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))            
@@ -1946,7 +1946,7 @@ class HamGNN_out(nn.Module):
             lamda = np.einsum('nai, nij, naj -> na', np.conj(eigen_vecs), SK_t, eigen_vecs).real
             lamda = 1/np.sqrt(lamda) # shape: (numk, norbs)
             eigen_vecs = eigen_vecs*lamda[:,:,None]  
-            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data.pos), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
+            orbital_energies, orbital_coefficients = torch.Tensor(eigen).type_as(data['pos']), torch.complex(torch.Tensor(eigen_vecs.real), torch.Tensor(eigen_vecs.imag)).type_as(HK)
             """
             
             if export_reciprocal_values:
@@ -1996,8 +1996,8 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data.edge_index
-        cell = data.cell # shape:(Nbatch, 3, 3)
+        j, i = data['edge_index']
+        cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
         Hsoc_on_real = Hsoc_on_real.reshape(-1, 2*self.nao_max, 2*self.nao_max)
@@ -2006,70 +2006,70 @@ class HamGNN_out(nn.Module):
         Hsoc_off_imag = Hsoc_off_imag.reshape(-1, 2*self.nao_max, 2*self.nao_max)
         
         # parse the Atomic Orbital Basis Sets
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key is the atomic number, value is the index of the occupied orbits.
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
             
-        orb_mask = basis_definition[data.z] # shape: [Natoms, nao_max] 
-        orb_mask = torch.split(orb_mask, data.node_counts.tolist(), dim=0) # shape: [natoms, nao_max]
+        orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
+        orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # shape: [natoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # Set the number of valence electrons
-        num_val = torch.zeros((99,)).type_as(data.z)
+        num_val = torch.zeros((99,)).type_as(data['z'])
         for k in self.num_valence.keys():
             num_val[k] = self.num_valence[k]
-        num_val = num_val[data.z] # shape: [Natoms]
-        num_val = scatter(num_val, data.batch, dim=0) # shape: [Nbatch]
+        num_val = num_val[data['z']] # shape: [Natoms]
+        num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
                 
         # Initialize band_num_win
         if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data.z)
+            band_num_win = torch.zeros((99,)).type_as(data['z'])
             for k in self.band_num_control.keys():
                 band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data.z] # shape: [Natoms,]   
-            band_num_win = scatter(band_num_win, data.batch, dim=0) # shape: (Nbatch,)       
+            band_num_win = band_num_win[data['z']] # shape: [Natoms,]   
+            band_num_win = scatter(band_num_win, data['batch'], dim=0) # shape: (Nbatch,)       
             
         # Separate Hon and Hoff for each batch
-        node_counts = data.node_counts
+        node_counts = data['node_counts']
         Hon_split = torch.split(Hsoc_on_real, node_counts.tolist(), dim=0)
         iHon_split = torch.split(Hsoc_on_imag, node_counts.tolist(), dim=0)
-        Son_split = torch.split(data.Son.reshape(-1, self.nao_max, self.nao_max), node_counts.tolist(), dim=0)
+        Son_split = torch.split(data['Son'].reshape(-1, self.nao_max, self.nao_max), node_counts.tolist(), dim=0)
         #
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hsoc_off_real, edge_num.tolist(), dim=0)
         iHoff_split = torch.split(Hsoc_off_imag, edge_num.tolist(), dim=0)
-        Soff_split = torch.split(data.Soff.reshape(-1, self.nao_max, self.nao_max), edge_num.tolist(), dim=0)
+        Soff_split = torch.split(data['Soff'].reshape(-1, self.nao_max, self.nao_max), edge_num.tolist(), dim=0)
         
-        cell_shift_split = torch.split(data.cell_shift, edge_num.tolist(), dim=0)
-        nbr_shift_split = torch.split(data.nbr_shift, edge_num.tolist(), dim=0)
-        edge_index_split = torch.split(data.edge_index, edge_num.tolist(), dim=1)
+        cell_shift_split = torch.split(data['cell_shift'], edge_num.tolist(), dim=0)
+        nbr_shift_split = torch.split(data['nbr_shift'], edge_num.tolist(), dim=0)
+        edge_index_split = torch.split(data['edge_index'], edge_num.tolist(), dim=1)
         node_num = torch.cumsum(node_counts, dim=0) - node_counts
         edge_index_split = [edge_index_split[idx]-node_num[idx] for idx in range(len(node_num))]
         
         band_energy = []
         wavefunction = []
         for idx in range(Nbatch):
-            k_vec = data.k_vecs[idx]   
-            natoms = data.node_counts[idx].item() 
+            k_vec = data['k_vecs'][idx]   
+            natoms = data['node_counts'][idx].item() 
             
             # Initialize cell index
             cell_shift_tuple = [tuple(c) for c in cell_shift_split[idx].detach().cpu().tolist()]
             cell_shift_set = set(cell_shift_tuple)
             cell_shift_list = list(cell_shift_set)
             cell_index = [cell_shift_list.index(icell) for icell in cell_shift_tuple]
-            cell_index = torch.LongTensor(cell_index).type_as(data.edge_index)
+            cell_index = torch.LongTensor(cell_index).type_as(data['edge_index'])
             ncells = len(cell_shift_set)
             
             # Initialize SK
-            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(data.Son))
+            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(data['Son']))
             phase[:, cell_index] = torch.exp(2j*torch.pi*torch.sum(nbr_shift_split[idx][None,:,:]*k_vec[:,None,:], dim=-1))
             na = torch.arange(natoms).type_as(j)
 
-            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data.Son))
+            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
             S_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Soff_split[idx]
 
             SK = torch.einsum('ijklm, ni->njklm', S_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2079,7 +2079,7 @@ class HamGNN_out(nn.Module):
             SK = SK[:,orb_mask_batch[idx] > 0]
             norbs = int(math.sqrt(SK.numel()/self.num_k))
             SK = SK.reshape(self.num_k, norbs, norbs)
-            I = torch.eye(2).type_as(data.Hon)
+            I = torch.eye(2).type_as(data['Hon'])
             SK = torch.kron(I, SK)
             
             # Initialize Hsoc
@@ -2099,7 +2099,7 @@ class HamGNN_out(nn.Module):
             # Initialize HK
             HK_list = []
             for Hon, Hoff in zip(Hon_soc, Hoff_soc):
-                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data.Son))
+                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
                 H_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Hoff    
 
                 HK = torch.einsum('ijklm, ni->njklm', H_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2139,7 +2139,7 @@ class HamGNN_out(nn.Module):
     
     def mask_Ham(self, Hon, Hoff, data):
         # parse the Atomic Orbital Basis Sets
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data.z)
+        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
         # key is the atomic number, value is the index of the occupied orbits.
         for k in self.basis_def.keys():
             basis_definition[k][self.basis_def[k]] = 1
@@ -2154,7 +2154,7 @@ class HamGNN_out(nn.Module):
             Hoff = Hoff.reshape(original_shape_off[0], -1)
         
         # mask Hon first        
-        orb_mask = basis_definition[data.z].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
+        orb_mask = basis_definition[data['z']].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # shape: [Natoms, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Natoms, nao_max*nao_max]
         
@@ -2162,9 +2162,9 @@ class HamGNN_out(nn.Module):
         Hon_mask[orb_mask>0] = Hon[orb_mask>0]
         
         # mask Hoff
-        j, i = data.edge_index        
-        orb_mask_j = basis_definition[data.z[j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
-        orb_mask_i = basis_definition[data.z[i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
+        j, i = data['edge_index']       
+        orb_mask_j = basis_definition[data['z'][j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
+        orb_mask_i = basis_definition[data['z'][i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
         orb_mask = orb_mask_j[:,:,None] * orb_mask_i[:,None,:]       # shape: [Nedges, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Nedges, nao_max*nao_max]
         
@@ -2221,22 +2221,22 @@ class HamGNN_out(nn.Module):
         return coefficient.view(coefficient.shape[0], -1)
          
     def forward(self, data, graph_representation: dict = None):
-        # prepare data.hamiltonian & data.overlap
+        # prepare data['hamiltonian'] & data['overlap']
         if 'hamiltonian' not in data:
-            data.hamiltonian = self.cat_onsite_and_offsite(data, data.Hon, data.Hoff)
+            data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
         if 'overlap' not in data:
-            data.overlap = self.cat_onsite_and_offsite(data, data.Son, data.Soff)
+            data['overlap'] = self.cat_onsite_and_offsite(data, data['Son'], data['Soff'])
         
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data.edge_index
+        j, i = data['edge_index']
         
         # Calculate inv_edge_index in batch
-        inv_edge_idx = data.inv_edge_idx
+        inv_edge_idx = data['inv_edge_idx']
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data.batch[j], dim=0)
+        edge_num = scatter(edge_num, data['batch'][j], dim=0)
         edge_num = torch.cumsum(edge_num, dim=0) - edge_num
-        inv_edge_idx = inv_edge_idx + edge_num[data.batch[j]]
+        inv_edge_idx = inv_edge_idx + edge_num[data['batch'][j]]
         
         # Calculate the on-site Hamiltonian 
         self.ham_irreps_dim = self.ham_irreps_dim.type_as(j)  
@@ -2300,30 +2300,30 @@ class HamGNN_out(nn.Module):
                 
                 Hsoc_on_real = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
                 Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_on_real = Hsoc_on_real.reshape(-1, (2*self.nao_max)**2)
                 
                 Hsoc_on_imag = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
-                Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data.Lon[:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data.Lon[:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data.Lon[:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_on_imag = Hsoc_on_imag.reshape(-1, (2*self.nao_max)**2)
                 
                 Hsoc_off_real = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
                 Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_off_real = Hsoc_off_real.reshape(-1, (2*self.nao_max)**2)
                 
                 Hsoc_off_imag = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
-                Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data.Loff[:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data.Loff[:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data.Loff[:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                 Hsoc_off_imag = Hsoc_off_imag.reshape(-1, (2*self.nao_max)**2)
             
             elif self.soc_basis == 'su2':
@@ -2361,27 +2361,27 @@ class HamGNN_out(nn.Module):
                 raise NotImplementedError
             
             if self.add_H0:
-                Hsoc_on_real =  Hsoc_on_real + data.Hon0
-                Hsoc_off_real = Hsoc_off_real + data.Hoff0
-                Hsoc_on_imag = Hsoc_on_imag + data.iHon0
-                Hsoc_off_imag = Hsoc_off_imag + data.iHoff0
+                Hsoc_on_real =  Hsoc_on_real + data['Hon0']
+                Hsoc_off_real = Hsoc_off_real + data['Hoff0']
+                Hsoc_on_imag = Hsoc_on_imag + data['iHon0']
+                Hsoc_off_imag = Hsoc_off_imag + data['iHoff0']
             
             Hsoc_real = self.cat_onsite_and_offsite(data, Hsoc_on_real, Hsoc_off_real)
             Hsoc_imag = self.cat_onsite_and_offsite(data, Hsoc_on_imag, Hsoc_off_imag)
             
-            data.hamiltonian_real = self.cat_onsite_and_offsite(data, data.Hon, data.Hoff)
-            data.hamiltonian_imag = self.cat_onsite_and_offsite(data, data.iHon, data.iHoff)
+            data['hamiltonian_real'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
+            data['hamiltonian_imag'] = self.cat_onsite_and_offsite(data, data['iHon'], data['iHoff'])
             
             #Hsoc = self.construct_Hsoc(Hsoc_real, Hsoc_imag)
-            #data.hamiltonian = self.construct_Hsoc(data.hamiltonian_real, data.hamiltonian_imag)
+            #data['hamiltonian'] = self.construct_Hsoc(data['hamiltonian_real'], data['hamiltonian_imag'])
             
             Hsoc = torch.cat((Hsoc_real, Hsoc_imag), dim=0)
-            data.hamiltonian = torch.cat((data.hamiltonian_real, data.hamiltonian_imag), dim=0)
+            data['hamiltonian'] = torch.cat((data['hamiltonian_real'], data['hamiltonian_imag']), dim=0)
             
             if self.calculate_band_energy:
                 k_vecs = []
-                for idx in range(data.batch[-1]+1):
-                    cell = data.cell
+                for idx in range(data['batch'][-1]+1):
+                    cell = data['cell']
                     # Generate K point path
                     if self.k_path is not None:
                         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
@@ -2393,10 +2393,10 @@ class HamGNN_out(nn.Module):
                     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
                     k_vec = torch.Tensor(k_vec).type_as(Hon)
                     k_vecs.append(k_vec)  
-                data.k_vecs = torch.stack(k_vecs, dim=0)
+                data['k_vecs'] = torch.stack(k_vecs, dim=0)
                 band_energy, wavefunction = self.cal_band_energy_soc(Hsoc_on_real, Hsoc_on_imag, Hsoc_off_real, Hsoc_off_imag, data) 
                 with torch.no_grad():
-                    data.band_energy, data.wavefunction = self.cal_band_energy_soc(data.Hon, data.iHon, data.Hoff, data.iHoff, data)
+                    data['band_energy'], data['wavefunction'] = self.cal_band_energy_soc(data['Hon'], data['iHon'], data['Hoff'], data['iHoff'], data)
             else:
                 band_energy = None
                 wavefunction = None
@@ -2411,7 +2411,7 @@ class HamGNN_out(nn.Module):
             # Impose Hermitian symmetry for Hon
             Hon = self.symmetrize_Hon(Hon)
             if self.add_H0:
-                Hon = Hon + data.Hon0
+                Hon = Hon + data['Hon0']
                
             # Calculate the off-site Hamiltonian
             # Calculate the contribution of the edges       
@@ -2424,15 +2424,15 @@ class HamGNN_out(nn.Module):
             # Impose Hermitian symmetry for Hoff
             Hoff = self.symmetrize_Hoff(Hoff, inv_edge_idx)
             if self.add_H0:
-                Hoff = Hoff + data.Hoff0
+                Hoff = Hoff + data['Hoff0']
         
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
                 Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
         
             if self.calculate_band_energy:
                 k_vecs = []
-                for idx in range(data.batch[-1]+1):
-                    cell = data.cell
+                for idx in range(data['batch'][-1]+1):
+                    cell = data['cell']
                     # Generate K point path
                     if isinstance(self.k_path, list):
                         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
@@ -2440,8 +2440,8 @@ class HamGNN_out(nn.Module):
                     elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
                         # build crystal structure
                         latt = cell[idx].detach().cpu().numpy()*au2ang
-                        pos = torch.split(data.pos, data.node_counts.tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
-                        species = torch.split(data.z, data.node_counts.tolist(), dim=0)[idx]
+                        pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
+                        species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
                         struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
                         # Initialize k_path and label
                         kpath_seek = KPathSeek(structure = struct)
@@ -2466,7 +2466,7 @@ class HamGNN_out(nn.Module):
                     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
                     k_vec = torch.Tensor(k_vec).type_as(Hon)
                     k_vecs.append(k_vec)  
-                data.k_vecs = torch.stack(k_vecs, dim=0)
+                data['k_vecs'] = torch.stack(k_vecs, dim=0)
                 if self.export_reciprocal_values:
                     if self.ham_only:
                         band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(Hon, Hoff, data, True)
@@ -2477,7 +2477,7 @@ class HamGNN_out(nn.Module):
                 else:
                     band_energy, wavefunction, gap, H_sym = self.cal_band_energy(Hon, Hoff, data)
                 with torch.no_grad():
-                    data.band_energy, data.wavefunction, data.band_gap, data.H_sym = self.cal_band_energy(data.Hon, data.Hoff, data)
+                    data['band_energy'], data['wavefunction'], data['band_gap'], data['H_sym'] = self.cal_band_energy(data['Hon'], data['Hoff'], data)
             else:
                 band_energy = None
                 wavefunction = None

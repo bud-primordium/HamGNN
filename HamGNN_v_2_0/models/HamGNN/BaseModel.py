@@ -264,13 +264,13 @@ class BaseModel(nn.Module):
         """
         graph = EasyDict()
 
-        node_counts = scatter(torch.ones_like(data.batch), data.batch, dim=0).detach()
+        node_counts = scatter(torch.ones_like(data['batch']), data['batch'], dim=0).detach()
 
-        latt_batch = data.cell.detach().reshape(-1, 3, 3)
-        pos_batch = data.pos.detach()
+        latt_batch = data['cell'].detach().reshape(-1, 3, 3)
+        pos_batch = data['pos'].detach()
 
         pos_batch = torch.split(pos_batch, node_counts.tolist(), dim=0)
-        z_batch = torch.split(data.z.detach(), node_counts.tolist(), dim=0)
+        z_batch = torch.split(data['z'].detach(), node_counts.tolist(), dim=0)
         
         nbr_shift = []
         edge_index = []
@@ -299,21 +299,21 @@ class BaseModel(nn.Module):
             nbr_shift.append(nbr_shift_temp)
 
         # 拼接所有晶体的图信息
-        edge_index = torch.cat(edge_index, dim=-1).type_as(data.edge_index)
-        cell_shift = torch.cat(cell_shift, dim=0).type_as(data.cell_shift)
-        nbr_shift = torch.cat(nbr_shift, dim=0).type_as(data.nbr_shift)
+        edge_index = torch.cat(edge_index, dim=-1).type_as(data['edge_index'])
+        cell_shift = torch.cat(cell_shift, dim=0).type_as(data['cell_shift'])
+        nbr_shift = torch.cat(nbr_shift, dim=0).type_as(data['nbr_shift'])
 
         # 找到新生成的边与原始数据中边的对应关系
-        matching_edges = find_matching_columns_of_A_in_B(torch.cat([data.edge_index, data.cell_shift.t()], dim=0), 
+        matching_edges = find_matching_columns_of_A_in_B(torch.cat([data['edge_index'], data['cell_shift'].t()], dim=0), 
                                                       torch.cat([edge_index, cell_shift.t()], dim=0))
 
         # 填充图字典
-        graph['z'] = data.z
-        graph['pos'] = data.pos
+        graph['z'] = data['z']
+        graph['pos'] = data['pos']
         graph['edge_index'] = edge_index
         graph['cell_shift'] = cell_shift
         graph['nbr_shift'] = nbr_shift
-        graph['batch'] = data.batch
+        graph['batch'] = data['batch']
         graph['matching_edges'] = matching_edges
 
         return graph

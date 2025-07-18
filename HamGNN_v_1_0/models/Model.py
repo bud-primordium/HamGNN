@@ -283,7 +283,7 @@ class Model(pl.LightningModule):
 
     def _enable_grads(self, data):
         if self.requires_dr:
-            data.pos.requires_grad_()
+            data['pos'].requires_grad_()
 
     def check_param(self):
         for name, parms in self.named_parameters():
