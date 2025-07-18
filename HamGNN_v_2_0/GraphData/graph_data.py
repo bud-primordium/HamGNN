@@ -45,7 +45,8 @@ class graph_data_module(pl.LightningDataModule):
                  batch_size: int = 300,
                  val_batch_size: int = None,
                  test_batch_size: int = None,
-                 split_file : str = None):
+                 split_file : str = None,
+                 num_workers: int = 4):
         """初始化 `graph_data_module`。
 
         Args:
@@ -77,6 +78,7 @@ class graph_data_module(pl.LightningDataModule):
         self.split_file = split_file
         self.val_batch_size = val_batch_size or batch_size
         self.test_batch_size = test_batch_size or self.val_batch_size
+        self.num_workers = num_workers
 
     def setup(self, stage=None):
         """划分数据集为训练、验证和测试三部分。
@@ -131,7 +133,7 @@ class graph_data_module(pl.LightningDataModule):
         Returns:
             DataLoader: 用于训练集的数据加载器实例。
         """
-        return DataLoader(self.train_data, batch_size=self.batch_size, pin_memory=True)
+        return DataLoader(self.train_data, batch_size=self.batch_size, pin_memory=True, num_workers=self.num_workers)
 
     def val_dataloader(self) -> DataLoader:
         """创建并返回验证数据加载器。
@@ -139,7 +141,7 @@ class graph_data_module(pl.LightningDataModule):
         Returns:
             DataLoader: 用于验证集的数据加载器实例。
         """
-        return DataLoader(self.val_data, batch_size=self.val_batch_size, pin_memory=True)
+        return DataLoader(self.val_data, batch_size=self.val_batch_size, pin_memory=True, num_workers=self.num_workers)
 
     def test_dataloader(self) -> DataLoader:
         """创建并返回测试数据加载器。
@@ -147,7 +149,7 @@ class graph_data_module(pl.LightningDataModule):
         Returns:
             DataLoader: 用于测试集的数据加载器实例。
         """
-        return DataLoader(self.test_data, batch_size=self.test_batch_size, pin_memory=True)
+        return DataLoader(self.test_data, batch_size=self.test_batch_size, pin_memory=True, num_workers=self.num_workers)
 
     # ------------------------------------------------------------------
     # 兼容旧版本 PyTorch-Lightning 的变通方案
