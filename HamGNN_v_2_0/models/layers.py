@@ -141,7 +141,7 @@ class CosineCutoff(nn.Module):
 
         """
         # 计算截断函数的值
-        cutoffs = 0.5 * (torch.cos(distances * pi / self.cutoff) + 1.0)
+        cutoffs = 0.5 * (torch.cos(distances * 3.141592653589793 / self.cutoff) + 1.0)
         # 移除超出截断半径的贡献
         cutoffs *= (distances < self.cutoff).float()
         return cutoffs

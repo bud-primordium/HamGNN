@@ -1593,7 +1593,8 @@ class HamGNN_out(nn.Module):
         node_counts = data['node_counts']
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
         #
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         edge_num = torch.ones_like(j)
         edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
@@ -1633,7 +1634,8 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -1820,7 +1822,8 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -2003,7 +2006,8 @@ class HamGNN_out(nn.Module):
         """
         Currently this function can only be used to calculate the energy band of the openmx Hamiltonian.
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -2169,7 +2173,8 @@ class HamGNN_out(nn.Module):
         Hon_mask[orb_mask>0] = Hon[orb_mask>0]
         
         # mask Hoff
-        j, i = data['edge_index']       
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]       
         orb_mask_j = basis_definition[data['z'][j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
         orb_mask_i = basis_definition[data['z'][i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
         orb_mask = orb_mask_j[:,:,None] * orb_mask_i[:,None,:]       # shape: [Nedges, nao_max, nao_max]
@@ -2236,7 +2241,8 @@ class HamGNN_out(nn.Module):
         
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         
         # Calculate inv_edge_index in batch
         inv_edge_idx = data['inv_edge_idx']

@@ -46,7 +46,8 @@ class graph_data_module(pl.LightningDataModule):
                  val_batch_size: int = None,
                  test_batch_size: int = None,
                  split_file : str = None,
-                 num_workers: int = 4):
+                 num_workers: int = 4,
+                 transform: Callable = None):
         """初始化 `graph_data_module`。
 
         Args:
@@ -68,6 +69,9 @@ class graph_data_module(pl.LightningDataModule):
                 一个 `.npz` 文件的路径，其中包含预先定义好的 'train_idx', 'val_idx', 'test_idx' 
                 数据集划分索引。如果提供此文件，将忽略 `train_ratio`, `val_ratio`, `test_ratio`。
                 默认为 None。
+            transform (Callable, optional):
+                可选的数据变换函数，在数据加载时应用于每个样本。例如 DynamicGraphTransform。
+                默认为 None。
         """
         super(graph_data_module, self).__init__()
         self.dataset = dataset
@@ -79,6 +83,20 @@ class graph_data_module(pl.LightningDataModule):
         self.val_batch_size = val_batch_size or batch_size
         self.test_batch_size = test_batch_size or self.val_batch_size
         self.num_workers = num_workers
+        self.transform = transform
+
+    def _apply_transform(self, data):
+        """应用数据变换函数（如果存在的话）。
+        
+        Args:
+            data: 原始数据对象
+            
+        Returns:
+            变换后的数据对象，如果没有transform则返回原数据
+        """
+        if self.transform is not None:
+            return self.transform(data)
+        return data
 
     def setup(self, stage=None):
         """划分数据集为训练、验证和测试三部分。
@@ -103,9 +121,9 @@ class graph_data_module(pl.LightningDataModule):
             train_idx = S["train_idx"].tolist()
             val_idx = S["val_idx"].tolist()
             test_idx = S["test_idx"].tolist()
-            self.train_data = Subset(self.dataset, indices=train_idx)
-            self.val_data = Subset(self.dataset, indices=val_idx)
-            self.test_data = Subset(self.dataset, indices=test_idx)
+            self.train_data = [self._apply_transform(self.dataset[i]) for i in train_idx]
+            self.val_data = [self._apply_transform(self.dataset[i]) for i in val_idx]
+            self.test_data = [self._apply_transform(self.dataset[i]) for i in test_idx]
         else:
             # 在 'fit' 阶段或未指定阶段时，执行随机划分
             if stage == 'fit' or stage is None:
@@ -120,12 +138,12 @@ class graph_data_module(pl.LightningDataModule):
                 train_idx = perm[:num_train]
                 val_idx = perm[num_train:num_train+num_val]
                 test_idx = perm[-num_test:]
-                self.train_data = [self.dataset[i] for i in train_idx]
-                self.val_data = [self.dataset[i] for i in val_idx]
-                self.test_data = [self.dataset[i] for i in test_idx]
+                self.train_data = [self._apply_transform(self.dataset[i]) for i in train_idx]
+                self.val_data = [self._apply_transform(self.dataset[i]) for i in val_idx]
+                self.test_data = [self._apply_transform(self.dataset[i]) for i in test_idx]
             # 在 'test' 阶段，使用整个数据集作为测试集
             if stage == 'test':
-                self.test_data = self.dataset
+                self.test_data = [self._apply_transform(self.dataset[i]) for i in range(len(self.dataset))]
 
     def train_dataloader(self) -> DataLoader:
         """创建并返回训练数据加载器。

@@ -82,9 +82,23 @@ def prepare_data(config):
     graph_data = graph_data['graph'].item()
     graph_dataset = list(graph_data.values())
 
+    # 根据配置决定是否需要动态图构建转换
+    transform = None
+    if hasattr(config, 'representation_nets') and hasattr(config.representation_nets, 'HamGNN_pre'):
+        if getattr(config.representation_nets.HamGNN_pre, 'build_internal_graph', False):
+            # 导入并创建 DynamicGraphTransform
+            from .models.HamGNN.BaseModel import DynamicGraphTransform
+            
+            # 从配置中获取参数
+            radius_type = getattr(config.representation_nets.HamGNN_pre, 'radius_type', 'openmx')
+            radius_scale = getattr(config.representation_nets.HamGNN_pre, 'radius_scale', 1.5)
+            
+            transform = DynamicGraphTransform(radius_type=radius_type, radius_scale=radius_scale)
+            print(f"启用动态图构建转换: radius_type={radius_type}, radius_scale={radius_scale}")
+    
     # 初始化数据模块,它将处理数据集的划分、加载和批处理
     graph_dataset = graph_data_module(graph_dataset, train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio, 
-                                        batch_size=batch_size, split_file=split_file)
+                                        batch_size=batch_size, split_file=split_file, transform=transform)
     # 根据当前阶段（如 'fit' 或 'test'）设置数据模块
     graph_dataset.setup(stage=config.setup.stage)
 

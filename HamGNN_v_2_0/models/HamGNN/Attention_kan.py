@@ -747,7 +747,8 @@ class LocalEnvironmentEmbedding(nn.Module):
         Returns:
             Tensor: Local environment embeddings.
         """
-        src, dst = edge_index
+        src = edge_index[0]
+        dst = edge_index[1]
         pseudo_scalar = torch.ones_like(edge_embed[:, :1])
         
         edge_scalars = self.edge_scalar_layer(node_attr[src], node_attr[dst], edge_embed)
@@ -1365,13 +1366,14 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
         :param data: A dictionary containing graph data.
         :return: Updated graph data with encoded edge features.
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         pos = data['pos']
 
         # Calculate edge directions and lengths
         edge_dir = (pos[i] + nbr_shift) - pos[j]
-        edge_length = edge_dir.norm(dim=-1)
+        edge_length = torch.norm(edge_dir, p=2, dim=-1)
 
         # Update data with computed edge vectors and lengths
         data[AtomicDataDict.EDGE_VECTORS_KEY] = edge_dir/edge_length[:,None]
@@ -1593,7 +1595,9 @@ class ConvBlockE3(nn.Module):
         Returns:
         - torch.Tensor: Updated node features.
         """
-        sender, receiver = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        sender = edge_index[0]
+        receiver = edge_index[1]
         node_features = data[AtomicDataDict.NODE_FEATURES_KEY]
         edge_embedding = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
         edge_attributes = data[AtomicDataDict.EDGE_ATTRS_KEY]
@@ -1673,7 +1677,8 @@ class AttentionAggregationV2(nn.Module):
         """
         value = self.unfuse_value(value)
         
-        edge_src, edge_dst = edge_index
+        edgr_src = edge_index[0]
+        edge_dst = edge_index[1]
         
         # Compute the attention weights per edge
         if edge_weights_cutoff is not None:
@@ -1747,7 +1752,8 @@ class AttentionAggregation(nn.Module):
         value = self.unfuse_value(value)
         query = self.unfuse_query(query)
         
-        edge_src, edge_dst = edge_index
+        edgr_src = edge_index[0]
+        edge_dst = edge_index[1]
         
         # Compute the attention weights per edge
         edge_weights = (query * key).sum(-1)  # (num_edges, num_heads)
@@ -1924,7 +1930,9 @@ class AttentionBlockE3(nn.Module):
         Returns:
         - Tuple[torch.Tensor, Optional[torch.Tensor]]: Updated node features and skip connection.
         """
-        sender, receiver = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        sender = edge_index[0]
+        receiver = edge_index[1]
         node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
         edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
         edge_attrs = data[AtomicDataDict.EDGE_ATTRS_KEY]
@@ -2064,7 +2072,9 @@ class PairInteractionEmbeddingBlock(nn.Module):
         Returns:
         - torch.Tensor: Updated edge features.
         """
-        edge_src, edge_dst = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_src = edge_index[0]
+        edge_dst = edge_index[1]
         node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
         edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
         edge_attributes = data[AtomicDataDict.EDGE_ATTRS_KEY]
@@ -2181,7 +2191,9 @@ class PairInteractionBlock(nn.Module):
         Returns:
         - torch.Tensor: Updated edge features.
         """
-        edge_src, edge_dst = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_src = edge_index[0]
+        edge_dst = edge_index[1]
         node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
         edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
         edge_feats = data[AtomicDataDict.EDGE_FEATURES_KEY]

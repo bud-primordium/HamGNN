@@ -218,11 +218,8 @@ class HamGNNConvE3(BaseModel):
         if torch.get_default_dtype() == torch.float64:
             upgrade_tensor_precision(data)
 
-        # 如果配置要求，则在模型内部构建图（邻接关系）
-        if self.build_internal_graph:
-            graph = self.generate_graph(data) 
-        else:
-            graph = data
+        # 图构建现在在数据预处理阶段完成，模型直接使用预处理好的数据
+        graph = data
         
         # --- 特征提取与嵌入 ---
         self.atomic_embedding(graph)  # 原子种类独热编码
@@ -241,8 +238,8 @@ class HamGNNConvE3(BaseModel):
         # --- 整理并返回最终的图表示 ---
         graph_representation = EasyDict()
         graph_representation['node_attr'] = graph[AtomicDataDict.NODE_FEATURES_KEY]
-        if self.build_internal_graph:
-            # 如果是内部生成的图，需要匹配正确的边
+        # 如果数据包含 matching_edges (由 DynamicGraphTransform 生成)，则使用匹配的边
+        if 'matching_edges' in graph:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph.matching_edges]
         else:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY]
@@ -414,10 +411,8 @@ class HamGNNTransformer(BaseModel):
                 - 'node_attr': 节点的等变特征张量。
                 - 'edge_attr': 边的等变特征张量。
         """
-        if self.build_internal_graph:
-            graph = self.generate_graph(data) 
-        else:
-            graph = data
+        # 图构建现在在数据预处理阶段完成，模型直接使用预处理好的数据
+        graph = data
         
         # --- 特征提取与嵌入 ---
         self.atomic_embedding(graph)
@@ -435,7 +430,8 @@ class HamGNNTransformer(BaseModel):
         # --- 整理并返回最终的图表示 ---
         graph_representation = EasyDict()
         graph_representation['node_attr'] = graph[AtomicDataDict.NODE_FEATURES_KEY]
-        if self.build_internal_graph:
+        # 如果数据包含 matching_edges (由 DynamicGraphTransform 生成)，则使用匹配的边
+        if 'matching_edges' in graph:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph.matching_edges]
         else:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY]
@@ -1481,7 +1477,8 @@ class HamGNNPlusPlusOut(nn.Module):
         node_counts = data['node_counts']
         Hon_split = torch.split(Hon, node_counts.tolist(), dim=0)
         #
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         edge_num = torch.ones_like(j)
         edge_num = scatter(edge_num, data['batch'][j], dim=0)
         Hoff_split = torch.split(Hoff, edge_num.tolist(), dim=0)
@@ -1585,7 +1582,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             tuple: 包含能带能量、波函数、带隙等信息的元组。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -1793,7 +1791,8 @@ class HamGNNPlusPlusOut(nn.Module):
                 如果 `export_reciprocal_values` 为 `False`，返回 `(band_energy, wavefunction, gap, H_sym)`。
                 如果 `export_reciprocal_values` 为 `True`，返回 `(band_energy, wavefunction, HK, SK, dSK, gap)`。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -2007,7 +2006,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             tuple: 返回一个包含能带能量 `band_energy` 和扁平化的波函数 `wavefunction` 的元组。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         cell = data['cell'] # shape:(Nbatch, 3, 3)
         Nbatch = cell.shape[0]
         
@@ -2196,7 +2196,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Hon_mask[orb_mask>0] = Hon[orb_mask>0]
         
         # 接着掩码 off-site 矩阵
-        j, i = data['edge_index']        
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]        
         orb_mask_j = basis_definition[data['z'][j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
         orb_mask_i = basis_definition[data['z'][i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
         # 通过外积创建 (i, j) 轨道对的掩码
@@ -2328,7 +2329,8 @@ class HamGNNPlusPlusOut(nn.Module):
 
     def edge_hunter(self, data, inv_edge_idx=None):
         # ... (此函数逻辑复杂且高度特化，保持原有注释风格)
-        src, tar = data['edge_index']
+        src = data['edge_index'][0]
+        tar = data['edge_index'][1]
         unique_cell_shift = data['unique_cell_shift']
         cell_shift_indices = data['cell_shift_indices']
         cell_index_map = data['cell_index_map']
@@ -2378,7 +2380,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             torch.Tensor: 拼接后的 on-site 和 off-site 掩码。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         z = data['z']
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
@@ -2401,7 +2404,8 @@ class HamGNNPlusPlusOut(nn.Module):
         Returns:
             torch.Tensor: 适用于共线自旋计算的拼接掩码。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         z = data['z']
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
@@ -2427,7 +2431,8 @@ class HamGNNPlusPlusOut(nn.Module):
             tuple: 返回一个元组 `(mask_real_imag, mask_all)`，
                    分别对应 SOC 哈密顿量的实部/虚部掩码和总掩码。
         """
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         z = data['z']
         basis_definition = self.get_basis_definition(z)
 
@@ -2482,7 +2487,8 @@ class HamGNNPlusPlusOut(nn.Module):
         
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         
         # Calculate inv_edge_index in batch
         inv_edge_idx = data['inv_edge_idx']

@@ -217,53 +217,78 @@ def find_matching_columns_of_A_in_B(A, B):
 class BaseModel(nn.Module):
     """所有 HamGNN 图学习模型的基类。
 
-    它封装了动态图构建的核心逻辑。
-
-    Attributes:
-        radius_type (str): 用于确定原子半径的来源类型 (e.g., 'openmx')。
-        radius_scale (float): 原子半径的缩放因子。
+    重构后的版本专注于纯计算逻辑，动态图构建已移至数据预处理阶段。
+    这使得模型能够与 torch.jit.script 兼容。
+    
+    注意：为了向后兼容，仍保留 radius_type 和 radius_scale 参数，
+    但它们不再在 BaseModel 中使用。子类可以用这些参数创建相应的 transform。
     """
     def __init__(self, radius_type: str = 'openmx', radius_scale: float = 1.5) -> None:
         """
         Args:
-            radius_type (str): 原子半径的类型，默认为 'openmx'。
-            radius_scale (float): 原子半径的缩放因子，默认为 1.5。
+            radius_type (str): 原子半径的类型，默认为 'openmx' （仅用于向后兼容）
+            radius_scale (float): 原子半径的缩放因子，默认为 1.5 （仅用于向后兼容）
         """
         super().__init__()
-        self.radius_type = radius_type
-        self.radius_scale = radius_scale
+        # 保留这些参数以便子类可以访问，但BaseModel不再使用它们
+        self._radius_type = radius_type
+        self._radius_scale = radius_scale
 
     def forward(self, data):
         """前向传播的占位符，应在子类中实现。"""
         raise NotImplementedError
 
-    def generate_graph(
-        self,
-        data,
-    ):
+
+    @property
+    def num_params(self) -> int:
+        """计算模型的总参数数量。"""
+        return sum(p.numel() for p in self.parameters())
+
+
+class DynamicGraphTransform:
+    """
+    动态图构建转换器
+    
+    将BaseModel中的动态图构建逻辑分离为独立的数据转换步骤，
+    使模型核心逻辑专注于计算，符合关注点分离原则。
+    这样设计的目的是使模型能够被torch.jit.script成功编译。
+    """
+    
+    def __init__(self, radius_type: str = 'openmx', radius_scale: float = 1.5):
         """
-        根据原子位置和种类动态生成计算图（邻居列表）。
-
-        此方法会忽略 `data` 中预先计算的 `edge_index`，并根据每种原子的
-        化学性质（半径）和 `radius_scale` 重新计算邻居关系。
-        它还会找到新生成的图的边与原始图的边的对应关系。
-
+        初始化动态图构建转换器
+        
         Args:
-            data (Data): 输入的图数据对象，必须包含 `pos`, `z`, `cell`, `batch` 等信息。
-
-        Returns:
-            EasyDict: 
-                一个包含新生成的图信息的字典。
-                - 'z': 原子序数。
-                - 'pos': 原子位置。
-                - 'edge_index': 新的边索引。
-                - 'cell_shift': 边的晶胞平移向量。
-                - 'nbr_shift': 邻居的相对位置向量。
-                - 'batch': 批处理索引。
-                - 'matching_edges': 新图的边在原始图中的匹配索引。
+            radius_type (str): 原子半径的类型，默认为 'openmx'
+            radius_scale (float): 原子半径的缩放因子，默认为 1.5
         """
-        graph = EasyDict()
-
+        self.radius_type = radius_type
+        self.radius_scale = radius_scale
+    
+    def __call__(self, data):
+        """
+        对数据应用动态图构建转换
+        
+        Args:
+            data: PyTorch Geometric Data对象，包含原子位置、原子类型等信息
+            
+        Returns:
+            data: 更新后的Data对象，包含动态生成的图结构
+        """
+        # 将原来generate_graph的逻辑移到这里
+        return self._generate_graph(data)
+    
+    def _generate_graph(self, data):
+        """
+        根据原子位置和种类动态生成计算图（邻居列表）
+        
+        此方法基于每种原子的化学性质（半径）和radius_scale重新计算邻居关系，
+        并找到新生成的图的边与原始图的边的对应关系。
+        """
+        # 如果数据中没有batch信息，添加默认batch
+        if 'batch' not in data:
+            data['batch'] = torch.zeros(data['pos'].shape[0], dtype=torch.long, device=data['pos'].device)
+            
         node_counts = scatter(torch.ones_like(data['batch']), data['batch'], dim=0).detach()
 
         latt_batch = data['cell'].detach().reshape(-1, 3, 3)
@@ -281,7 +306,9 @@ class BaseModel(nn.Module):
             # 基于原子半径动态计算邻居列表
             edge_index_temp, shifts_tmp, _ = neighbor_list_and_relative_vec(
                 pos,
-                r_max=get_radii_from_atomic_numbers(z_batch[idx_xtal], radius_scale=self.radius_scale, radius_type=self.radius_type),
+                r_max=get_radii_from_atomic_numbers(z_batch[idx_xtal], 
+                                                  radius_scale=self.radius_scale, 
+                                                  radius_type=self.radius_type),
                 self_interaction=False,
                 strict_self_interaction=True,
                 cell=latt_batch[idx_xtal],
@@ -292,33 +319,27 @@ class BaseModel(nn.Module):
             
             # 调整边索引以适应批处理
             if idx_xtal > 0:
-                edge_index_temp += node_counts[idx_xtal - 1]
+                edge_index_temp += node_counts[:idx_xtal].sum()
 
             edge_index.append(edge_index_temp)
             cell_shift.append(shifts_tmp)
             nbr_shift.append(nbr_shift_temp)
 
         # 拼接所有晶体的图信息
-        edge_index = torch.cat(edge_index, dim=-1).type_as(data['edge_index'])
-        cell_shift = torch.cat(cell_shift, dim=0).type_as(data['cell_shift'])
-        nbr_shift = torch.cat(nbr_shift, dim=0).type_as(data['nbr_shift'])
+        new_edge_index = torch.cat(edge_index, dim=-1).type_as(data['edge_index'])
+        new_cell_shift = torch.cat(cell_shift, dim=0).type_as(data['cell_shift'])
+        new_nbr_shift = torch.cat(nbr_shift, dim=0).type_as(data['nbr_shift'])
 
         # 找到新生成的边与原始数据中边的对应关系
-        matching_edges = find_matching_columns_of_A_in_B(torch.cat([data['edge_index'], data['cell_shift'].t()], dim=0), 
-                                                      torch.cat([edge_index, cell_shift.t()], dim=0))
+        matching_edges = find_matching_columns_of_A_in_B(
+            torch.cat([data['edge_index'], data['cell_shift'].t()], dim=0), 
+            torch.cat([new_edge_index, new_cell_shift.t()], dim=0)
+        )
 
-        # 填充图字典
-        graph['z'] = data['z']
-        graph['pos'] = data['pos']
-        graph['edge_index'] = edge_index
-        graph['cell_shift'] = cell_shift
-        graph['nbr_shift'] = nbr_shift
-        graph['batch'] = data['batch']
-        graph['matching_edges'] = matching_edges
+        # 更新数据对象
+        data['edge_index'] = new_edge_index
+        data['cell_shift'] = new_cell_shift
+        data['nbr_shift'] = new_nbr_shift
+        data['matching_edges'] = matching_edges
 
-        return graph
-
-    @property
-    def num_params(self) -> int:
-        """计算模型的总参数数量。"""
-        return sum(p.numel() for p in self.parameters())
+        return data

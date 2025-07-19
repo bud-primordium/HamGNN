@@ -29,7 +29,8 @@ class Force(nn.Module):
 
     def forward(self, data, graph_representation: dict = None):
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j] # j->i: ri-rj = rji
@@ -80,7 +81,8 @@ class Born(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
@@ -143,7 +145,8 @@ class piezoelectric(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
@@ -180,7 +183,8 @@ class piezoelectric(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:

@@ -59,7 +59,8 @@ class Force(nn.Module):
             dict: 包含计算出的原子受力 `force` 的字典。
         """
         edge_attr = graph_representation['edge_attr']  # 边特征张量mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         pos = data['pos']
         # 计算从原子 j 指向原子 i 的方向矢量 (考虑周期性边界条件)
@@ -169,7 +170,8 @@ class Born(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
@@ -265,7 +267,8 @@ class piezoelectric(nn.Module):
     def forward(self, data, graph_representation: dict = None):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # mji
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         pos = data['pos']
         edge_dir = (pos[i]+nbr_shift) - pos[j]  # j->i: ri-rj = rji
@@ -329,7 +332,8 @@ class piezoelectric(nn.Module):
         node_attr = graph_representation['node_attr']
         edge_attr = graph_representation['edge_attr']  # m_ji
         triplet_attr = graph_representation['triplet_attr']
-        j, i = data['edge_index']
+        j = data['edge_index'][0]
+        i = data['edge_index'][1]
         nbr_shift = data['nbr_shift']
         # (idx_i, idx_j, idx_k, idx_kj, idx_ji)
         if self.include_triplet:
