@@ -83,9 +83,13 @@ def prepare_data(config):
     graph_dataset = list(graph_data.values())
 
     # 根据配置决定是否需要动态图构建转换
+    # 注意：为了 TorchScript 兼容性，动态图构建已从模型内部移至数据预处理阶段
     transform = None
     if hasattr(config, 'representation_nets') and hasattr(config.representation_nets, 'HamGNN_pre'):
-        if getattr(config.representation_nets.HamGNN_pre, 'build_internal_graph', False):
+        build_internal_graph = getattr(config.representation_nets.HamGNN_pre, 'build_internal_graph', False)
+        
+        # 如果原本是内部构建图，现在需要在预处理阶段构建
+        if build_internal_graph:
             # 导入并创建 DynamicGraphTransform
             from .models.HamGNN.BaseModel import DynamicGraphTransform
             
@@ -94,7 +98,9 @@ def prepare_data(config):
             radius_scale = getattr(config.representation_nets.HamGNN_pre, 'radius_scale', 1.5)
             
             transform = DynamicGraphTransform(radius_type=radius_type, radius_scale=radius_scale)
-            print(f"启用动态图构建转换: radius_type={radius_type}, radius_scale={radius_scale}")
+            print(f"动态图构建已移至预处理阶段: radius_type={radius_type}, radius_scale={radius_scale}")
+        else:
+            print("使用预构建的图数据，无需动态构建")
     
     # 初始化数据模块,它将处理数据集的划分、加载和批处理
     graph_dataset = graph_data_module(graph_dataset, train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio, 
