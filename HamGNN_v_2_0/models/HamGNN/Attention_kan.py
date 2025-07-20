@@ -2181,8 +2181,9 @@ class PairInteractionBlock(nn.Module):
             use_kan=self.use_kan
             )
 
-        # Skip connection - always create to avoid TorchScript issues
-        self.skip_linear = self.create_linear(irreps_edge_feats, irreps_edge_feats)
+        # Skip connection
+        if self.use_skip_connections:
+            self.skip_linear = self.create_linear(irreps_edge_feats, irreps_edge_feats)
 
     def create_linear(self, irreps_in, irreps_out=None):
         """
@@ -2225,36 +2226,16 @@ class PairInteractionBlock(nn.Module):
             edge_embed
         )
         
-        if self.use_skip_connections:
+        if self.use_skip_connections and hasattr(self, 'skip_linear'):
             skip_feats = self.skip_linear(edge_feats)  
             edge_feats = edge_feats_mix + skip_feats
-        else:
-            edge_feats = edge_feats_mix
+        # else:
+        #     edge_feats = edge_feats_mix
 
         data["edge_features"] = edge_feats
         
         return edge_feats
     
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
-        """
-        Handle backward compatibility when loading checkpoints.
-        
-        In older versions, skip_linear was only created when use_skip_connections=True.
-        In the current version, skip_linear is always created to avoid TorchScript issues.
-        This method ensures old checkpoints can still be loaded.
-        """
-        # If current instance doesn't use skip connections, handle skip_linear compatibility
-        if not self.use_skip_connections:
-            # Remove skip_linear keys from state_dict to avoid loading errors
-            skip_keys_to_remove = [k for k in list(state_dict.keys()) if k.startswith(f"{prefix}skip_linear.")]
-            for key in skip_keys_to_remove:
-                state_dict.pop(key, None)
-            
-            # Remove skip_linear keys from missing_keys to avoid warnings
-            missing_keys[:] = [k for k in missing_keys if not k.startswith(f"{prefix}skip_linear.")]
-        
-        # Call parent method to handle remaining state dict loading
-        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs)
 
 @compile_mode("script")
 class CorrProductBlock(nn.Module):
