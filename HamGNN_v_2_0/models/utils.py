@@ -23,7 +23,7 @@ import torch.nn as nn
 import numpy as np
 from torch.nn import (Linear, Bilinear, Sigmoid, Softplus, ELU, ReLU, SELU, SiLU,
                       CELU, BatchNorm1d, ModuleList, Sequential, Tanh, BatchNorm1d as BN)
-from typing import Callable, Union, Optional
+from typing import Callable, Union, Optional, Dict
 import re
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
@@ -664,7 +664,7 @@ def extract_elements_above_threshold(
     
     return extracted_values
 
-def upgrade_tensor_precision(tensor_dict: dict):
+def upgrade_tensor_precision(tensor_dict: Dict[str, torch.Tensor]):
     """升级给定字典中特定类型张量的精度。
     
     该函数遍历字典，将 `torch.float32` 张量转换为 `torch.float64` (double)，

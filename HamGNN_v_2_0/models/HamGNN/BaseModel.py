@@ -239,10 +239,12 @@ class BaseModel(nn.Module):
         raise NotImplementedError
 
 
-    @property
     def num_params(self) -> int:
         """计算模型的总参数数量。"""
-        return sum(p.numel() for p in self.parameters())
+        total = 0
+        for p in self.parameters():
+            total += p.numel()
+        return total
 
 
 class DynamicGraphTransform:
