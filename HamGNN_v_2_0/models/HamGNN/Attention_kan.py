@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, Type, Union, Tuple
 import torch
 from torch import nn
 import math
+from collections import OrderedDict
 from e3nn import o3
 from e3nn.nn import FullyConnectedNet
 from e3nn.math import soft_unit_step
@@ -240,7 +241,7 @@ class OverlapExpand(nn.Module):
         self.tensor_expansion = TensorExpansion(ham_type=ham_type, nao_max=nao_max)
         self.irreps_overlap = self.tensor_expansion.irreps_out
 
-    def forward(self, data):
+    def forward(self, data: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
         Forward pass to expand overlap data.
 
@@ -1231,10 +1232,24 @@ class MessagePackBlockV2(nn.Module):
 
         return output
 
+
+@torch.jit.script
+def shifted_softplus(x: torch.Tensor) -> torch.Tensor:
+    """JIT-compatible version of ShiftedSoftPlus."""
+    # Use torch.log and torch.tensor instead of math.log
+    return torch.nn.functional.softplus(x) - torch.log(torch.tensor(2.0, device=x.device, dtype=x.dtype))
+
+
+@torch.jit.script
+def abs_activation(x: torch.Tensor) -> torch.Tensor:
+    """JIT-compatible wrapper for torch.abs."""
+    return torch.abs(x)
+
+
 acts = {
-    "abs": torch.abs,
-    "tanh": torch.tanh,
-    "ssp": ShiftedSoftPlus,
+    "abs": abs_activation,
+    "tanh": torch.nn.functional.tanh,
+    "ssp": shifted_softplus,
     "silu": torch.nn.functional.silu,
 }
 
@@ -1312,7 +1327,7 @@ def filter_and_split_irreps(irreps: o3.Irreps, num_channels: int, min_l: int, ma
     
     return result_irreps
 
-@compile_mode('script')
+@compile_mode("script")
 class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
     """
     Encodes edge lengths using a specified radial basis.
@@ -1359,7 +1374,7 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
             irreps_out={self.out_field: o3.Irreps([(num_basis, (0, 1))])},
         )
 
-    def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
+    def forward(self, data: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
         Computes the edge encoding and updates the data dictionary.
 
@@ -1376,8 +1391,8 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
         edge_length = torch.norm(edge_dir, p=2, dim=-1)
 
         # Update data with computed edge vectors and lengths
-        data[AtomicDataDict.EDGE_VECTORS_KEY] = edge_dir/edge_length[:,None]
-        data[AtomicDataDict.EDGE_LENGTH_KEY] = edge_length
+        data["edge_vectors"] = edge_dir/edge_length[:,None]
+        data["edge_lengths"] = edge_length
 
         # Apply the radial basis to the edge lengths
         edge_length_embedded = self.basis(edge_length)
@@ -1389,7 +1404,7 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
 
         return data
 
-@compile_mode('script')
+@compile_mode("script")
 class VectorToAttentionHeads(nn.Module):
     """
     Reshapes vectors of shape [N, irreps_mid] to vectors of shape [N, num_heads, irreps_head].
@@ -1423,7 +1438,7 @@ class VectorToAttentionHeads(nn.Module):
     def __repr__(self):
         return f'{self.__class__.__name__}(irreps_head={self.irreps_head}, num_heads={self.num_heads})'
 
-@compile_mode('script')
+@compile_mode("script")
 class AttentionHeadsToVector(nn.Module):
     """
     Converts vectors of shape [N, num_heads, irreps_head] into vectors of shape [N, irreps_head * num_heads].
@@ -1585,7 +1600,7 @@ class ConvBlockE3(nn.Module):
             irreps_in, irreps_out or irreps_in, internal_weights=True, shared_weights=True
         )
 
-    def forward(self, data: dict) -> torch.Tensor:
+    def forward(self, data: Dict[str, torch.Tensor]) -> torch.Tensor:
         """
         Forward pass of the convolutional block.
 
@@ -1595,13 +1610,13 @@ class ConvBlockE3(nn.Module):
         Returns:
         - torch.Tensor: Updated node features.
         """
-        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data["edge_index"]
         sender = edge_index[0]
         receiver = edge_index[1]
-        node_features = data[AtomicDataDict.NODE_FEATURES_KEY]
-        edge_embedding = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
-        edge_attributes = data[AtomicDataDict.EDGE_ATTRS_KEY]
-        num_nodes = len(data[AtomicDataDict.NODE_FEATURES_KEY])
+        node_features = data["node_features"]
+        edge_embedding = data["edge_embedding"]
+        edge_attributes = data["edge_attrs"]
+        num_nodes = len(data["node_features"])
 
         # Skip connection
         skip_connection = self.skip_linear(node_features) if self.use_skip_connections else None
@@ -1610,7 +1625,7 @@ class ConvBlockE3(nn.Module):
         messages = self.conv_tp(
             node_features[sender], 
             node_features[receiver],  
-            data[AtomicDataDict.EDGE_FEATURES_KEY], 
+            data["edge_features"], 
             edge_attributes,
             edge_embedding
         )
@@ -1624,10 +1639,10 @@ class ConvBlockE3(nn.Module):
         output_features = self.residual(aggregated_messages)
 
         # Apply skip connection if used
-        if self.use_skip_connections:
-            output_features += skip_connection
+        if self.use_skip_connections and skip_connection is not None:
+            output_features = output_features + skip_connection
 
-        data[AtomicDataDict.NODE_FEATURES_KEY] = output_features
+        data["node_features"] = output_features
         
         return output_features
 
@@ -1721,6 +1736,9 @@ class AttentionAggregation(nn.Module):
         self.value_irreps_head = scale_irreps(irreps_value, 1/num_heads)
         self.query_irreps_head = scale_irreps(irreps_query, 1/num_heads)
         
+        # Pre-compute dim for TorchScript compatibility
+        self.key_irreps_head_dim = self.key_irreps_head.dim
+        
         self.unfuse_key = VectorToAttentionHeads(self.key_irreps_head, num_heads)
         self.unfuse_value = VectorToAttentionHeads(self.value_irreps_head, num_heads)
         self.unfuse_query = VectorToAttentionHeads(self.query_irreps_head, num_heads)
@@ -1759,7 +1777,8 @@ class AttentionAggregation(nn.Module):
         edge_weights = (query * key).sum(-1)  # (num_edges, num_heads)
         if edge_weight_cutoff is not None:
             edge_weights = edge_weight_cutoff[:, None] * edge_weights  # (num_edges, num_heads)
-        edge_weights = edge_weights / math.sqrt(self.key_irreps_head.dim)
+        # TorchScript workaround: use pre-computed dim value
+        edge_weights = edge_weights / math.sqrt(self.key_irreps_head_dim)
         edge_weights = edge_softmax(edge_weights, edge_dst)  # (num_edges, num_heads)
         edge_weights = edge_weights.unsqueeze(-1)  # (num_edges, num_heads, 1)
 
@@ -1768,7 +1787,7 @@ class AttentionAggregation(nn.Module):
         f_out = self.fuse_value(f_out)  # Merge heads
         return f_out
 
-@compile_mode("script")    
+@compile_mode("script")
 class AttentionBlockE3(nn.Module):
     """
     An equivariant attention block for processing graph data with attention mechanisms.
@@ -1920,7 +1939,7 @@ class AttentionBlockE3(nn.Module):
     def forward(
         self,
         data: Dict[str, torch.Tensor],
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+    ) -> torch.Tensor:
         """
         Forward pass of the attention block.
 
@@ -1928,15 +1947,15 @@ class AttentionBlockE3(nn.Module):
         - data (Dict[str, torch.Tensor]): A dictionary containing the graph data.
 
         Returns:
-        - Tuple[torch.Tensor, Optional[torch.Tensor]]: Updated node features and skip connection.
+        - torch.Tensor: Updated node features.
         """
-        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data["edge_index"]
         sender = edge_index[0]
         receiver = edge_index[1]
-        node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
-        edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
-        edge_attrs = data[AtomicDataDict.EDGE_ATTRS_KEY]
-        edge_feats = data[AtomicDataDict.EDGE_FEATURES_KEY]
+        node_feats = data["node_features"]
+        edge_embed = data["edge_embedding"]
+        edge_attrs = data["edge_attrs"]
+        edge_feats = data["edge_features"]
         
         # Skip connection
         sc = self.skip_linear(node_feats) if self.use_skip_connections else None
@@ -1952,17 +1971,17 @@ class AttentionBlockE3(nn.Module):
                                    edge_embed)
 
         # Attention mechanism      
-        edge_weight_cutoff = self.cutoff_func(data[AtomicDataDict.EDGE_LENGTH_KEY])
-        node_feats = self.attention(key, value, query, edge_weight_cutoff, edge_index=data[AtomicDataDict.EDGE_INDEX_KEY])
+        edge_weight_cutoff = self.cutoff_func(data["edge_lengths"])
+        node_feats = self.attention(key, value, query, edge_weight_cutoff, edge_index=data["edge_index"])
 
         # Apply nonlinearity
         node_feats = self.residual(node_feats)
 
         # Apply skip connection if used
-        if self.use_skip_connections:
-            node_feats += sc  
+        if self.use_skip_connections and sc is not None:
+            node_feats = node_feats + sc  
 
-        data[AtomicDataDict.NODE_FEATURES_KEY] = node_feats
+        data["node_features"] = node_feats
 
         return node_feats
 
@@ -2072,12 +2091,12 @@ class PairInteractionEmbeddingBlock(nn.Module):
         Returns:
         - torch.Tensor: Updated edge features.
         """
-        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data["edge_index"]
         edge_src = edge_index[0]
         edge_dst = edge_index[1]
-        node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
-        edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
-        edge_attributes = data[AtomicDataDict.EDGE_ATTRS_KEY]
+        node_feats = data["node_features"]
+        edge_embed = data["edge_embedding"]
+        edge_attributes = data["edge_attrs"]
         
         node_feats_src = self.linear_up_src(node_feats[edge_src])
         node_feats_dst = self.linear_up_dst(node_feats[edge_dst])
@@ -2087,7 +2106,7 @@ class PairInteractionEmbeddingBlock(nn.Module):
             node_feats_src + node_feats_dst, edge_attributes, edge_embed
         )
 
-        data[AtomicDataDict.EDGE_FEATURES_KEY] = edge_feats_mix_tp
+        data["edge_features"] = edge_feats_mix_tp
         return edge_feats_mix_tp
 
 @compile_mode("script")
@@ -2162,9 +2181,8 @@ class PairInteractionBlock(nn.Module):
             use_kan=self.use_kan
             )
 
-        # Skip connection
-        if self.use_skip_connections:
-            self.skip_linear = self.create_linear(irreps_edge_feats, irreps_edge_feats)
+        # Skip connection - always create to avoid TorchScript issues
+        self.skip_linear = self.create_linear(irreps_edge_feats, irreps_edge_feats)
 
     def create_linear(self, irreps_in, irreps_out=None):
         """
@@ -2191,28 +2209,52 @@ class PairInteractionBlock(nn.Module):
         Returns:
         - torch.Tensor: Updated edge features.
         """
-        edge_index = data[AtomicDataDict.EDGE_INDEX_KEY]
+        edge_index = data["edge_index"]
         edge_src = edge_index[0]
         edge_dst = edge_index[1]
-        node_feats = data[AtomicDataDict.NODE_FEATURES_KEY]
-        edge_embed = data[AtomicDataDict.EDGE_EMBEDDING_KEY]
-        edge_feats = data[AtomicDataDict.EDGE_FEATURES_KEY]
+        node_feats = data["node_features"]
+        edge_embed = data["edge_embedding"]
+        edge_feats = data["edge_features"]
 
         # Mixing node features for edge features       
         edge_feats_mix = self.conv_tp(
             self.linear_up_src(node_feats)[edge_src], 
             self.linear_up_tar(node_feats)[edge_dst], 
             edge_feats, 
-            data[AtomicDataDict.EDGE_ATTRS_KEY], 
+            data["edge_attrs"], 
             edge_embed
         )
         
         if self.use_skip_connections:
-            edge_feats = edge_feats_mix + self.skip_linear(edge_feats)
+            skip_feats = self.skip_linear(edge_feats)  
+            edge_feats = edge_feats_mix + skip_feats
+        else:
+            edge_feats = edge_feats_mix
 
-        data[AtomicDataDict.EDGE_FEATURES_KEY] = edge_feats
+        data["edge_features"] = edge_feats
         
         return edge_feats
+    
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
+        """
+        Handle backward compatibility when loading checkpoints.
+        
+        In older versions, skip_linear was only created when use_skip_connections=True.
+        In the current version, skip_linear is always created to avoid TorchScript issues.
+        This method ensures old checkpoints can still be loaded.
+        """
+        # If current instance doesn't use skip connections, handle skip_linear compatibility
+        if not self.use_skip_connections:
+            # Remove skip_linear keys from state_dict to avoid loading errors
+            skip_keys_to_remove = [k for k in list(state_dict.keys()) if k.startswith(f"{prefix}skip_linear.")]
+            for key in skip_keys_to_remove:
+                state_dict.pop(key, None)
+            
+            # Remove skip_linear keys from missing_keys to avoid warnings
+            missing_keys[:] = [k for k in missing_keys if not k.startswith(f"{prefix}skip_linear.")]
+        
+        # Call parent method to handle remaining state dict loading
+        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs)
 
 @compile_mode("script")
 class CorrProductBlock(nn.Module):
@@ -2293,17 +2335,17 @@ class CorrProductBlock(nn.Module):
         Returns:
         - torch.Tensor: Updated node features.
         """
-        node_feats = self.linear_pre(data[AtomicDataDict.NODE_FEATURES_KEY])
+        node_feats = self.linear_pre(data["node_features"])
         node_feats = self.reshape(node_feats) # [n_nodes, channels, (l + 1)**2]
 
-        out = self.prod(node_feats, None, data[AtomicDataDict.NODE_ATTRS_KEY])
+        out = self.prod(node_feats, None, data["node_attrs"])
         out = self.linear_out(out)
 
         if self.use_skip_connections:
-            sc = self.linear_sc(data[AtomicDataDict.NODE_FEATURES_KEY])
-            data[AtomicDataDict.NODE_FEATURES_KEY] = out + sc
+            sc = self.linear_sc(data["node_features"])
+            data["node_features"] = out + sc
         else:
-            data[AtomicDataDict.NODE_FEATURES_KEY] = out
+            data["node_features"] = out
 
         return out
 
