@@ -201,7 +201,7 @@ class HamGNNConvE3(BaseModel):
                                                     radial_MLP=self.radial_MLP)
             self.pair_interactions.append(pair_interaction)
     
-    def forward(self, data):
+    def forward(self, data: Dict[str, torch.Tensor]):
         """执行模型的前向传播。
 
         Args:
@@ -215,11 +215,12 @@ class HamGNNConvE3(BaseModel):
                 - 'node_attr': 节点的等变特征张量。
                 - 'edge_attr': 边的等变特征张量。
         """
-        if torch.get_default_dtype() == torch.float64:
+        # 检查数据精度并升级（TorchScript兼容版本）
+        if 'pos' in data and data['pos'].dtype == torch.float64:
             upgrade_tensor_precision(data)
 
         # 图构建现在在数据预处理阶段完成，模型直接使用预处理好的数据
-        graph = data
+        graph: Dict[str, torch.Tensor] = data
         
         # --- 特征提取与嵌入 ---
         self.atomic_embedding(graph)  # 原子种类独热编码
@@ -229,18 +230,22 @@ class HamGNNConvE3(BaseModel):
         self.chemical_embedding(graph)# 初始化学环境特征
         
         # --- 等变卷积层堆叠 ---
-        for i in range(self.num_layers):
-            self.convolutions[i](graph)
-            if self.use_corr_prod:
-                self.corr_products[i](graph)
-            self.pair_interactions[i](graph)
+        if self.use_corr_prod:
+            for conv_layer, corr_layer, pair_layer in zip(self.convolutions, self.corr_products, self.pair_interactions):
+                conv_layer(graph)
+                corr_layer(graph)
+                pair_layer(graph)
+        else:
+            for conv_layer, pair_layer in zip(self.convolutions, self.pair_interactions):
+                conv_layer(graph)
+                pair_layer(graph)
             
         # --- 整理并返回最终的图表示 ---
-        graph_representation = EasyDict()
+        graph_representation: Dict[str, torch.Tensor] = {}
         graph_representation['node_attr'] = graph[AtomicDataDict.NODE_FEATURES_KEY]
         # 如果数据包含 matching_edges (由 DynamicGraphTransform 生成)，则使用匹配的边
         if 'matching_edges' in graph:
-            graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph.matching_edges]
+            graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph['matching_edges']]
         else:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY]
         return graph_representation
@@ -397,7 +402,7 @@ class HamGNNTransformer(BaseModel):
                                                     radial_MLP=self.radial_MLP)
             self.pair_interactions.append(pair_interaction)
     
-    def forward(self, data):
+    def forward(self, data: Dict[str, torch.Tensor]):
         """执行模型的前向传播。
 
         Args:
@@ -412,7 +417,7 @@ class HamGNNTransformer(BaseModel):
                 - 'edge_attr': 边的等变特征张量。
         """
         # 图构建现在在数据预处理阶段完成，模型直接使用预处理好的数据
-        graph = data
+        graph: Dict[str, torch.Tensor] = data
         
         # --- 特征提取与嵌入 ---
         self.atomic_embedding(graph)
@@ -422,17 +427,17 @@ class HamGNNTransformer(BaseModel):
         self.chemical_embedding(graph)
 
         # --- 等变 Transformer 层堆叠 ---
-        for i in range(self.num_layers):
-            self.orb_transformers[i](graph)
-            self.corr_products[i](graph)
-            self.pair_interactions[i](graph)
+        for transformer_layer, corr_layer, pair_layer in zip(self.orb_transformers, self.corr_products, self.pair_interactions):
+            transformer_layer(graph)
+            corr_layer(graph)
+            pair_layer(graph)
             
         # --- 整理并返回最终的图表示 ---
-        graph_representation = EasyDict()
+        graph_representation: Dict[str, torch.Tensor] = {}
         graph_representation['node_attr'] = graph[AtomicDataDict.NODE_FEATURES_KEY]
         # 如果数据包含 matching_edges (由 DynamicGraphTransform 生成)，则使用匹配的边
         if 'matching_edges' in graph:
-            graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph.matching_edges]
+            graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY][graph['matching_edges']]
         else:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY]
         return graph_representation
