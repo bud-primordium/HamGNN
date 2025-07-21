@@ -46,8 +46,29 @@ from pymatgen.core.structure import Structure
 from pymatgen.symmetry.kpath import KPathSeek
 from e3nn.math import soft_unit_step
 from ..utils import blockwise_2x2_concat, extract_elements_above_threshold, upgrade_tensor_precision
+from e3nn.util.jit import compile_mode
 
 au2ang = 0.5291772083
+
+# 原子序数映射常量 - 用于TorchScript兼容性
+# 保持与Element['X'].Z完全一致的数值
+ATOMIC_NUMBERS = {
+    'H': 1, 'He': 2, 'Li': 3, 'Be': 4, 'B': 5, 'C': 6, 'N': 7, 'O': 8,
+    'F': 9, 'Ne': 10, 'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P': 15,
+    'S': 16, 'Cl': 17, 'Ar': 18, 'K': 19, 'Ca': 20, 'Sc': 21, 'Ti': 22,
+    'V': 23, 'Cr': 24, 'Mn': 25, 'Fe': 26, 'Co': 27, 'Ni': 28, 'Cu': 29,
+    'Zn': 30, 'Ga': 31, 'Ge': 32, 'As': 33, 'Se': 34, 'Br': 35, 'Kr': 36,
+    'Rb': 37, 'Sr': 38, 'Y': 39, 'Zr': 40, 'Nb': 41, 'Mo': 42, 'Tc': 43,
+    'Ru': 44, 'Rh': 45, 'Pd': 46, 'Ag': 47, 'Cd': 48, 'In': 49, 'Sn': 50,
+    'Sb': 51, 'Te': 52, 'I': 53, 'Xe': 54, 'Cs': 55, 'Ba': 56, 'La': 57,
+    'Ce': 58, 'Pr': 59, 'Nd': 60, 'Pm': 61, 'Sm': 62, 'Eu': 63, 'Gd': 64,
+    'Tb': 65, 'Dy': 66, 'Ho': 67, 'Er': 68, 'Tm': 69, 'Yb': 70, 'Lu': 71,
+    'Hf': 72, 'Ta': 73, 'W': 74, 'Re': 75, 'Os': 76, 'Ir': 77, 'Pt': 78,
+    'Au': 79, 'Hg': 80, 'Tl': 81, 'Pb': 82, 'Bi': 83, 'Po': 84, 'At': 85,
+    'Rn': 86, 'Fr': 87, 'Ra': 88, 'Ac': 89, 'Th': 90, 'Pa': 91, 'U': 92,
+    'Np': 93, 'Pu': 94, 'Am': 95, 'Cm': 96, 'Bk': 97, 'Cf': 98, 'Es': 99,
+    'Fm': 100, 'Md': 101, 'No': 102, 'Lr': 103
+}
 
 class HamGNNConvE3(BaseModel):
     """基于 E(3) 等变图卷积的 HamGNN 模型。
@@ -443,6 +464,7 @@ class HamGNNTransformer(BaseModel):
         return graph_representation
 
 
+@compile_mode("script")
 class HamGNNPlusPlusOut(nn.Module):
     """HamGNN 的输出模块，用于构建物理哈密顿量并计算相关属性。
 
@@ -729,23 +751,24 @@ class HamGNNPlusPlusOut(nn.Module):
         为 'openmx' 类型的哈密顿量设置基组信息。
         定义了每种元素的价电子数、轨道构成 (Irreps)，以及轨道在矩阵中的索引重排方式。
         """
-        self.num_valence = {Element['H'].Z: 1, Element['He'].Z: 2, Element['Li'].Z: 3, Element['Be'].Z: 2, Element['B'].Z: 3,
-                            Element['C'].Z: 4, Element['N'].Z: 5,  Element['O'].Z: 6,  Element['F'].Z: 7,  Element['Ne'].Z: 8,
-                            Element['Na'].Z: 9, Element['Mg'].Z: 8, Element['Al'].Z: 3, Element['Si'].Z: 4, Element['P'].Z: 5,
-                            Element['S'].Z: 6,  Element['Cl'].Z: 7, Element['Ar'].Z: 8, Element['K'].Z: 9,  Element['Ca'].Z: 10,
-                            Element['Sc'].Z: 11, Element['Ti'].Z: 12, Element['V'].Z: 13, Element['Cr'].Z: 14, Element['Mn'].Z: 15,
-                            Element['Fe'].Z: 16, Element['Co'].Z: 17, Element['Ni'].Z: 18, Element['Cu'].Z: 19, Element['Zn'].Z: 20,
-                            Element['Ga'].Z: 13, Element['Ge'].Z: 4,  Element['As'].Z: 15, Element['Se'].Z: 6,  Element['Br'].Z: 7,
-                            Element['Kr'].Z: 8,  Element['Rb'].Z: 9,  Element['Sr'].Z: 10, Element['Y'].Z: 11, Element['Zr'].Z: 12,
-                            Element['Nb'].Z: 13, Element['Mo'].Z: 14, Element['Tc'].Z: 15, Element['Ru'].Z: 14, Element['Rh'].Z: 15,
-                            Element['Pd'].Z: 16, Element['Ag'].Z: 17, Element['Cd'].Z: 12, Element['In'].Z: 13, Element['Sn'].Z: 14,
-                            Element['Sb'].Z: 15, Element['Te'].Z: 16, Element['I'].Z: 7, Element['Xe'].Z: 8, Element['Cs'].Z: 9,
-                            Element['Ba'].Z: 10, Element['La'].Z: 11, Element['Ce'].Z: 12, Element['Pr'].Z: 13, Element['Nd'].Z: 14,
-                            Element['Pm'].Z: 15, Element['Sm'].Z: 16, Element['Dy'].Z: 20, Element['Ho'].Z: 21, Element['Lu'].Z: 11,
-                            Element['Hf'].Z: 12, Element['Ta'].Z: 13, Element['W'].Z: 12,  Element['Re'].Z: 15, Element['Os'].Z: 14,
-                            Element['Ir'].Z: 15, Element['Pt'].Z: 16, Element['Au'].Z: 17, Element['Hg'].Z: 18, Element['Tl'].Z: 19,
-                            Element['Pb'].Z: 14, Element['Bi'].Z: 15
-                        }
+        self.num_valence = {
+            ATOMIC_NUMBERS['H']: 1, ATOMIC_NUMBERS['He']: 2, ATOMIC_NUMBERS['Li']: 3, ATOMIC_NUMBERS['Be']: 2, ATOMIC_NUMBERS['B']: 3,
+            ATOMIC_NUMBERS['C']: 4, ATOMIC_NUMBERS['N']: 5, ATOMIC_NUMBERS['O']: 6, ATOMIC_NUMBERS['F']: 7, ATOMIC_NUMBERS['Ne']: 8,
+            ATOMIC_NUMBERS['Na']: 9, ATOMIC_NUMBERS['Mg']: 8, ATOMIC_NUMBERS['Al']: 3, ATOMIC_NUMBERS['Si']: 4, ATOMIC_NUMBERS['P']: 5,
+            ATOMIC_NUMBERS['S']: 6, ATOMIC_NUMBERS['Cl']: 7, ATOMIC_NUMBERS['Ar']: 8, ATOMIC_NUMBERS['K']: 9, ATOMIC_NUMBERS['Ca']: 10,
+            ATOMIC_NUMBERS['Sc']: 11, ATOMIC_NUMBERS['Ti']: 12, ATOMIC_NUMBERS['V']: 13, ATOMIC_NUMBERS['Cr']: 14, ATOMIC_NUMBERS['Mn']: 15,
+            ATOMIC_NUMBERS['Fe']: 16, ATOMIC_NUMBERS['Co']: 17, ATOMIC_NUMBERS['Ni']: 18, ATOMIC_NUMBERS['Cu']: 19, ATOMIC_NUMBERS['Zn']: 20,
+            ATOMIC_NUMBERS['Ga']: 13, ATOMIC_NUMBERS['Ge']: 4, ATOMIC_NUMBERS['As']: 15, ATOMIC_NUMBERS['Se']: 6, ATOMIC_NUMBERS['Br']: 7,
+            ATOMIC_NUMBERS['Kr']: 8, ATOMIC_NUMBERS['Rb']: 9, ATOMIC_NUMBERS['Sr']: 10, ATOMIC_NUMBERS['Y']: 11, ATOMIC_NUMBERS['Zr']: 12,
+            ATOMIC_NUMBERS['Nb']: 13, ATOMIC_NUMBERS['Mo']: 14, ATOMIC_NUMBERS['Tc']: 15, ATOMIC_NUMBERS['Ru']: 14, ATOMIC_NUMBERS['Rh']: 15,
+            ATOMIC_NUMBERS['Pd']: 16, ATOMIC_NUMBERS['Ag']: 17, ATOMIC_NUMBERS['Cd']: 12, ATOMIC_NUMBERS['In']: 13, ATOMIC_NUMBERS['Sn']: 14,
+            ATOMIC_NUMBERS['Sb']: 15, ATOMIC_NUMBERS['Te']: 16, ATOMIC_NUMBERS['I']: 7, ATOMIC_NUMBERS['Xe']: 8, ATOMIC_NUMBERS['Cs']: 9,
+            ATOMIC_NUMBERS['Ba']: 10, ATOMIC_NUMBERS['La']: 11, ATOMIC_NUMBERS['Ce']: 12, ATOMIC_NUMBERS['Pr']: 13, ATOMIC_NUMBERS['Nd']: 14,
+            ATOMIC_NUMBERS['Pm']: 15, ATOMIC_NUMBERS['Sm']: 16, ATOMIC_NUMBERS['Dy']: 20, ATOMIC_NUMBERS['Ho']: 21, ATOMIC_NUMBERS['Lu']: 11,
+            ATOMIC_NUMBERS['Hf']: 12, ATOMIC_NUMBERS['Ta']: 13, ATOMIC_NUMBERS['W']: 12, ATOMIC_NUMBERS['Re']: 15, ATOMIC_NUMBERS['Os']: 14,
+            ATOMIC_NUMBERS['Ir']: 15, ATOMIC_NUMBERS['Pt']: 16, ATOMIC_NUMBERS['Au']: 17, ATOMIC_NUMBERS['Hg']: 18, ATOMIC_NUMBERS['Tl']: 19,
+            ATOMIC_NUMBERS['Pb']: 14, ATOMIC_NUMBERS['Bi']: 15
+        }
         
         if self.nao_max == 14:
             self.index_change = torch.LongTensor([0,1,2,5,3,4,8,6,7,11,13,9,12,10])       
@@ -771,8 +794,8 @@ class HamGNNPlusPlusOut(nn.Module):
                                 19:[0,1,2,3,4,5,6,7,8,9,10,11,12,13], # K
                                 20:[0,1,2,3,4,5,6,7,8,9,10,11,12,13], # Ca
                                 35:[0,1,2,3,4,5,6,7,8,9,10,11,12,13], # Br  
-                                Element['V'].Z: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # V
-                                Element['Mn'].Z: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # Mn
+                                ATOMIC_NUMBERS['V']: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # V
+                                ATOMIC_NUMBERS['Mn']: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # Mn
                             }
         
         elif self.nao_max == 13:
@@ -819,91 +842,91 @@ class HamGNNPlusPlusOut(nn.Module):
                 26:[0,1,2,3,4,5,6,7,8,9,10,11,12,13], # Fe
                 77:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], # Ir
                 52:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], # Te
-                Element['V'].Z: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # V
-                Element['Sb'].Z: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], # Sb
+                ATOMIC_NUMBERS['V']: [0,1,2,3,4,5,6,7,8,9,10,11,12,13], # V
+                ATOMIC_NUMBERS['Sb']: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], # Sb
             }
         
         elif self.nao_max == 26:
             self.index_change = torch.LongTensor([0,1,2,5,3,4,8,6,7,11,13,9,12,10,16,18,14,17,15,22,23,21,24,20,25,19])       
             self.row = self.col = o3.Irreps("1x0e+1x0e+1x0e+1x1o+1x1o+1x2e+1x2e+1x3o")
             self.basis_def = (lambda s1=[0],s2=[1],s3=[2],p1=[3,4,5],p2=[6,7,8],d1=[9,10,11,12,13],d2=[14,15,16,17,18],f1=[19,20,21,22,23,24,25]: {
-                Element['H'].Z : s1+s2+p1,  # H6.0-s2p1
-                Element['He'].Z : s1+s2+p1,  # He8.0-s2p1
-                Element['Li'].Z : s1+s2+s3+p1+p2,  # Li8.0-s3p2
-                Element['Be'].Z : s1+s2+p1+p2,  # Be7.0-s2p2
-                Element['B'].Z : s1+s2+p1+p2+d1,  # B7.0-s2p2d1
-                Element['C'].Z : s1+s2+p1+p2+d1,  # C6.0-s2p2d1
-                Element['N'].Z : s1+s2+p1+p2+d1,  # N6.0-s2p2d1
-                Element['O'].Z : s1+s2+p1+p2+d1,  # O6.0-s2p2d1
-                Element['F'].Z : s1+s2+p1+p2+d1,  # F6.0-s2p2d1
-                Element['Ne'].Z: s1+s2+p1+p2+d1,  # Ne9.0-s2p2d1
-                Element['Na'].Z: s1+s2+s3+p1+p2+d1,  # Na9.0-s3p2d1
-                Element['Mg'].Z: s1+s2+s3+p1+p2+d1,  # Mg9.0-s3p2d1
-                Element['Al'].Z: s1+s2+p1+p2+d1,  # Al7.0-s2p2d1
-                Element['Si'].Z: s1+s2+p1+p2+d1,  # Si7.0-s2p2d1
-                Element['P'].Z: s1+s2+p1+p2+d1,  # P7.0-s2p2d1
-                Element['S'].Z: s1+s2+p1+p2+d1,  # S7.0-s2p2d1
-                Element['Cl'].Z: s1+s2+p1+p2+d1,  # Cl7.0-s2p2d1
-                Element['Ar'].Z: s1+s2+p1+p2+d1,  # Ar9.0-s2p2d1
-                Element['K'].Z: s1+s2+s3+p1+p2+d1,  # K10.0-s3p2d1
-                Element['Ca'].Z: s1+s2+s3+p1+p2+d1,  # Ca9.0-s3p2d1
-                Element['Sc'].Z: s1+s2+s3+p1+p2+d1,  # Sc9.0-s3p2d1
-                Element['Ti'].Z: s1+s2+s3+p1+p2+d1,  # Ti7.0-s3p2d1
-                Element['V'].Z: s1+s2+s3+p1+p2+d1,  # V6.0-s3p2d1
-                Element['Cr'].Z: s1+s2+s3+p1+p2+d1,  # Cr6.0-s3p2d1
-                Element['Mn'].Z: s1+s2+s3+p1+p2+d1,  # Mn6.0-s3p2d1
-                Element['Fe'].Z: s1+s2+s3+p1+p2+d1,  # Fe5.5H-s3p2d1
-                Element['Co'].Z: s1+s2+s3+p1+p2+d1,  # Co6.0H-s3p2d1
-                Element['Ni'].Z: s1+s2+s3+p1+p2+d1,  # Ni6.0H-s3p2d1
-                Element['Cu'].Z: s1+s2+s3+p1+p2+d1,  # Cu6.0H-s3p2d1
-                Element['Zn'].Z: s1+s2+s3+p1+p2+d1,  # Zn6.0H-s3p2d1
-                Element['Ga'].Z: s1+s2+s3+p1+p2+d1+d2,  # Ga7.0-s3p2d2
-                Element['Ge'].Z: s1+s2+s3+p1+p2+d1+d2,  # Ge7.0-s3p2d2
-                Element['As'].Z: s1+s2+s3+p1+p2+d1+d2,  # As7.0-s3p2d2
-                Element['Se'].Z: s1+s2+s3+p1+p2+d1+d2,  # Se7.0-s3p2d2
-                Element['Br'].Z: s1+s2+s3+p1+p2+d1+d2,  # Br7.0-s3p2d2
-                Element['Kr'].Z: s1+s2+s3+p1+p2+d1+d2,  # Kr10.0-s3p2d2
-                Element['Rb'].Z: s1+s2+s3+p1+p2+d1+d2,  # Rb11.0-s3p2d2
-                Element['Sr'].Z: s1+s2+s3+p1+p2+d1+d2,  # Sr10.0-s3p2d2
-                Element['Y'].Z: s1+s2+s3+p1+p2+d1+d2,  # Y10.0-s3p2d2
-                Element['Zr'].Z: s1+s2+s3+p1+p2+d1+d2,  # Zr7.0-s3p2d2
-                Element['Nb'].Z: s1+s2+s3+p1+p2+d1+d2,  # Nb7.0-s3p2d2
-                Element['Mo'].Z: s1+s2+s3+p1+p2+d1+d2,  # Mo7.0-s3p2d2
-                Element['Tc'].Z: s1+s2+s3+p1+p2+d1+d2,  # Tc7.0-s3p2d2
-                Element['Ru'].Z: s1+s2+s3+p1+p2+d1+d2,  # Ru7.0-s3p2d2
-                Element['Rh'].Z: s1+s2+s3+p1+p2+d1+d2,  # Rh7.0-s3p2d2
-                Element['Pd'].Z: s1+s2+s3+p1+p2+d1+d2,  # Pd7.0-s3p2d2
-                Element['Ag'].Z: s1+s2+s3+p1+p2+d1+d2,  # Ag7.0-s3p2d2
-                Element['Cd'].Z: s1+s2+s3+p1+p2+d1+d2,  # Cd7.0-s3p2d2
-                Element['In'].Z: s1+s2+s3+p1+p2+d1+d2,  # In7.0-s3p2d2
-                Element['Sn'].Z: s1+s2+s3+p1+p2+d1+d2,  # Sn7.0-s3p2d2
-                Element['Sb'].Z: s1+s2+s3+p1+p2+d1+d2,  # Sb7.0-s3p2d2
-                Element['Te'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Te7.0-s3p2d2f1
-                Element['I'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # I7.0-s3p2d2f1
-                Element['Xe'].Z: s1+s2+s3+p1+p2+d1+d2,  # Xe11.0-s3p2d2
-                Element['Cs'].Z: s1+s2+s3+p1+p2+d1+d2,  # Cs12.0-s3p2d2
-                Element['Ba'].Z: s1+s2+s3+p1+p2+d1+d2,  # Ba10.0-s3p2d2
-                Element['La'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # La8.0-s3p2d2f1
-                Element['Ce'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Ce8.0-s3p2d2f1
-                Element['Pr'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Pr8.0-s3p2d2f1
-                Element['Nd'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Nd8.0-s3p2d2f1
-                Element['Pm'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Pm8.0-s3p2d2f1
-                Element['Sm'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Sm8.0-s3p2d2f1
-                Element['Dy'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Dy8.0-s3p2d2f1
-                Element['Ho'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Ho8.0-s3p2d2f1
-                Element['Lu'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Lu8.0-s3p2d2f1
-                Element['Hf'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Hf9.0-s3p2d2f1
-                Element['Ta'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Ta7.0-s3p2d2f1
-                Element['W'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # W7.0-s3p2d2f1
-                Element['Re'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Re7.0-s3p2d2f1
-                Element['Os'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Os7.0-s3p2d2f1
-                Element['Ir'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Ir7.0-s3p2d2f1
-                Element['Pt'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Pt7.0-s3p2d2f1
-                Element['Au'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Au7.0-s3p2d2f1
-                Element['Hg'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Hg8.0-s3p2d2f1
-                Element['Tl'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Tl8.0-s3p2d2f1
-                Element['Pb'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Pb8.0-s3p2d2f1
-                Element['Bi'].Z: s1+s2+s3+p1+p2+d1+d2+f1,  # Bi8.0-s3p2d2f1 
+                ATOMIC_NUMBERS['H'] : s1+s2+p1,  # H6.0-s2p1
+                ATOMIC_NUMBERS['He'] : s1+s2+p1,  # He8.0-s2p1
+                ATOMIC_NUMBERS['Li'] : s1+s2+s3+p1+p2,  # Li8.0-s3p2
+                ATOMIC_NUMBERS['Be'] : s1+s2+p1+p2,  # Be7.0-s2p2
+                ATOMIC_NUMBERS['B'] : s1+s2+p1+p2+d1,  # B7.0-s2p2d1
+                ATOMIC_NUMBERS['C'] : s1+s2+p1+p2+d1,  # C6.0-s2p2d1
+                ATOMIC_NUMBERS['N'] : s1+s2+p1+p2+d1,  # N6.0-s2p2d1
+                ATOMIC_NUMBERS['O'] : s1+s2+p1+p2+d1,  # O6.0-s2p2d1
+                ATOMIC_NUMBERS['F'] : s1+s2+p1+p2+d1,  # F6.0-s2p2d1
+                ATOMIC_NUMBERS['Ne']: s1+s2+p1+p2+d1,  # Ne9.0-s2p2d1
+                ATOMIC_NUMBERS['Na']: s1+s2+s3+p1+p2+d1,  # Na9.0-s3p2d1
+                ATOMIC_NUMBERS['Mg']: s1+s2+s3+p1+p2+d1,  # Mg9.0-s3p2d1
+                ATOMIC_NUMBERS['Al']: s1+s2+p1+p2+d1,  # Al7.0-s2p2d1
+                ATOMIC_NUMBERS['Si']: s1+s2+p1+p2+d1,  # Si7.0-s2p2d1
+                ATOMIC_NUMBERS['P']: s1+s2+p1+p2+d1,  # P7.0-s2p2d1
+                ATOMIC_NUMBERS['S']: s1+s2+p1+p2+d1,  # S7.0-s2p2d1
+                ATOMIC_NUMBERS['Cl']: s1+s2+p1+p2+d1,  # Cl7.0-s2p2d1
+                ATOMIC_NUMBERS['Ar']: s1+s2+p1+p2+d1,  # Ar9.0-s2p2d1
+                ATOMIC_NUMBERS['K']: s1+s2+s3+p1+p2+d1,  # K10.0-s3p2d1
+                ATOMIC_NUMBERS['Ca']: s1+s2+s3+p1+p2+d1,  # Ca9.0-s3p2d1
+                ATOMIC_NUMBERS['Sc']: s1+s2+s3+p1+p2+d1,  # Sc9.0-s3p2d1
+                ATOMIC_NUMBERS['Ti']: s1+s2+s3+p1+p2+d1,  # Ti7.0-s3p2d1
+                ATOMIC_NUMBERS['V']: s1+s2+s3+p1+p2+d1,  # V6.0-s3p2d1
+                ATOMIC_NUMBERS['Cr']: s1+s2+s3+p1+p2+d1,  # Cr6.0-s3p2d1
+                ATOMIC_NUMBERS['Mn']: s1+s2+s3+p1+p2+d1,  # Mn6.0-s3p2d1
+                ATOMIC_NUMBERS['Fe']: s1+s2+s3+p1+p2+d1,  # Fe5.5H-s3p2d1
+                ATOMIC_NUMBERS['Co']: s1+s2+s3+p1+p2+d1,  # Co6.0H-s3p2d1
+                ATOMIC_NUMBERS['Ni']: s1+s2+s3+p1+p2+d1,  # Ni6.0H-s3p2d1
+                ATOMIC_NUMBERS['Cu']: s1+s2+s3+p1+p2+d1,  # Cu6.0H-s3p2d1
+                ATOMIC_NUMBERS['Zn']: s1+s2+s3+p1+p2+d1,  # Zn6.0H-s3p2d1
+                ATOMIC_NUMBERS['Ga']: s1+s2+s3+p1+p2+d1+d2,  # Ga7.0-s3p2d2
+                ATOMIC_NUMBERS['Ge']: s1+s2+s3+p1+p2+d1+d2,  # Ge7.0-s3p2d2
+                ATOMIC_NUMBERS['As']: s1+s2+s3+p1+p2+d1+d2,  # As7.0-s3p2d2
+                ATOMIC_NUMBERS['Se']: s1+s2+s3+p1+p2+d1+d2,  # Se7.0-s3p2d2
+                ATOMIC_NUMBERS['Br']: s1+s2+s3+p1+p2+d1+d2,  # Br7.0-s3p2d2
+                ATOMIC_NUMBERS['Kr']: s1+s2+s3+p1+p2+d1+d2,  # Kr10.0-s3p2d2
+                ATOMIC_NUMBERS['Rb']: s1+s2+s3+p1+p2+d1+d2,  # Rb11.0-s3p2d2
+                ATOMIC_NUMBERS['Sr']: s1+s2+s3+p1+p2+d1+d2,  # Sr10.0-s3p2d2
+                ATOMIC_NUMBERS['Y']: s1+s2+s3+p1+p2+d1+d2,  # Y10.0-s3p2d2
+                ATOMIC_NUMBERS['Zr']: s1+s2+s3+p1+p2+d1+d2,  # Zr7.0-s3p2d2
+                ATOMIC_NUMBERS['Nb']: s1+s2+s3+p1+p2+d1+d2,  # Nb7.0-s3p2d2
+                ATOMIC_NUMBERS['Mo']: s1+s2+s3+p1+p2+d1+d2,  # Mo7.0-s3p2d2
+                ATOMIC_NUMBERS['Tc']: s1+s2+s3+p1+p2+d1+d2,  # Tc7.0-s3p2d2
+                ATOMIC_NUMBERS['Ru']: s1+s2+s3+p1+p2+d1+d2,  # Ru7.0-s3p2d2
+                ATOMIC_NUMBERS['Rh']: s1+s2+s3+p1+p2+d1+d2,  # Rh7.0-s3p2d2
+                ATOMIC_NUMBERS['Pd']: s1+s2+s3+p1+p2+d1+d2,  # Pd7.0-s3p2d2
+                ATOMIC_NUMBERS['Ag']: s1+s2+s3+p1+p2+d1+d2,  # Ag7.0-s3p2d2
+                ATOMIC_NUMBERS['Cd']: s1+s2+s3+p1+p2+d1+d2,  # Cd7.0-s3p2d2
+                ATOMIC_NUMBERS['In']: s1+s2+s3+p1+p2+d1+d2,  # In7.0-s3p2d2
+                ATOMIC_NUMBERS['Sn']: s1+s2+s3+p1+p2+d1+d2,  # Sn7.0-s3p2d2
+                ATOMIC_NUMBERS['Sb']: s1+s2+s3+p1+p2+d1+d2,  # Sb7.0-s3p2d2
+                ATOMIC_NUMBERS['Te']: s1+s2+s3+p1+p2+d1+d2+f1,  # Te7.0-s3p2d2f1
+                ATOMIC_NUMBERS['I']: s1+s2+s3+p1+p2+d1+d2+f1,  # I7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Xe']: s1+s2+s3+p1+p2+d1+d2,  # Xe11.0-s3p2d2
+                ATOMIC_NUMBERS['Cs']: s1+s2+s3+p1+p2+d1+d2,  # Cs12.0-s3p2d2
+                ATOMIC_NUMBERS['Ba']: s1+s2+s3+p1+p2+d1+d2,  # Ba10.0-s3p2d2
+                ATOMIC_NUMBERS['La']: s1+s2+s3+p1+p2+d1+d2+f1,  # La8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Ce']: s1+s2+s3+p1+p2+d1+d2+f1,  # Ce8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Pr']: s1+s2+s3+p1+p2+d1+d2+f1,  # Pr8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Nd']: s1+s2+s3+p1+p2+d1+d2+f1,  # Nd8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Pm']: s1+s2+s3+p1+p2+d1+d2+f1,  # Pm8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Sm']: s1+s2+s3+p1+p2+d1+d2+f1,  # Sm8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Dy']: s1+s2+s3+p1+p2+d1+d2+f1,  # Dy8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Ho']: s1+s2+s3+p1+p2+d1+d2+f1,  # Ho8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Lu']: s1+s2+s3+p1+p2+d1+d2+f1,  # Lu8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Hf']: s1+s2+s3+p1+p2+d1+d2+f1,  # Hf9.0-s3p2d2f1
+                ATOMIC_NUMBERS['Ta']: s1+s2+s3+p1+p2+d1+d2+f1,  # Ta7.0-s3p2d2f1
+                ATOMIC_NUMBERS['W']: s1+s2+s3+p1+p2+d1+d2+f1,  # W7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Re']: s1+s2+s3+p1+p2+d1+d2+f1,  # Re7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Os']: s1+s2+s3+p1+p2+d1+d2+f1,  # Os7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Ir']: s1+s2+s3+p1+p2+d1+d2+f1,  # Ir7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Pt']: s1+s2+s3+p1+p2+d1+d2+f1,  # Pt7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Au']: s1+s2+s3+p1+p2+d1+d2+f1,  # Au7.0-s3p2d2f1
+                ATOMIC_NUMBERS['Hg']: s1+s2+s3+p1+p2+d1+d2+f1,  # Hg8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Tl']: s1+s2+s3+p1+p2+d1+d2+f1,  # Tl8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Pb']: s1+s2+s3+p1+p2+d1+d2+f1,  # Pb8.0-s3p2d2f1
+                ATOMIC_NUMBERS['Bi']: s1+s2+s3+p1+p2+d1+d2+f1,  # Bi8.0-s3p2d2f1 
             })()
         else:
             raise NotImplementedError(f"不支持的 NAO max '{self.nao_max}' for 'openmx'.")
@@ -1118,74 +1141,74 @@ class HamGNNPlusPlusOut(nn.Module):
                    d2=[21,22,23,24,25],
                    f1=[26,27,28,29,30,31,32],
                    f2=[33,34,35,36,37,38,39]: {
-                Element('Ag').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Al').Z: s1+s2+s3+s4+p1+p2+p3+p4+d1, 
-                Element('Ar').Z: s1+s2+p1+p2+d1, 
-                Element('As').Z: s1+s2+p1+p2+d1, 
-                Element('Au').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Ba').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Be').Z: s1+s2+s3+s4+p1, 
-                Element('B').Z: s1+s2+p1+p2+d1, 
-                Element('Bi').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Br').Z: s1+s2+p1+p2+d1, 
-                Element('Ca').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Cd').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('C').Z: s1+s2+p1+p2+d1, 
-                Element('Cl').Z: s1+s2+p1+p2+d1, 
-                Element('Co').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Cr').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Cs').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Cu').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Fe').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('F').Z: s1+s2+p1+p2+d1, 
-                Element('Ga').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Ge').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('He').Z: s1+s2+p1, 
-                Element('Hf').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # Hf_gga_10au_100Ry_4s2p2d2f.orb
-                Element('H').Z: s1+s2+p1, 
-                Element('Hg').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('I').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('In').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Ir').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('K').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Kr').Z: s1+s2+p1+p2+d1, 
-                Element('Li').Z: s1+s2+s3+s4+p1, 
-                Element('Mg').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Mn').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Mo').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Na').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Nb').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Ne').Z: s1+s2+p1+p2+d1, 
-                Element('N').Z: s1+s2+p1+p2+d1, 
-                Element('Ni').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('O').Z: s1+s2+p1+p2+d1, 
-                Element('Os').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Pb').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Pd').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('P').Z: s1+s2+p1+p2+d1, 
-                Element('Pt').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Rb').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Re').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Rh').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Ru').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Sb').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Sc').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Se').Z: s1+s2+p1+p2+d1, 
-                Element('S').Z: s1+s2+p1+p2+d1, 
-                Element('Si').Z: s1+s2+p1+p2+d1, 
-                Element('Sn').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Sr').Z: s1+s2+s3+s4+p1+p2+d1, 
-                Element('Ta').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # Ta_gga_10au_100Ry_4s2p2d2f.orb
-                Element('Tc').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Te').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Ti').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Tl').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('V').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('W').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # W_gga_10au_100Ry_4s2p2d2f.orb
-                Element('Xe').Z: s1+s2+p1+p2+d1+d2+f1, 
-                Element('Y').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Zn').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
-                Element('Zr').Z: s1+s2+s3+s4+p1+p2+d1+d2+f1,
+                ATOMIC_NUMBERS['Ag']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Al']: s1+s2+s3+s4+p1+p2+p3+p4+d1, 
+                ATOMIC_NUMBERS['Ar']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['As']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Au']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ba']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Be']: s1+s2+s3+s4+p1, 
+                ATOMIC_NUMBERS['B']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Bi']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Br']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Ca']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Cd']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['C']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Cl']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Co']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Cr']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Cs']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Cu']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Fe']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['F']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Ga']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ge']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['He']: s1+s2+p1, 
+                ATOMIC_NUMBERS['Hf']: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # Hf_gga_10au_100Ry_4s2p2d2f.orb
+                ATOMIC_NUMBERS['H']: s1+s2+p1, 
+                ATOMIC_NUMBERS['Hg']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['I']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['In']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ir']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['K']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Kr']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Li']: s1+s2+s3+s4+p1, 
+                ATOMIC_NUMBERS['Mg']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Mn']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Mo']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Na']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Nb']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ne']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['N']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Ni']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['O']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Os']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Pb']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Pd']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['P']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Pt']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Rb']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Re']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Rh']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ru']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Sb']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Sc']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Se']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['S']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Si']: s1+s2+p1+p2+d1, 
+                ATOMIC_NUMBERS['Sn']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Sr']: s1+s2+s3+s4+p1+p2+d1, 
+                ATOMIC_NUMBERS['Ta']: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # Ta_gga_10au_100Ry_4s2p2d2f.orb
+                ATOMIC_NUMBERS['Tc']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Te']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Ti']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Tl']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['V']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['W']: s1+s2+s3+s4+p1+p2+d1+d2+f1+f2,  # W_gga_10au_100Ry_4s2p2d2f.orb
+                ATOMIC_NUMBERS['Xe']: s1+s2+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Y']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Zn']: s1+s2+s3+s4+p1+p2+d1+d2+f1, 
+                ATOMIC_NUMBERS['Zr']: s1+s2+s3+s4+p1+p2+d1+d2+f1,
                 })()
         else:
             raise NotImplementedError(f"不支持的 NAO max '{self.nao_max}' for 'abacus'.")
@@ -2952,7 +2975,9 @@ class HamGNNPlusPlusOut(nn.Module):
                                 klabels += lbs
                             # remove adjacent duplicates   
                             res = [klabels[0]]
-                            [res.append(x) for x in klabels[1:] if x != res[-1]]
+                            for x in klabels[1:]:
+                                if x != res[-1]:
+                                    res.append(x)
                             klabels = res
                             k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
                             try:
@@ -3043,7 +3068,9 @@ class HamGNNPlusPlusOut(nn.Module):
                             klabels += lbs
                         # remove adjacent duplicates   
                         res = [klabels[0]]
-                        [res.append(x) for x in klabels[1:] if x != res[-1]]
+                        for x in klabels[1:]:
+                            if x != res[-1]:
+                                res.append(x)
                         klabels = res
                         k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
                         try:
