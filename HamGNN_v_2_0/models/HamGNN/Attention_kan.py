@@ -281,18 +281,31 @@ class ClebschGordanCoefficients(nn.Module):
         """
         super().__init__()
         
-        # 使用ModuleDict存储CG系数，这是TorchScript友好的
-        self.coefficients = nn.ModuleDict()
-
+        self.max_l = max_l
+        
+        # 为TorchScript兼容性，使用tensor存储而非ModuleDict
+        # 创建一个6D张量来存储所有的CG系数（因为wigner_3j返回3D张量）
+        # 索引方式: coeffs[l1, l2, l3-abs(l1-l2), :d1, :d2, :d3]
+        # 最大可能的l3是l1+l2，所以最大可能的维度是2*(l1+l2)+1 = 2*(max_l+max_l)+1
+        max_dim_l1_l2 = 2 * max_l + 1  # l1和l2的最大维度
+        max_dim_l3 = 2 * (2 * max_l) + 1  # l3的最大维度（当l3=l1+l2时）
+        # 第三个维度需要能容纳所有可能的l3值
+        max_l3_range = 2 * max_l + 1  # 从0到2*max_l的范围  
+        self.register_buffer('_cg_tensor', torch.zeros((max_l + 1, max_l + 1, max_l3_range, max_dim_l1_l2, max_dim_l1_l2, max_dim_l3)))
+        self.register_buffer('_cg_mask', torch.zeros((max_l + 1, max_l + 1, max_l3_range), dtype=torch.bool))
+        
         # Pre-compute and store all necessary Clebsch-Gordan coefficients
         for l1 in range(max_l + 1):
             for l2 in range(max_l + 1):
                 for l3 in range(abs(l1 - l2), l1 + l2 + 1):
-                    buffer_name = f'cg_{l1}_{l2}_{l3}'
-                    # 使用TensorWrapper包装张量以便在ModuleDict中存储
-                    self.coefficients[buffer_name] = TensorWrapper(o3.wigner_3j(l1, l2, l3))
+                    idx = l3 - abs(l1 - l2)
+                    cg_coeffs = o3.wigner_3j(l1, l2, l3)
+                    # wigner_3j返回的是3D张量
+                    d1, d2, d3 = cg_coeffs.shape
+                    self._cg_tensor[l1, l2, idx, :d1, :d2, :d3] = cg_coeffs
+                    self._cg_mask[l1, l2, idx] = True
 
-    def forward(self, l1, l2, l3):
+    def forward(self, l1: int, l2: int, l3: int) -> torch.Tensor:
         """
         Retrieve the pre-computed Clebsch-Gordan coefficient for the given angular momenta.
 
@@ -301,47 +314,94 @@ class ClebschGordanCoefficients(nn.Module):
         :param l3: Third angular momentum value.
         :return: The Clebsch-Gordan coefficient tensor.
         """
-        buffer_name = f'cg_{l1}_{l2}_{l3}'
-        # 通过ModuleDict访问，避免使用getattr()
-        return self.coefficients[buffer_name].data
+        # TorchScript兼容: 使用张量索引而非字符串索引
+        idx = l3 - abs(l1 - l2)
+        d1 = 2 * l1 + 1
+        d2 = 2 * l2 + 1
+        d3 = 2 * l3 + 1
+        return self._cg_tensor[l1, l2, idx, :d1, :d2, :d3]
 
     def state_dict(self, *args, **kwargs):
         """
-        在保存时，将内部的嵌套键名伪装成旧版的平铺键名，以确保向前兼容。
+        保持向后兼容性，state_dict保持标准格式
         """
-        original_dict = super().state_dict(*args, **kwargs)
-        prefix = kwargs.get('prefix', '')
-        new_dict = OrderedDict()
-        
-        for key, value in original_dict.items():
-            stripped_key = key[len(prefix):]
-            if stripped_key.startswith('coefficients.') and stripped_key.endswith('.data'):
-                # 'coefficients.cg_0_1_1.data' -> 'cg_0_1_1'
-                new_key_part = stripped_key.replace('coefficients.', '').replace('.data', '')
-                new_dict[prefix + new_key_part] = value
-            else:
-                new_dict[key] = value
-        return new_dict
+        return super().state_dict(*args, **kwargs)
 
     def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
                               missing_keys, unexpected_keys, error_msgs):
         """
-        在加载时，能自动识别旧版的平铺键名，并将其无缝转换为新版内部所需的嵌套格式。
-        *** 这是解决问题的关键 ***
+        处理旧checkpoint的兼容性加载
+        旧格式: prefix + 'cg_l1_l2_l3' (直接存储的tensor)
+        新格式: prefix + '_cg_tensor', prefix + '_cg_mask' (统一的tensor存储)
         """
-        # 查找所有属于此模块的、且是旧格式的键
-        keys_to_remap = [
-            k for k in state_dict 
-            if k.startswith(prefix) and 'cg_' in k and not k.startswith(prefix + 'coefficients.')
-        ]
+        # 检查是否是旧格式的checkpoint
+        old_format_keys = [k for k in state_dict if k.startswith(prefix + 'cg_')]
         
-        for old_key in keys_to_remap:
-            cg_part = old_key[len(prefix):]
-            if cg_part.startswith('cg_'):
-                # 'cg_0_1_1' -> 'coefficients.cg_0_1_1.data'
-                new_key = prefix + 'coefficients.' + cg_part + '.data'
-                state_dict[new_key] = state_dict.pop(old_key)
+        if old_format_keys:
+            # 创建新格式的张量
+            max_l = getattr(self, 'max_l', 8)
+            max_dim_l1_l2 = 2 * max_l + 1  # l1和l2的最大维度
+            max_dim_l3 = 2 * (2 * max_l) + 1  # l3的最大维度（当l3=l1+l2时）
+            max_l3_range = 2 * max_l + 1  # 从0到2*max_l的范围
+            cg_tensor = torch.zeros((max_l + 1, max_l + 1, max_l3_range, max_dim_l1_l2, max_dim_l1_l2, max_dim_l3))
+            cg_mask = torch.zeros((max_l + 1, max_l + 1, max_l3_range), dtype=torch.bool)
+            
+            # 从旧格式转换
+            for key in old_format_keys:
+                cg_name = key[len(prefix):]  # 'cg_0_1_1'
+                parts = cg_name.split('_')
+                if len(parts) == 4 and parts[0] == 'cg':
+                    l1, l2, l3 = int(parts[1]), int(parts[2]), int(parts[3])
+                    idx = l3 - abs(l1 - l2)
+                    cg_coeffs = state_dict.pop(key)
+                    
+                    # 旧checkpoint的CG系数直接使用，不需要重构
+                    # 获取实际的CG系数形状
+                    if cg_coeffs.dim() == 3:
+                        d1, d2, d3 = cg_coeffs.shape
+                    elif cg_coeffs.dim() == 2:
+                        # 如果是2D，假设是(d1*d2, d3)格式
+                        expected_d1 = 2 * l1 + 1
+                        expected_d2 = 2 * l2 + 1
+                        h, d3 = cg_coeffs.shape
+                        if h == expected_d1 * expected_d2:
+                            d1, d2 = expected_d1, expected_d2
+                            cg_coeffs = cg_coeffs.reshape(d1, d2, d3)
+                        else:
+                            # 使用实际形状
+                            d1, d2 = cg_coeffs.shape
+                            d3 = 1
+                            cg_coeffs = cg_coeffs.unsqueeze(-1)
+                    else:
+                        # 1D情况，需要推断
+                        expected_d1 = 2 * l1 + 1
+                        expected_d2 = 2 * l2 + 1
+                        expected_d3 = 2 * l3 + 1
+                        if cg_coeffs.numel() == expected_d1 * expected_d2 * expected_d3:
+                            d1, d2, d3 = expected_d1, expected_d2, expected_d3
+                            cg_coeffs = cg_coeffs.reshape(d1, d2, d3)
+                        else:
+                            # 保守处理：使用平方根估算
+                            numel = cg_coeffs.numel()
+                            d1 = expected_d1
+                            d2 = expected_d2
+                            d3 = numel // (d1 * d2)
+                            cg_coeffs = cg_coeffs.reshape(d1, d2, d3)
+                    
+                    try:
+                        cg_tensor[l1, l2, idx, :d1, :d2, :d3] = cg_coeffs
+                        cg_mask[l1, l2, idx] = True
+                    except RuntimeError as e:
+                        print(f" 在设置CG({l1},{l2},{l3})时出错：")
+                        print(f"  idx={idx}, cg_coeffs.shape={cg_coeffs.shape}, 期望放置位置=[{l1}, {l2}, {idx}, :{d1}, :{d2}, :{d3}]")
+                        print(f"  cg_tensor.shape={cg_tensor.shape}")
+                        raise e
+            
+            # 添加新格式的键
+            state_dict[prefix + '_cg_tensor'] = cg_tensor
+            state_dict[prefix + '_cg_mask'] = cg_mask
         
+        # 调用父类方法继续加载
         super()._load_from_state_dict(state_dict, prefix, local_metadata, strict,
                                       missing_keys, unexpected_keys, error_msgs)
 
