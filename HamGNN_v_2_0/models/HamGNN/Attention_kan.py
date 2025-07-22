@@ -263,6 +263,7 @@ class TensorWrapper(nn.Module):
         # 将张量注册为buffer，自动处理设备移动
         self.register_buffer('data', tensor)
 
+@compile_mode("script")
 class ClebschGordanCoefficients(nn.Module):
     """
     A PyTorch module for pre-computing and storing Clebsch-Gordan coefficients,

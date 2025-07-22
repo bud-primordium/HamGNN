@@ -750,6 +750,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         if not self.ham_only:            
             self.onsitenet_s = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=self.ham_irreps)
             self.offsitenet_s = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=self.ham_irreps) 
+        
+        # --- TorchScript兼容: 将字典转换为张量查找表 ---
+        self._init_tensor_lookups() 
                  
     def _init_irreps(self):
         """初始化哈密顿量所需的不可约表示 (Irreps)。
@@ -816,6 +819,20 @@ class HamGNNPlusPlusOutCore(nn.Module):
             
             self.J_irreps_dim = torch.LongTensor(self.J_irreps_dim)
             self.K_irreps_dim = torch.LongTensor(self.K_irreps_dim)
+
+    def _init_tensor_lookups(self):
+        """将basis_def和num_valence字典转换为张量查找表，以支持TorchScript。"""
+        # 创建基组定义张量
+        self.basis_def_tensor = torch.zeros((99, self.nao_max), dtype=torch.bool)
+        if hasattr(self, 'basis_def') and self.basis_def is not None:
+            for z, orbitals in self.basis_def.items():
+                self.basis_def_tensor[z, orbitals] = True
+        
+        # 创建价电子数张量
+        self.num_valence_tensor = torch.zeros(99, dtype=torch.long)
+        if hasattr(self, 'num_valence') and self.num_valence is not None:
+            for z, num in self.num_valence.items():
+                self.num_valence_tensor[z] = num
 
     def _set_basis_info(self):
         """
@@ -1129,19 +1146,19 @@ class HamGNNPlusPlusOutCore(nn.Module):
             self.row = self.col = o3.Irreps("1x0e+1x0e+1x1o+1x1o+1x2e")
             self.minus_index = torch.LongTensor([3,4,6,7,9,10])
             self.basis_def = (lambda s1=[0],s2=[1],p1=[2,3,4],p2=[5,6,7],d1=[8,9,10,11,12]: {
-                1 : np.array(s1+s2+p1, dtype=int), # H
-                2 : np.array(s1+s2+p1, dtype=int), # He
-                5 : np.array(s1+s2+p1+p2+d1, dtype=int), # B
-                6 : np.array(s1+s2+p1+p2+d1, dtype=int), # C
-                7 : np.array(s1+s2+p1+p2+d1, dtype=int), # N
-                8 : np.array(s1+s2+p1+p2+d1, dtype=int), # O
-                9 : np.array(s1+s2+p1+p2+d1, dtype=int), # F
-                10: np.array(s1+s2+p1+p2+d1, dtype=int), # Ne
-                14: np.array(s1+s2+p1+p2+d1, dtype=int), # Si
-                15: np.array(s1+s2+p1+p2+d1, dtype=int), # P
-                16: np.array(s1+s2+p1+p2+d1, dtype=int), # S
-                17: np.array(s1+s2+p1+p2+d1, dtype=int), # Cl
-                18: np.array(s1+s2+p1+p2+d1, dtype=int), # Ar
+                1 : s1+s2+p1, # H  # TorchScript兼容: 使用列表而非np.array
+                2 : s1+s2+p1, # He
+                5 : s1+s2+p1+p2+d1, # B
+                6 : s1+s2+p1+p2+d1, # C
+                7 : s1+s2+p1+p2+d1, # N
+                8 : s1+s2+p1+p2+d1, # O
+                9 : s1+s2+p1+p2+d1, # F
+                10: s1+s2+p1+p2+d1, # Ne
+                14: s1+s2+p1+p2+d1, # Si
+                15: s1+s2+p1+p2+d1, # P
+                16: s1+s2+p1+p2+d1, # S
+                17: s1+s2+p1+p2+d1, # Cl
+                18: s1+s2+p1+p2+d1, # Ar
             })()           
         
         elif self.nao_max == 27:
@@ -1513,12 +1530,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Returns:
             torch.Tensor: 索引调整后的哈密顿量。
         """
-        has_minus_index = False
-        try:
-            _ = self.minus_index
-            has_minus_index = True
-        except AttributeError:
-            pass
+        # TorchScript兼容: 使用getattr替代try-except
+        minus_index = getattr(self, 'minus_index', None)
+        has_minus_index = minus_index is not None
         
         if self.index_change is not None or has_minus_index:
             hamiltonian = hamiltonian.reshape(-1, self.nao_max, self.nao_max)   
@@ -1526,8 +1540,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 hamiltonian = hamiltonian[:, self.index_change[:,None], self.index_change[None,:]] 
             if has_minus_index:
                 # 对某些 m!=0 的轨道乘以 -1，以匹配 siesta 等软件的 Condon-Shortley 相位约定
-                hamiltonian[:,self.minus_index,:] = -hamiltonian[:,self.minus_index,:]
-                hamiltonian[:,:,self.minus_index] = -hamiltonian[:,:,self.minus_index]
+                hamiltonian[:,minus_index,:] = -hamiltonian[:,minus_index,:]
+                hamiltonian[:,:,minus_index] = -hamiltonian[:,:,minus_index]
             hamiltonian = hamiltonian.reshape(-1, self.nao_max**2)                
         return hamiltonian
     
@@ -1548,12 +1562,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         max_atoms = torch.max(data['node_counts']).item()
                 
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
-        basis_def_temp = copy.deepcopy(self.basis_def)
-        # key 是原子序数, value 是占据的轨道
-        for k in self.basis_def.keys():
-            basis_def_temp[k] = [num-1 for num in self.basis_def[k]]
-            basis_definition[k][basis_def_temp[k]] = 1
+        basis_definition = self.basis_def_tensor.type_as(data['z'])
             
         orb_mask = basis_definition[data['z']].view(-1, max_atoms*self.nao_max) # 形状: [N_batch, max_atoms*nao_max]  
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # 形状: [N_batch, max_atoms*nao_max, max_atoms*nao_max]
@@ -1703,10 +1712,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Nbatch = cell.shape[0]
         
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
-        # key 是原子序数, value 是占据轨道的索引。
-        for k in self.basis_def.keys():
-            basis_definition[k][self.basis_def[k]] = 1
+        basis_definition = self.basis_def_tensor.type_as(data['z'])
             
         orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
         orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # 形状: [n_atoms, nao_max]
@@ -1715,10 +1721,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # 形状: [n_atoms*nao_max, n_atoms*nao_max]
         
         # 设置价电子数
-        num_val = torch.zeros((99,)).type_as(data['z'])
-        for k in self.num_valence.keys():
-            num_val[k] = self.num_valence[k]
-        num_val = num_val[data['z']] # 形状: [N_atoms]
+        num_val = self.num_valence_tensor.type_as(data['z'])[data['z']] # 形状: [N_atoms]
         num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
                 
         # 初始化 band_num_win
@@ -1913,10 +1916,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         
         # --- 步骤 1: 解析和准备掩码及参数 ---
         # 解析原子轨道基组定义，用于后续的掩码操作
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
-        # key 是原子序数, value 是占据轨道的索引。
-        for k in self.basis_def.keys():
-            basis_definition[k][self.basis_def[k]] = 1
+        basis_definition = self.basis_def_tensor.type_as(data['z'])
             
         orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
         orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # 形状: [n_atoms, nao_max]
@@ -1926,10 +1926,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # 形状: [n_atoms*nao_max, n_atoms*nao_max]
         
         # 设置每个晶体的价电子数
-        num_val = torch.zeros((99,)).type_as(data['z'])
-        for k in self.num_valence.keys():
-            num_val[k] = self.num_valence[k]
-        num_val = num_val[data['z']] # 形状: [N_atoms]
+        num_val = self.num_valence_tensor.type_as(data['z'])[data['z']] # 形状: [N_atoms]
         num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
                 
         # 初始化能带窗口控制参数
@@ -2133,10 +2130,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Hsoc_off_imag = Hsoc_off_imag.reshape(-1, 2*self.nao_max, 2*self.nao_max)
         
         # 解析原子轨道基组
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
-        # key 是原子序数, value 是占据轨道的索引。
-        for k in self.basis_def.keys():
-            basis_definition[k][self.basis_def[k]] = 1
+        basis_definition = self.basis_def_tensor.type_as(data['z'])
             
         orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
         orb_mask = torch.split(orb_mask, data['node_counts'].tolist(), dim=0) # shape: [natoms, nao_max]
@@ -2145,10 +2139,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # 设置价电子数
-        num_val = torch.zeros((99,)).type_as(data['z'])
-        for k in self.num_valence.keys():
-            num_val[k] = self.num_valence[k]
-        num_val = num_val[data['z']] # shape: [Natoms]
+        num_val = self.num_valence_tensor.type_as(data['z'])[data['z']] # shape: [Natoms]
         num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
                 
         # 初始化能带窗口
@@ -2287,10 +2278,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             tuple: 返回一个元组，包含掩码后的 `(Hon, Hoff)`。
         """
         # 解析原子轨道基组定义
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(data['z'])
-        # key is the atomic number, value is the index of the occupied orbits.
-        for k in self.basis_def.keys():
-            basis_definition[k][self.basis_def[k]] = 1
+        basis_definition = self.basis_def_tensor.type_as(data['z'])
         
         # 保存原始形状以便最后恢复
         original_shape_on = Hon.shape
@@ -2481,10 +2469,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
             torch.Tensor: 一个 `(99, nao_max)` 的张量，其中 `basis_definition[z, i] = 1`
                           表示原子 `z` 包含轨道 `i`。
         """
-        basis_definition = torch.zeros((99, self.nao_max)).type_as(z)
-        for k in self.basis_def:
-            basis_definition[k][self.basis_def[k]] = 1
-        return basis_definition
+        # TorchScript兼容: 直接返回预计算的张量
+        return self.basis_def_tensor.type_as(z)
 
     def mask_tensor_builder(self, data) -> torch.Tensor:
         """构建掩码张量并返回拼接后的掩码张量。
@@ -2847,8 +2833,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     # Optimize Performance
                     edge_matcher_src, edge_matcher_tar = self.edge_hunter(data, inv_edge_idx)           
 
-                    H_heisen_J_on[magnetic_atoms] += oe.contract('mijkl, mij, kop, ml -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))    
-                    H_heisen_J_on[magnetic_atoms] += oe.contract('mijkl, mij, lop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
+                    H_heisen_J_on[magnetic_atoms] += torch.einsum('mijkl, mij, kop, ml -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))    
+                    H_heisen_J_on[magnetic_atoms] += torch.einsum('mijkl, mij, lop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
 
                     zero_shift_idx = cell_index_map[(0, 0, 0)]
                     for ia in range(len(J_on)):
@@ -2857,8 +2843,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             zero_shift_edges = edge_matcher_tar[ia][zero_shift_idx]
                             edge_matcher_src_ = torch.cat([edge_matcher_src[ia], zero_shift_edges])
                             Woff = weight_off[edge_matcher_src_]                    
-                            H_heisen_J_off[edge_matcher_src_] += oe.contract('ijkl, mij, kop, l -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                            H_heisen_J_off[edge_matcher_src_] += oe.contract('ijkl, mij, lop, k -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                            H_heisen_J_off[edge_matcher_src_] += torch.einsum('ijkl, mij, kop, l -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                            H_heisen_J_off[edge_matcher_src_] += torch.einsum('ijkl, mij, lop, k -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
                     
                     for i_edge in range(len(j)):
                         ia = j[i_edge].item()
@@ -2868,16 +2854,16 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         if magnetic_atoms[ja]:
                             Won = weight_on[ia]
                             Woff_src = weight_off[edge_matcher_src[ia]]
-                            H_heisen_J_on[ia] += oe.contract('ijkl, ij, kop, l -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
-                            H_heisen_J_off[edge_matcher_src[ia]] += oe.contract('ijkl, mij, kop, l -> moipj', J_off[i_edge].type_as(sigma), Woff_src.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
+                            H_heisen_J_on[ia] += torch.einsum('ijkl, ij, kop, l -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
+                            H_heisen_J_off[edge_matcher_src[ia]] += torch.einsum('ijkl, mij, kop, l -> moipj', J_off[i_edge].type_as(sigma), Woff_src.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
 
                         # j
                         if magnetic_atoms[ia]:
                             Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                            H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                            H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
                             if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                 Won = weight_on[ja]
-                                H_heisen_J_on[ja] += oe.contract('ijkl, ij, lop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))   
+                                H_heisen_J_on[ja] += torch.einsum('ijkl, ij, lop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))   
                 else:
                     J_on = self.onsitenet_J(node_attr) # shape: (Natoms, Nblocks)  
                     J_on = self.J_merge(J_on) # shape: (Natoms, nao_max, nao_max,)
@@ -2904,7 +2890,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         # Optimize Performance
                         edge_matcher_src, edge_matcher_tar = self.edge_hunter(data, inv_edge_idx)           
 
-                        H_heisen_J_on[magnetic_atoms] += oe.contract('mij, mij, op, m -> moipj', J_on[magnetic_atoms], weight_on[magnetic_atoms], sigma_z, spin_vec[magnetic_atoms,2])
+                        H_heisen_J_on[magnetic_atoms] += torch.einsum('mij, mij, op, m -> moipj', J_on[magnetic_atoms], weight_on[magnetic_atoms], sigma_z, spin_vec[magnetic_atoms,2])
 
                         zero_shift_idx = cell_index_map[(0, 0, 0)]
                         for ia in range(len(J_on)):
@@ -2913,7 +2899,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                                 zero_shift_edges = edge_matcher_tar[ia][zero_shift_idx]
                                 edge_matcher_src_ = torch.cat([edge_matcher_src[ia], zero_shift_edges])
                                 Woff = weight_off[edge_matcher_src_]   
-                                H_heisen_J_off[edge_matcher_src_] += oe.contract('ij, mij, op-> moipj', J_on[ia], Woff, sigma_z)*spin_vec[ia,2]
+                                H_heisen_J_off[edge_matcher_src_] += torch.einsum('ij, mij, op-> moipj', J_on[ia], Woff, sigma_z)*spin_vec[ia,2]
 
                         for i_edge in range(len(j)):
                             ia = j[i_edge].item()
@@ -2923,16 +2909,16 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             if magnetic_atoms[ja]:
                                 Won = weight_on[ia]
                                 Woff_src = weight_off[edge_matcher_src[ia]]
-                                H_heisen_J_on[ia] += oe.contract('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ja,2]
-                                H_heisen_J_off[edge_matcher_src[ia]] += oe.contract('ij, mij, op -> moipj', J_off[i_edge], Woff_src, sigma_z)*spin_vec[ja,2]
+                                H_heisen_J_on[ia] += torch.einsum('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ja,2]
+                                H_heisen_J_off[edge_matcher_src[ia]] += torch.einsum('ij, mij, op -> moipj', J_off[i_edge], Woff_src, sigma_z)*spin_vec[ja,2]
 
                             # j
                             if magnetic_atoms[ia]:
                                 Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
+                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
                                 if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
-                                    H_heisen_J_on[ja] += oe.contract('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ia,2]
+                                    H_heisen_J_on[ja] += torch.einsum('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ia,2]
 
                     else:                 
                         sigma = torch.view_as_complex(torch.zeros((3,2,2,2)).type_as(J_on))
@@ -2949,7 +2935,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         # Optimize Performance
                         edge_matcher_src, edge_matcher_tar = self.edge_hunter(data, inv_edge_idx)          
 
-                        H_heisen_J_on[magnetic_atoms] += oe.contract('mij, mij, kop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
+                        H_heisen_J_on[magnetic_atoms] += torch.einsum('mij, mij, kop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
 
                         zero_shift_idx = cell_index_map[(0, 0, 0)]
                         for ia in range(len(J_on)):
@@ -2958,7 +2944,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                                 zero_shift_edges = edge_matcher_tar[ia][zero_shift_idx]
                                 edge_matcher_src_ = torch.cat([edge_matcher_src[ia], zero_shift_edges])
                                 Woff = weight_off[edge_matcher_src_]  
-                                H_heisen_J_off[edge_matcher_src_] += oe.contract('ij, mij, kop, k -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                                H_heisen_J_off[edge_matcher_src_] += torch.einsum('ij, mij, kop, k -> moipj', J_on[ia].type_as(sigma), Woff.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
 
                         for i_edge in range(len(j)):
                             ia = j[i_edge].item()
@@ -2968,16 +2954,16 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             if magnetic_atoms[ja]:
                                 Won = weight_on[ia]
                                 Woff_src = weight_off[edge_matcher_src[ia]]
-                                H_heisen_J_on[ia] += oe.contract('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
-                                H_heisen_J_off[edge_matcher_src[ia]] += oe.contract('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_src.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
+                                H_heisen_J_on[ia] += torch.einsum('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
+                                H_heisen_J_off[edge_matcher_src[ia]] += torch.einsum('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_src.type_as(sigma), sigma, spin_vec[ja].type_as(sigma))
 
                             # j
                             if magnetic_atoms[ia]:
                                 Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += oe.contract('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
                                 if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
-                                    H_heisen_J_on[ja] += oe.contract('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))                                
+                                    H_heisen_J_on[ja] += torch.einsum('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))                                
 
                 if not self.collinear_spin:
                     Hsoc_on_real =  Hsoc_on_real + H_heisen_J_on.reshape(-1, (2*self.nao_max)**2).real
