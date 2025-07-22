@@ -10,6 +10,7 @@ import torch
 from torch import nn
 from typing import Any, Callable, Dict, List, Optional, Type, Union, Tuple
 import numpy as np
+import warnings
 from .BaseModel import BaseModel
 from e3nn import o3
 from ..layers import GaussianSmearing, BesselBasis, cuttoff_envelope, CosineCutoff
@@ -462,20 +463,106 @@ class HamGNNTransformer(BaseModel):
         else:
             graph_representation['edge_attr'] = graph[AtomicDataDict.EDGE_FEATURES_KEY]
         return graph_representation
+ 
+# ==============================================================================
+# K点生成模块 (非JIT，原HamGNNPlusPlusOut剥离出)
+# ==============================================================================
+class KPointTransform:
+    """
+    一个独立的、非JIT兼容的模块，负责从晶体结构数据中生成K点路径。
+    它将所有与pymatgen和kpoints_generator相关的逻辑与核心计算模型分离。
+    """
+    def __init__(self, k_path_config: Union[str, list, None], num_k: int):
+        """
+        Args:
+            k_path_config (Union[str, list, None]): K点路径配置。
+                - list: 用户提供的高对称点列表。
+                - 'auto': 使用pymatgen自动生成路径。
+                - None: 生成随机K点。
+            num_k (int): K点路径上的采样点数量。
+        """
+        self.k_path_config = k_path_config
+        self.num_k = num_k
+ 
+    def __call__(self, data: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        """
+        对输入的data字典进行操作，计算并添加 'k_vecs' 键。
+ 
+        Args:
+            data (dict): 包含 'cell', 'pos', 'z', 'node_counts' 的数据字典。
+ 
+        Returns:
+            dict: 添加了 'k_vecs' 的数据字典。
+        """
+        if 'k_vecs' in data:
+            return data
+ 
+        k_vecs = []
+        node_counts = data['node_counts'].tolist()
+        pos_split = torch.split(data['pos'], node_counts, dim=0)
+        z_split = torch.split(data['z'], node_counts, dim=0)
+        
+        for idx in range(data['cell'].shape[0]):
+            cell = data['cell'][idx].detach().cpu().numpy()
+            lat_per_inv = np.linalg.inv(cell).T
+            k_vec = None
+            
+            # --- 这是从 forward 方法中剥离并整合的K点生成逻辑 ---
+ 
+            # 对应于 "非SOC" 和 "共线自旋" 分支中处理列表路径的逻辑
+            if isinstance(self.k_path_config, list):
+                kpts = kpoints_generator(dim_k=3, lat=cell)
+                k_vec, _, _, _ = kpts.k_path(self.k_path_config, self.num_k)
+            
+            # 对应于 "非SOC" 和 "共线自旋" 分支中处理 'auto' 的逻辑
+            # 注意：如果传入 'auto'，即使是SOC情况，这里也会执行，
+            # 这保持了灵活性，同时核心模型的调用者 (config.yaml) 决定了行为。
+            elif isinstance(self.k_path_config, str) and self.k_path_config.lower() == 'auto':
+                latt = cell * au2ang
+                pos = pos_split[idx].detach().cpu().numpy() * au2ang
+                species_z = z_split[idx]
+                struct = Structure(
+                    lattice=latt, 
+                    species=[Element.from_Z(k.item()).symbol for k in species_z], 
+                    coords=pos, 
+                    coords_are_cartesian=True
+                )
+                kpath_seek = KPathSeek(structure=struct)
+                klabels = [l for path in kpath_seek.kpath['path'] for l in path]
+                res = [klabels[0]] + [klabels[i] for i in range(1, len(klabels)) if klabels[i] != klabels[i-1]]
+                k_path_list = [kpath_seek.kpath['kpoints'][k] for k in res]
+                try:
+                    kpts = kpoints_generator(dim_k=3, lat=cell)
+                    k_vec, _, _, _ = kpts.k_path(k_path_list, self.num_k)
+                except Exception:
+                    warnings.warn("pymatgen K-path generation failed, falling back to random k-points.")
+                    k_vec = 2.0 * np.random.rand(self.num_k, 3) - 1.0
+            
+            # 对应于所有分支中的 "else" 情况 (随机k点)
+            else:
+                if self.k_path_config is not None:
+                     warnings.warn(f"k_path value '{self.k_path_config}' is not supported for auto-generation, falling back to random k-points.")
+                k_vec = 2.0 * np.random.rand(self.num_k, 3) - 1.0
+ 
+            # 将分数坐标的k点转换为笛卡尔坐标下的分数坐标（相对于倒易晶格矢量）
+            k_vec_cart = k_vec.dot(lat_per_inv)
+            k_vecs.append(torch.tensor(k_vec_cart, dtype=data['pos'].dtype, device=data['pos'].device))
+ 
+        data['k_vecs'] = torch.stack(k_vecs, dim=0)
+        return data
 
-
+# ==============================================================================
+# 核心计算模块 (JIT兼容，原HamGNNPlusPlusOut中与K点生成相关的逻辑已剥离出)
+# ==============================================================================
 @compile_mode("script")
-class HamGNNPlusPlusOut(nn.Module):
-    """HamGNN 的输出模块，用于构建物理哈密顿量并计算相关属性。
+class HamGNNPlusPlusOutCore(nn.Module):
+    """原HamGNNPlusPlusOut 的输出核心，包含Script兼容的计算逻辑。
 
     这个模块接收图神经网络编码的等变特征，并利用这些特征作为系数，
     通过 Clebsch-Gordan 张量积将它们组合成完整的哈密顿量 (H) 和重叠矩阵 (S)。
     它能够处理多种 DFT 软件（如 OpenMX, SIESTA, ABACUS）的基组，支持自旋轨道耦合（SOC）、
     自旋约束计算，并能最终求解能带结构。
 
-    .. note::
-       这个类的实现非常复杂，因为它紧密地耦合了物理学（量子化学、固体物理）
-       和 E(3) 等变神经网络的数学原理。
 
     Attributes:
         nao_max (int): 预设的最大原子轨道数。
@@ -500,7 +587,7 @@ class HamGNNPlusPlusOut(nn.Module):
                  include_triplet: bool = False, 
                  calculate_band_energy: bool = False, 
                  num_k: int = 8, 
-                 k_path: Union[list, np.ndarray, tuple] = None, 
+                 # k_path: Union[list, np.ndarray, tuple] = None, 
                  band_num_control: dict = None, 
                  soc_switch: bool = True, 
                  nonlinearity_type: str = 'gate', 
@@ -527,7 +614,7 @@ class HamGNNPlusPlusOut(nn.Module):
             include_triplet (bool): 是否包含三体相互作用 (当前未完全实现)。
             calculate_band_energy (bool): 是否计算能带结构。
             num_k (int): K 点路径上的采样点数量。
-            k_path (list/np.ndarray): 定义计算能带的高对称 K 点路径。
+            # k_path (list/np.ndarray): 定义计算能带的高对称 K 点路径，将由外部包装器管理。
             band_num_control (dict): 控制不同原子类型计算的能带数量。
             soc_switch (bool): 是否启用自旋轨道耦合 (SOC)。
             nonlinearity_type (str): 在 HamLayer 中使用的非线性激活函数类型 (e.g., 'gate')。
@@ -603,7 +690,7 @@ class HamGNNPlusPlusOut(nn.Module):
         # 能带结构计算相关参数
         self.calculate_band_energy = calculate_band_energy
         self.num_k = num_k
-        self.k_path = k_path
+        # self.k_path = k_path
         
         # 其他参数
         self.add_quartic = False
@@ -2928,21 +3015,22 @@ class HamGNNPlusPlusOut(nn.Module):
                 data['hamiltonian'] = torch.cat((data['hamiltonian_real'], data['hamiltonian_imag']), dim=0)
 
                 if self.calculate_band_energy:
-                    k_vecs = []
-                    for idx in range(data['batch'][-1]+1):
-                        cell = data['cell']
-                        # Generate K point path
-                        if self.k_path is not None:
-                            kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
-                            k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
-                        else:
-                            lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
-                            k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
-                        k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
-                        k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
-                        k_vec = torch.Tensor(k_vec).type_as(Hon)
-                        k_vecs.append(k_vec)  
-                    data['k_vecs'] = torch.stack(k_vecs, dim=0)
+                    # 原HamGNNPlusPlusOut中的k_path移出，由外部包装器管理
+                    # k_vecs = []
+                    # for idx in range(data['batch'][-1]+1):
+                    #     cell = data['cell']
+                    #     # Generate K point path
+                    #     if self.k_path is not None:
+                    #         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
+                    #         k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
+                    #     else:
+                    #         lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
+                    #         k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
+                    #     k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
+                    #     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
+                    #     k_vec = torch.Tensor(k_vec).type_as(Hon)
+                    #     k_vecs.append(k_vec)  
+                    # data['k_vecs'] = torch.stack(k_vecs, dim=0)
                     band_energy, wavefunction = self.cal_band_energy_soc(Hsoc_on_real, Hsoc_on_imag, Hsoc_off_real, Hsoc_off_imag, data) 
                     with torch.no_grad():
                         data['band_energy'], data['wavefunction'] = self.cal_band_energy_soc(data['Hon'], data['iHon'], data['Hoff'], data['iHoff'], data)
@@ -2955,45 +3043,46 @@ class HamGNNPlusPlusOut(nn.Module):
                 
                 # cal band energy
                 if self.calculate_band_energy:
-                    k_vecs = []
-                    for idx in range(data['batch'][-1]+1):
-                        cell = data['cell']
-                        # Generate K point path
-                        if isinstance(self.k_path, list):
-                            kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
-                            k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
-                        elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
-                            # build crystal structure
-                            latt = cell[idx].detach().cpu().numpy()*au2ang
-                            pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
-                            species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
-                            struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
-                            # Initialize k_path and label
-                            kpath_seek = KPathSeek(structure = struct)
-                            klabels = []
-                            for lbs in kpath_seek.kpath['path']:
-                                klabels += lbs
-                            # remove adjacent duplicates   
-                            res = [klabels[0]]
-                            for x in klabels[1:]:
-                                if x != res[-1]:
-                                    res.append(x)
-                            klabels = res
-                            k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
-                            try:
-                                kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
-                                k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(k_path, self.num_k)
-                            except:
-                                lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
-                                k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
-                        else:
-                            lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
-                            k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
-                        k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
-                        k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
-                        k_vec = torch.Tensor(k_vec).type_as(Hon)
-                        k_vecs.append(k_vec)  
-                    data['k_vecs'] = torch.stack(k_vecs, dim=0)
+                    # 原HamGNNPlusPlusOut中的k_path移出，由外部包装器管理
+                    # k_vecs = []
+                    # for idx in range(data['batch'][-1]+1):
+                    #     cell = data['cell']
+                    #     # Generate K point path
+                    #     if isinstance(self.k_path, list):
+                    #         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
+                    #         k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
+                    #     elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
+                    #         # build crystal structure
+                    #         latt = cell[idx].detach().cpu().numpy()*au2ang
+                    #         pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
+                    #         species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
+                    #         struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
+                    #         # Initialize k_path and label
+                    #         kpath_seek = KPathSeek(structure = struct)
+                    #         klabels = []
+                    #         for lbs in kpath_seek.kpath['path']:
+                    #             klabels += lbs
+                    #         # remove adjacent duplicates   
+                    #         res = [klabels[0]]
+                    #         for x in klabels[1:]:
+                    #             if x != res[-1]:
+                    #                 res.append(x)
+                    #         klabels = res
+                    #         k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
+                    #         try:
+                    #             kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
+                    #             k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(k_path, self.num_k)
+                    #         except:
+                    #             lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
+                    #             k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
+                    #     else:
+                    #         lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
+                    #         k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
+                    #     k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
+                    #     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
+                    #     k_vec = torch.Tensor(k_vec).type_as(Hon)
+                    #     k_vecs.append(k_vec)  
+                    # data['k_vecs'] = torch.stack(k_vecs, dim=0)
                     if self.export_reciprocal_values:
                         band_energy_up, wavefunction_up, HK_up, SK_up, dSK_up, gap_up = self.cal_band_energy(Hcol_on[:,0,:], Hcol_off[:,0,:], data, True)
                         band_energy_down, wavefunction_down, HK_down, SK_down, dSK_down, gap_down = self.cal_band_energy(Hcol_on[:,1,:], Hcol_off[:,1,:], data, True)
@@ -3048,45 +3137,46 @@ class HamGNNPlusPlusOut(nn.Module):
                 Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
         
             if self.calculate_band_energy:
-                k_vecs = []
-                for idx in range(data['batch'][-1]+1):
-                    cell = data['cell']
-                    # Generate K point path
-                    if isinstance(self.k_path, list):
-                        kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
-                        k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
-                    elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
-                        # build crystal structure
-                        latt = cell[idx].detach().cpu().numpy()*au2ang
-                        pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
-                        species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
-                        struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
-                        # Initialize k_path and label
-                        kpath_seek = KPathSeek(structure = struct)
-                        klabels = []
-                        for lbs in kpath_seek.kpath['path']:
-                            klabels += lbs
-                        # remove adjacent duplicates   
-                        res = [klabels[0]]
-                        for x in klabels[1:]:
-                            if x != res[-1]:
-                                res.append(x)
-                        klabels = res
-                        k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
-                        try:
-                            kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
-                            k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(k_path, self.num_k)
-                        except:
-                            lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
-                            k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
-                    else:
-                        lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
-                        k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
-                    k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
-                    k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
-                    k_vec = torch.Tensor(k_vec).type_as(Hon)
-                    k_vecs.append(k_vec)  
-                data['k_vecs'] = torch.stack(k_vecs, dim=0)
+                # 原HamGNNPlusPlusOut中的k_path移出，由外部包装器管理
+                # k_vecs = []
+                # for idx in range(data['batch'][-1]+1):
+                #     cell = data['cell']
+                #     # Generate K point path
+                #     if isinstance(self.k_path, list):
+                #         kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
+                #         k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(self.k_path, self.num_k)
+                #     elif isinstance(self.k_path, str) and self.k_path.lower() == 'auto':
+                #         # build crystal structure
+                #         latt = cell[idx].detach().cpu().numpy()*au2ang
+                #         pos = torch.split(data['pos'], data['node_counts'].tolist(), dim=0)[idx].detach().cpu().numpy()*au2ang
+                #         species = torch.split(data['z'], data['node_counts'].tolist(), dim=0)[idx]
+                #         struct = Structure(lattice=latt, species=[Element.from_Z(k.item()).symbol for k in species], coords=pos, coords_are_cartesian=True)
+                #         # Initialize k_path and label
+                #         kpath_seek = KPathSeek(structure = struct)
+                #         klabels = []
+                #         for lbs in kpath_seek.kpath['path']:
+                #             klabels += lbs
+                #         # remove adjacent duplicates   
+                #         res = [klabels[0]]
+                #         for x in klabels[1:]:
+                #             if x != res[-1]:
+                #                 res.append(x)
+                #         klabels = res
+                #         k_path = [kpath_seek.kpath['kpoints'][k] for k in klabels]
+                #         try:
+                #             kpts=kpoints_generator(dim_k=3, lat=cell[idx].detach().cpu().numpy())
+                #             k_vec, k_dist, k_node, lat_per_inv = kpts.k_path(k_path, self.num_k)
+                #         except:
+                #             lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
+                #             k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
+                #     else:
+                #         lat_per_inv=np.linalg.inv(cell[idx].detach().cpu().numpy()).T
+                #         k_vec = 2.0*np.random.rand(self.num_k, 3)-1.0 #(-1, 1)
+                #     k_vec = k_vec.dot(lat_per_inv[np.newaxis,:,:]) # shape (nk,1,3)
+                #     k_vec = k_vec.reshape(-1,3) # shape (nk, 3)
+                #     k_vec = torch.Tensor(k_vec).type_as(Hon)
+                #     k_vecs.append(k_vec)  
+                # data['k_vecs'] = torch.stack(k_vecs, dim=0)
                 if self.export_reciprocal_values:
                     if self.ham_only:
                         band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(Hon, Hoff, data, True)
@@ -3173,3 +3263,91 @@ class HamGNNPlusPlusOut(nn.Module):
             result.update({'overlap': S})
         
         return result
+
+# ==============================================================================
+#  用户友好的包装器模块 (非JIT)
+# ==============================================================================
+class HamGNNPlusPlusOut(nn.Module):
+    """
+    用户友好的HamGNN输出模块包装器。
+    它负责处理非JIT兼容的K点生成，并调用内部的、可编译的核心计算模块。
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        
+        # 提取K点生成所需的配置参数
+        self.calculate_band_energy = kwargs.get('calculate_band_energy', False)
+        
+        # 使用 .pop() 来获取参数，并将其从kwargs中移除，
+        # 这样它就不会被传递给不支持它的Core模型
+        k_path_config = kwargs.pop('k_path', None)
+        
+        # 如果需要计算能带，则创建K点转换器实例
+        if self.calculate_band_energy:
+            num_k = kwargs.get('num_k', 8)
+            self.k_point_transform = KPointTransform(k_path_config, num_k)
+        
+        # 实例化核心的、可JIT编译的计算模块
+        # *args 和更新后的 kwargs 被传递下去
+        self.core_model = HamGNNPlusPlusOutCore(*args, **kwargs)
+        # ==================== 暴露公共API ====================
+        # 只暴露那些 `Core` 模型特有，而 `nn.Module` 基类没有的属性。
+        
+        self.derivative = self.core_model.derivative
+        self.nao_max = self.core_model.nao_max
+        self.ham_type = self.core_model.ham_type
+        
+        # 如果后续还有其他自定义属性被访问，就在这里以同样的方式添加它们。
+ 
+    def forward(self, data: Dict[str, torch.Tensor], graph_representation: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        """
+        前向传播逻辑。
+ 
+        1.  如果需要计算能带且`data`中没有`k_vecs`，则调用K点转换器生成它们。
+        2.  调用核心模型执行所有主要的物理计算。
+        """
+        if self.calculate_band_energy and 'k_vecs' not in data:
+            warnings.warn(
+                "Auto-generating k-points inside the model's forward pass is not JIT-compatible. "
+                "For deployment, please apply KPointTransform during data loading.",
+                UserWarning
+            )
+            data = self.k_point_transform(data)
+ 
+        # 调用核心模型
+        return self.core_model(data, graph_representation)
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
+                              missing_keys, unexpected_keys, error_msgs):
+        """
+        向后兼容性支持：处理旧checkpoint（没有core_model层级）的加载
+        
+        旧格式: output_module.xxx
+        新格式: output_module.core_model.xxx
+        """
+        # 收集所有属于此模块但不包含'core_model'的键
+        keys_to_remap = []
+        for key in list(state_dict.keys()):
+            if key.startswith(prefix) and not '.core_model.' in key:
+                # 计算相对键名
+                relative_key = key[len(prefix):]
+                # 跳过包装器自身的属性（如calculate_band_energy）
+                if relative_key in ['calculate_band_energy', 'k_point_transform.']:
+                    continue
+                if not relative_key.startswith('k_point_transform.'):
+                    keys_to_remap.append(key)
+        
+        # 将旧键重映射到新键
+        for old_key in keys_to_remap:
+            relative_key = old_key[len(prefix):]
+            new_key = prefix + 'core_model.' + relative_key
+            if old_key in state_dict:
+                state_dict[new_key] = state_dict.pop(old_key)
+        
+        # 调用父类方法继续加载
+        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict,
+                                      missing_keys, unexpected_keys, error_msgs)
+
+    # 注意：我们特意不定义 __getattr__ 方法
+    # 所有 nn.Module 的标准方法 (如 .to(), .eval(), .parameters()) 都通过继承自动处理。
+    # 所有自定义的 API 都在 __init__ 中被显式暴露。
