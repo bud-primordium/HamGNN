@@ -809,6 +809,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         
         self.ham_irreps_dim = torch.LongTensor(self.ham_irreps_dim)
 
+        # TorchScript兼容: 初始化hamDecomp为None
+        self.hamDecomp = None
+        
         # 如果启用 SOC 且基组为 su2
         if self.soc_switch and (self.soc_basis == 'su2'): 
             out_js_list = []
@@ -1806,7 +1809,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         gap = []
         for idx in range(Nbatch):
             k_vec = data['k_vecs'][idx]   
-            natoms = data['node_counts'][idx]
+            natoms = int(data['node_counts'][idx])
             
             # 初始化 H(k) 和 S(k)       
             # 傅里叶变换的相位因子
@@ -2015,7 +2018,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
             k_vec = data['k_vecs'][idx]   
-            natoms = data['node_counts'][idx]
+            natoms = int(data['node_counts'][idx])
             
             # --- 3a: 构建 k 点依赖的矩阵 HK 和 SK ---
             # 计算傅里叶变换的相位因子
@@ -2380,7 +2383,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Returns:
             torch.Tensor: 完整的复数 SOC 哈密顿量张量。
         """
-        Hsoc = torch.view_as_complex(torch.zeros((H.shape[0], (2*self.nao_max)**2, 2)).type_as(H))
+        Hsoc = torch.view_as_complex(torch.zeros((H.shape[0], int((2*self.nao_max)**2), 2)).type_as(H))
         Hsoc = H + 1.0j*iH
         return Hsoc
 
@@ -2617,8 +2620,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
         mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]])
 
         # 扩展张量以包含自旋分量
-        mask_on_expanded = blockwise_2x2_concat(mask_on, mask_on, mask_on, mask_on).reshape(-1, (2*self.nao_max)**2).bool()
-        mask_off_expanded = blockwise_2x2_concat(mask_off, mask_off, mask_off, mask_off).reshape(-1, (2*self.nao_max)**2).bool()
+        mask_on_expanded = blockwise_2x2_concat(mask_on, mask_on, mask_on, mask_on).reshape(-1, int((2*self.nao_max)**2)).bool()
+        mask_off_expanded = blockwise_2x2_concat(mask_off, mask_off, mask_off, mask_off).reshape(-1, int((2*self.nao_max)**2)).bool()
 
         # 处理实部和虚部掩码
         mask_real_imag = self.cat_onsite_and_offsite(data, mask_on_expanded, mask_off_expanded)
@@ -2771,59 +2774,62 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                        Hsoc_on_real = Hsoc_on_real.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_on_real = Hsoc_on_real.reshape(-1, int((2*self.nao_max)**2))
 
                         Hsoc_on_imag = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
                         Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                        Hsoc_on_imag = Hsoc_on_imag.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_on_imag = Hsoc_on_imag.reshape(-1, int((2*self.nao_max)**2))
 
                         Hsoc_off_real = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
                         Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                        Hsoc_off_real = Hsoc_off_real.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_off_real = Hsoc_off_real.reshape(-1, int((2*self.nao_max)**2))
 
                         Hsoc_off_imag = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
                         Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
                         Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                        Hsoc_off_imag = Hsoc_off_imag.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_off_imag = Hsoc_off_imag.reshape(-1, int((2*self.nao_max)**2))
 
                 elif self.soc_basis == 'su2':
-                    node_sph = self.onsitenet_h_su2(node_attr) 
+                    if self.onsitenet_h_su2 is not None and self.offsitenet_h_su2 is not None and self.hamDecomp is not None:
+                        node_sph = self.onsitenet_h_su2(node_attr) 
 
-                    Hon = self.hamDecomp.get_H(node_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
-                    Hon = self.change_index(Hon)
-                    Hon = Hon.reshape(-1, 2, 2, self.nao_max, self.nao_max)                
-                    Hon = torch.swapaxes(Hon, 2, 3) # shape (Nnodes, 2, nao_max, 2, nao_max)
+                        Hon = self.hamDecomp.get_H(node_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
+                        Hon = self.change_index(Hon)
+                        Hon = Hon.reshape(-1, 2, 2, self.nao_max, self.nao_max)                
+                        Hon = torch.swapaxes(Hon, 2, 3) # shape (Nnodes, 2, nao_max, 2, nao_max)
 
-                    # Calculate the off-site Hamiltonian
-                    # Calculate the contribution of the edges       
-                    edge_sph = self.offsitenet_h_su2(edge_attr)
+                        # Calculate the off-site Hamiltonian
+                        # Calculate the contribution of the edges       
+                        edge_sph = self.offsitenet_h_su2(edge_attr)
 
-                    Hoff = self.hamDecomp.get_H(edge_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
-                    Hoff = self.change_index(Hoff)
-                    Hoff = Hoff.reshape(-1, 2, 2, self.nao_max, self.nao_max)
-                    Hoff = torch.swapaxes(Hoff, 2, 3) # shape (Nedges, 2, nao_max, 2, nao_max)    
+                        Hoff = self.hamDecomp.get_H(edge_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
+                        Hoff = self.change_index(Hoff)
+                        Hoff = Hoff.reshape(-1, 2, 2, self.nao_max, self.nao_max)
+                        Hoff = torch.swapaxes(Hoff, 2, 3) # shape (Nedges, 2, nao_max, 2, nao_max)    
 
-                    # mask zeros         
-                    for i in range(2):
-                        for j in range(2):
-                            Hon[:,i,:,j,:], Hoff[:,i,:,j,:] = self.mask_Ham(Hon[:,i,:,j,:], Hoff[:,i,:,j,:], data)
-                    # TorchScript兼容: 确保reshape参数是int
-                    Hon = Hon.reshape(-1, int((2*self.nao_max)**2))
-                    # TorchScript兼容: 确保reshape参数是int
-                    Hoff = Hoff.reshape(-1, int((2*self.nao_max)**2))
-                    # build four parts
-                    Hsoc_on_real =  Hon.real
-                    Hsoc_off_real = Hoff.real
-                    Hsoc_on_imag = Hon.imag
-                    Hsoc_off_imag = Hoff.imag
+                        # mask zeros         
+                        for i in range(2):
+                            for j in range(2):
+                                Hon[:,i,:,j,:], Hoff[:,i,:,j,:] = self.mask_Ham(Hon[:,i,:,j,:], Hoff[:,i,:,j,:], data)
+                        # TorchScript兼容: 确保reshape参数是int
+                        Hon = Hon.reshape(-1, int((2*self.nao_max)**2))
+                        # TorchScript兼容: 确保reshape参数是int
+                        Hoff = Hoff.reshape(-1, int((2*self.nao_max)**2))
+                        # build four parts
+                        Hsoc_on_real =  Hon.real
+                        Hsoc_off_real = Hoff.real
+                        Hsoc_on_imag = Hon.imag
+                        Hsoc_off_imag = Hoff.imag
+                    else:
+                        raise RuntimeError("SOC su2 networks not initialized")
 
                 else:
                     raise NotImplementedError
@@ -2850,12 +2856,12 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     Hsoc_on_real = torch.zeros_like(data['Hon']).reshape(Hon.shape[0], 2*self.nao_max, 2*self.nao_max)
                     Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real = Hsoc_on_real.reshape(Hon.shape[0], (2*self.nao_max)**2)
+                    Hsoc_on_real = Hsoc_on_real.reshape(Hon.shape[0], int((2*self.nao_max)**2))
                     
                     Hsoc_off_real = torch.zeros_like(data['Hoff']).reshape(Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)
                     Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
                     Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real = Hsoc_off_real.reshape(Hoff.shape[0], (2*self.nao_max)**2)
+                    Hsoc_off_real = Hsoc_off_real.reshape(Hoff.shape[0], int((2*self.nao_max)**2))
                     
                     Hsoc_on_imag = torch.zeros_like(data['iHon']) 
                     Hsoc_off_imag = torch.zeros_like(data['iHoff'])
@@ -2863,7 +2869,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             if self.spin_constrained:
                 magnetic_atoms = (data['spin_length'] > self.minMagneticMoment)
                 data['unique_cell_shift'], data['cell_shift_indices'], data['cell_index_map'] = self.get_unique_cell_shift_and_cell_shift_indices(data)
-                cell_shift_indices = data['cell_shift_indices'].tolist()
+                cell_shift_indices = data['cell_shift_indices']
                 cell_index_map = data['cell_index_map']
                 
                 # learn a weight matrix
@@ -2953,9 +2959,10 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                         # j
                         if magnetic_atoms[ia]:
-                            Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                            H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                            if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
+                            idx_cell_shift = int(cell_shift_indices[i_edge])
+                            Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
+                            H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                            if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
                                 Won = weight_on[ja]
                                 H_heisen_J_on[ja] += torch.einsum('ijkl, ij, lop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))   
                 else:
@@ -3013,9 +3020,10 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                             # j
                             if magnetic_atoms[ia]:
-                                Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
-                                if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
+                                idx_cell_shift = int(cell_shift_indices[i_edge])
+                                Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
+                                H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
+                                if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += torch.einsum('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ia,2]
 
@@ -3063,17 +3071,18 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                             # j
                             if magnetic_atoms[ia]:
-                                Woff_tar = weight_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]]
-                                H_heisen_J_off[edge_matcher_tar[ja][cell_shift_indices[i_edge]]] += torch.einsum('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                                if cell_shift_indices[i_edge] == data['cell_index_map'][(0,0,0)]:
+                                idx_cell_shift = int(cell_shift_indices[i_edge])
+                                Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
+                                H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
+                                if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += torch.einsum('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))                                
 
                 if not self.collinear_spin:
-                    Hsoc_on_real =  Hsoc_on_real + H_heisen_J_on.reshape(-1, (2*self.nao_max)**2).real
-                    Hsoc_off_real = Hsoc_off_real + H_heisen_J_off.reshape(-1, (2*self.nao_max)**2).real
-                    Hsoc_on_imag = Hsoc_on_imag + H_heisen_J_on.reshape(-1, (2*self.nao_max)**2).imag
-                    Hsoc_off_imag = Hsoc_off_imag + H_heisen_J_off.reshape(-1, (2*self.nao_max)**2).imag
+                    Hsoc_on_real =  Hsoc_on_real + H_heisen_J_on.reshape(-1, int((2*self.nao_max)**2)).real
+                    Hsoc_off_real = Hsoc_off_real + H_heisen_J_off.reshape(-1, int((2*self.nao_max)**2)).real
+                    Hsoc_on_imag = Hsoc_on_imag + H_heisen_J_on.reshape(-1, int((2*self.nao_max)**2)).imag
+                    Hsoc_off_imag = Hsoc_off_imag + H_heisen_J_off.reshape(-1, int((2*self.nao_max)**2)).imag
                     
                     if self.symmetrize:
                         Hsoc_on_real = self.symmetrize_Hon_soc(Hsoc_on_real, sign='+')
@@ -3294,7 +3303,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     if self.zero_point_shift:
                         # calculate miu
                         S = data['overlap'].reshape(-1, self.nao_max, self.nao_max)                        
-                        S_soc = blockwise_2x2_concat(S, torch.zeros_like(S), torch.zeros_like(S), S).reshape(-1, (2*self.nao_max)**2)
+                        S_soc = blockwise_2x2_concat(S, torch.zeros_like(S), torch.zeros_like(S), S).reshape(-1, int((2*self.nao_max)**2))
                         sum_S_soc = 2*torch.sum(S[S > 1e-6])                        
                         miu_real = torch.sum(extract_elements_above_threshold(S_soc, Hsoc_real-data['hamiltonian_real'], 1e-6))/sum_S_soc
                         # shift Hamiltonian and band_energy
