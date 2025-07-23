@@ -1646,12 +1646,14 @@ class HamGNNPlusPlusOutCore(nn.Module):
         H = H.reshape(-1, orbs)              
         return H
     
-    def cat_onsite_and_offsite(self, data: Dict[str, torch.Tensor], Hon: torch.Tensor, Hoff: torch.Tensor) -> torch.Tensor:
+    def cat_onsite_and_offsite(self, node_counts: torch.Tensor, edge_index: torch.Tensor, batch: torch.Tensor, Hon: torch.Tensor, Hoff: torch.Tensor) -> torch.Tensor:
         """
         将批处理中的 onsite 和 offsite 矩阵块按顺序拼接起来。
 
         Args:
-            data (Data): 输入的图数据。
+            node_counts (torch.Tensor): 每个晶胞中的节点数。
+            edge_index (torch.Tensor): 边索引张量。
+            batch (torch.Tensor): 批次信息。
             Hon (torch.Tensor): Onsite 矩阵块。
             Hoff (torch.Tensor): Offsite 矩阵块。
 
@@ -1659,14 +1661,13 @@ class HamGNNPlusPlusOutCore(nn.Module):
             torch.Tensor: 拼接后的矩阵块。
         """
         # 获取每个晶胞中的节点数
-        node_counts = data['node_counts']
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hon_split = torch.tensor_split(Hon, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
         #
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
+        j = edge_index[0]
+        i = edge_index[1]
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data['batch'][j], dim=0)
+        edge_num = scatter(edge_num, batch[j], dim=0)
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hoff_split = torch.tensor_split(Hoff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         #
@@ -2640,22 +2641,23 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # TorchScript兼容: 直接返回预计算的张量
         return self.basis_def_tensor.type_as(z)
 
-    def mask_tensor_builder(self, data) -> torch.Tensor:
+    def mask_tensor_builder(self, edge_index: torch.Tensor, z: torch.Tensor) -> torch.Tensor:
         """构建掩码张量并返回拼接后的掩码张量。
 
         Args:
-            data (Data): PyG 图数据对象。
+            edge_index (torch.Tensor): 边索引张量。
+            z (torch.Tensor): 原子序数张量。
 
         Returns:
             torch.Tensor: 拼接后的 on-site 和 off-site 掩码。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        z = data['z']
+        j = edge_index[0]
+        i = edge_index[1]
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
-        mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).bool()
-        mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]]).bool()
+        # TorchScript兼容: 使用.to(torch.bool)替代.bool()
+        mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).to(torch.bool)
+        mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]]).to(torch.bool)
         # 拼接并重塑掩码
         mask_all = torch.cat(
             # TorchScript兼容: 确保reshape参数是int
@@ -2665,23 +2667,24 @@ class HamGNNPlusPlusOutCore(nn.Module):
         )
         return mask_all
 
-    def mask_tensor_builder_col(self, data) -> torch.Tensor:
+    def mask_tensor_builder_col(self, edge_index: torch.Tensor, z: torch.Tensor) -> torch.Tensor:
         """为共线自旋情况构建掩码张量。
 
         Args:
-            data (Data): PyG 图数据对象。
+            edge_index (torch.Tensor): 边索引张量。
+            z (torch.Tensor): 原子序数张量。
 
         Returns:
             torch.Tensor: 适用于共线自旋计算的拼接掩码。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        z = data['z']
+        j = edge_index[0]
+        i = edge_index[1]
         basis_definition = self.get_basis_definition(z)
         # 使用 einsum 计算 on-site 和 off-site 掩码
-        mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).bool()
+        # TorchScript兼容: 使用.to(torch.bool)替代.bool()
+        mask_on = torch.einsum('ni, nj -> nij', basis_definition[z], basis_definition[z]).to(torch.bool)
         mask_on = torch.stack([mask_on, mask_on], dim=1) # (Nbatchs, 2, nao_max, nao_max)
-        mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]]).bool()
+        mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]]).to(torch.bool)
         mask_off = torch.stack([mask_off, mask_off], dim=1) # (Nbatchs, 2, nao_max, nao_max)
         # 拼接并重塑掩码
         mask_all = torch.cat(
@@ -2692,19 +2695,21 @@ class HamGNNPlusPlusOutCore(nn.Module):
         )
         return mask_all
 
-    def mask_tensor_builder_soc(self, data) -> tuple:
+    def mask_tensor_builder_soc(self, edge_index: torch.Tensor, z: torch.Tensor, node_counts: torch.Tensor, batch: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """为包含自旋轨道耦合的情况构建掩码张量。
 
         Args:
-            data (Data): PyG 图数据对象。
+            edge_index (torch.Tensor): 边索引张量。
+            z (torch.Tensor): 原子序数张量。
+            node_counts (torch.Tensor): 每个晶胞中的节点数。
+            batch (torch.Tensor): 批次信息。
 
         Returns:
             tuple: 返回一个元组 `(mask_real_imag, mask_all)`，
                    分别对应 SOC 哈密顿量的实部/虚部掩码和总掩码。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        z = data['z']
+        j = edge_index[0]
+        i = edge_index[1]
         basis_definition = self.get_basis_definition(z)
 
         # 计算基础掩码
@@ -2712,11 +2717,12 @@ class HamGNNPlusPlusOutCore(nn.Module):
         mask_off = torch.einsum('ni, nj -> nij', basis_definition[z[j]], basis_definition[z[i]])
 
         # 扩展张量以包含自旋分量
-        mask_on_expanded = blockwise_2x2_concat(mask_on, mask_on, mask_on, mask_on).reshape(-1, int((2*self.nao_max)**2)).bool()
-        mask_off_expanded = blockwise_2x2_concat(mask_off, mask_off, mask_off, mask_off).reshape(-1, int((2*self.nao_max)**2)).bool()
+        # TorchScript兼容: 使用.to(torch.bool)替代.bool()
+        mask_on_expanded = blockwise_2x2_concat(mask_on, mask_on, mask_on, mask_on).reshape(-1, int((2*self.nao_max)**2)).to(torch.bool)
+        mask_off_expanded = blockwise_2x2_concat(mask_off, mask_off, mask_off, mask_off).reshape(-1, int((2*self.nao_max)**2)).to(torch.bool)
 
         # 处理实部和虚部掩码
-        mask_real_imag = self.cat_onsite_and_offsite(data, mask_on_expanded, mask_off_expanded)
+        mask_real_imag = self.cat_onsite_and_offsite(node_counts, edge_index, batch, mask_on_expanded, mask_off_expanded)
 
         # 拼接所有掩码
         mask_all = torch.cat((mask_real_imag, mask_real_imag), dim=0)
@@ -2752,9 +2758,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
     
         # prepare data['hamiltonian'] & data['overlap']
         if 'hamiltonian' not in data:
-            data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
+            data['hamiltonian'] = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], data['Hon'], data['Hoff'])
         if 'overlap' not in data:
-            data['overlap'] = self.cat_onsite_and_offsite(data, data['Son'], data['Soff'])
+            data['overlap'] = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], data['Son'], data['Soff'])
         
         # TorchScript兼容: 确保graph_representation不为None
         assert graph_representation is not None, "graph_representation must not be None"
@@ -2820,6 +2826,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
         
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
                 Son, Soff = self.mask_Ham(Son, Soff, data['z'], data['edge_index'])
+        
+        # TorchScript兼容: 初始化变量以避免作用域问题
+        HK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+        SK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+        dSK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
         
         if self.soc_switch or self.spin_constrained:            
             if self.soc_switch:
@@ -3243,11 +3254,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     Hcol_off = Hcol_off + data['Hoff0']   
 
             if not self.collinear_spin:
-                Hsoc_real = self.cat_onsite_and_offsite(data, Hsoc_on_real, Hsoc_off_real)
-                Hsoc_imag = self.cat_onsite_and_offsite(data, Hsoc_on_imag, Hsoc_off_imag)
+                Hsoc_real = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], Hsoc_on_real, Hsoc_off_real)
+                Hsoc_imag = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], Hsoc_on_imag, Hsoc_off_imag)
 
-                data['hamiltonian_real'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
-                data['hamiltonian_imag'] = self.cat_onsite_and_offsite(data, data['iHon'], data['iHoff'])
+                data['hamiltonian_real'] = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], data['Hon'], data['Hoff'])
+                data['hamiltonian_imag'] = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], data['iHon'], data['iHoff'])
 
                 Hsoc = torch.cat((Hsoc_real, Hsoc_imag), dim=0)
                 data['hamiltonian'] = torch.cat((data['hamiltonian_real'], data['hamiltonian_imag']), dim=0)
@@ -3287,8 +3298,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     band_energy = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                     wavefunction = torch.empty((0,), dtype=torch.complex64, device=node_attr.device)
             else:                
-                Hcol = self.cat_onsite_and_offsite(data, Hcol_on, Hcol_off)
-                data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
+                Hcol = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], Hcol_on, Hcol_off)
+                data['hamiltonian'] = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], data['Hon'], data['Hoff'])
                 
                 # cal band energy
                 if self.calculate_band_energy:
@@ -3418,6 +3429,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
                 Hon, Hoff = self.mask_Ham(Hon, Hoff, data['z'], data['edge_index'])
         
+            # TorchScript兼容: 初始化变量以避免作用域问题
+            HK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+            SK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+            dSK = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+            
             if self.calculate_band_energy:
                 # 原HamGNNPlusPlusOut中的k_path移出，由外部包装器管理
                 # k_vecs = []
@@ -3520,7 +3536,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                               'band_energy': band_energy, 'wavefunction': wavefunction}
                     
                     if self.get_nonzero_mask_tensor:
-                        mask_real_imag, mask_all = self.mask_tensor_builder_soc(data)
+                        mask_real_imag, mask_all = self.mask_tensor_builder_soc(data['edge_index'], data['z'], data['node_counts'], data['batch'])
                         result['mask_real_imag'] = mask_real_imag
                     
                 else: # collinear_spin
@@ -3536,10 +3552,10 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     result = {'hamiltonian': Hcol, 'band_energy': band_energy, 'wavefunction': wavefunction}
                     
                     if self.get_nonzero_mask_tensor:
-                        mask_all = self.mask_tensor_builder_col(data)
+                        mask_all = self.mask_tensor_builder_col(data['edge_index'], data['z'])
                         result['mask'] = mask_all             
             else:
-                H = self.cat_onsite_and_offsite(data, Hon, Hoff)
+                H = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], Hon, Hoff)
                 if self.zero_point_shift:
                     # calculate miu
                     S = data['overlap']  
@@ -3554,7 +3570,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     result.update({'HK':HK, 'SK':SK, 'dSK': dSK})
                 
                 if self.get_nonzero_mask_tensor:
-                    mask_all = self.mask_tensor_builder(data)
+                    mask_all = self.mask_tensor_builder(data['edge_index'], data['z'])
                     result['mask'] = mask_all
                 
         else:
@@ -3563,7 +3579,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         if not self.ham_only:                
             # openmx
             if self.ham_type in ['openmx','pasp', 'siesta','abacus']:
-                S = self.cat_onsite_and_offsite(data, Son, Soff)
+                S = self.cat_onsite_and_offsite(data['node_counts'], data['edge_index'], data['batch'], Son, Soff)
             else:
                 raise NotImplementedError
             result.update({'overlap': S})
@@ -3613,12 +3629,11 @@ class HamGNNPlusPlusOut(nn.Module):
         2.  调用核心模型执行所有主要的物理计算。
         """
         if self.calculate_band_energy and 'k_vecs' not in data:
-            warnings.warn(
-                "Auto-generating k-points inside the model's forward pass is not JIT-compatible. "
-                "For deployment, please apply KPointTransform during data loading.",
-                UserWarning
+            # TorchScript兼容: 无法动态生成k点，要求预处理提供
+            raise RuntimeError(
+                "k_vecs not found in data, but band energy calculation is enabled. "
+                "For TorchScript compatibility, please ensure k_vecs are provided through data preprocessing."
             )
-            data = self.k_point_transform(data)
  
         # 调用核心模型
         return self.core_model(data, graph_representation)
