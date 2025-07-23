@@ -1757,7 +1757,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
             Hoff = Hoff.reshape(-1, int((2*self.nao_max)**2))
             return Hoff
 
-    def cal_band_energy_debug(self, Hon, Hoff, Son, Soff, data, export_reciprocal_values:bool=False):
+    def cal_band_energy_debug(self, Hon, Hoff, Son, Soff, 
+                              edge_index: torch.Tensor, cell: torch.Tensor, z: torch.Tensor,
+                              node_counts: torch.Tensor, batch: torch.Tensor,
+                              nbr_shift: torch.Tensor, k_vecs: torch.Tensor,
+                              export_reciprocal_values: bool = False):
         """
         计算能带结构（调试版本）。
         
@@ -1775,13 +1779,13 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Returns:
             tuple: 包含能带能量、波函数、带隙等信息的元组。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        cell = data['cell'] # 形状:(N_batch, 3, 3)
+        j = edge_index[0]
+        i = edge_index[1]
+        # cell = cell  # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
         # 解析原子轨道基组定义
-        basis_definition = self.basis_def_tensor.type_as(data['z'])
+        basis_definition = self.basis_def_tensor.type_as(z)
             
         orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
@@ -1827,6 +1831,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
         S_reciprocal = []
         dS_reciprocal = []
         gap = []
+        # TorchScript兼容: 初始化dSK变量，避免在条件分支外未定义
+        dSK = torch.empty((0, 0, 0, 0), dtype=torch.complex64, device=Hon.device)
         for idx in range(Nbatch):
             k_vec = data['k_vecs'][idx]   
             natoms = int(node_counts[idx])
@@ -1840,6 +1846,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
             SK_pred = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))           
             if export_reciprocal_values:
                 dSK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 3, 2)).type_as(Hon))
+            else:
+                # TorchScript兼容: 在else分支中也初始化dSK，避免类型不一致
+                dSK = torch.empty((0, 0, 0, 0), dtype=torch.complex64, device=Hon.device)
 
             na = torch.arange(natoms).type_as(j)
             # 添加 onsite 部分 (R=0)
@@ -2203,7 +2212,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
         gap = torch.cat(gap, dim=0)
         
         if export_reciprocal_values:
-            wavefunction = torch.stack(wavefunction, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
+            # TorchScript兼容: 使用新变量名避免类型冲突
+            wavefunction_tensor = torch.stack(wavefunction, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
             HK = torch.stack(H_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
             SK = torch.stack(S_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
             # TorchScript兼容: 只有当dS_reciprocal包含有效数据时才stack
@@ -2212,12 +2222,17 @@ class HamGNNPlusPlusOutCore(nn.Module):
             else:
                 # 创建与其他张量匹配形状的空tensor
                 dSK = torch.empty((Nbatch, 0, 0, 0, 0), dtype=torch.complex64, device=HK.device)
-            return band_energy, wavefunction, HK, SK, dSK, gap
+            return band_energy, wavefunction_tensor, HK, SK, dSK, gap
         else:
-            wavefunction = [wavefunction[idx].reshape(-1) for idx in range(Nbatch)]
-            wavefunction = torch.cat(wavefunction, dim=0) # shape:[Nbatch*num_k*norbs*norbs]
-            H_sym = torch.cat(H_sym, dim=0) # shape:(Nbatch*num_k*norbs*norbs)
-            return band_energy, wavefunction, gap, H_sym  
+            # TorchScript兼容: 使用新变量名避免类型冲突，并统一返回值格式
+            wavefunction_list = [wavefunction[idx].reshape(-1) for idx in range(Nbatch)]
+            wavefunction_tensor = torch.cat(wavefunction_list, dim=0) # shape:[Nbatch*num_k*norbs*norbs]
+            H_sym_tensor = torch.cat(H_sym, dim=0) # shape:(Nbatch*num_k*norbs*norbs)
+            # 为了保持返回值一致性，创建空的HK, SK, dSK
+            HK = torch.empty((0, 0, 0), dtype=wavefunction_tensor.dtype, device=wavefunction_tensor.device)
+            SK = torch.empty((0, 0, 0), dtype=wavefunction_tensor.dtype, device=wavefunction_tensor.device)
+            dSK = torch.empty((0, 0, 0, 0), dtype=torch.complex64, device=wavefunction_tensor.device)
+            return band_energy, wavefunction_tensor, HK, SK, dSK, gap  
 
     def cal_band_energy_soc(self, Hsoc_on_real: torch.Tensor, Hsoc_on_imag: torch.Tensor, 
                               Hsoc_off_real: torch.Tensor, Hsoc_off_imag: torch.Tensor,
@@ -2770,11 +2785,16 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # TorchScript兼容: 初始化Son和Soff变量，避免未定义错误
         Son = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
         Soff = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
-        # TorchScript兼容: 初始化返回值变量
-        band_energy = None
-        wavefunction = None
-        gap = None
-        H_sym = None
+        # TorchScript兼容: 初始化返回值变量为正确的张量类型，避免None类型问题
+        band_energy = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+        wavefunction = torch.empty((0,), dtype=torch.complex64, device=node_attr.device)
+        gap = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+        H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+        # TorchScript兼容: 初始化Hsoc相关变量，避免作用域问题
+        Hsoc = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hsoc_real = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hsoc_imag = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hcol = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
         
         if not self.ham_only and self.onsitenet_s is not None:
             node_sph = self.onsitenet_s(node_attr)
@@ -3263,8 +3283,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             data['nbr_shift'], data['k_vecs'], data['Hon']
                         )
                 else:
-                    band_energy = None
-                    wavefunction = None
+                    # TorchScript兼容: 保持类型一致，使用空tensor而非None
+                    band_energy = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+                    wavefunction = torch.empty((0,), dtype=torch.complex64, device=node_attr.device)
             else:                
                 Hcol = self.cat_onsite_and_offsite(data, Hcol_on, Hcol_off)
                 data['hamiltonian'] = self.cat_onsite_and_offsite(data, data['Hon'], data['Hoff'])
@@ -3324,43 +3345,48 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
                             data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
-                        H_sym = None
+                        H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                         band_energy = torch.cat([band_energy_up, band_energy_down])
                         wavefunction = torch.cat([wavefunction_up, wavefunction_down])
                         HK = torch.cat([HK_up, HK_down])
                         gap = torch.cat([gap_up, gap_down])
                     else:
-                        band_energy_up, wavefunction_up, gap_up, H_sym = self.cal_band_energy(
+                        band_energy_up, wavefunction_up, HK_up, SK_up, dSK_up, gap_up = self.cal_band_energy(
                             Hcol_on[:,0,:], Hcol_off[:,0,:], 
                             data['edge_index'], data['cell'], data['z'], 
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
-                        band_energy_down, wavefunction_down, gap_down, H_sym = self.cal_band_energy(
+                        band_energy_down, wavefunction_down, HK_down, SK_down, dSK_down, gap_down = self.cal_band_energy(
                             Hcol_on[:,1,:], Hcol_off[:,1,:], 
                             data['edge_index'], data['cell'], data['z'], 
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
+                        # 注意：当export_reciprocal_values=False时，HK_*, SK_*, dSK_*是空tensor，H_sym来自wavefunction
+                        H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                         band_energy = torch.cat([band_energy_up, band_energy_down])
                         wavefunction = torch.cat([wavefunction_up, wavefunction_down])
                         gap = torch.cat([gap_up, gap_down])
                     with torch.no_grad():
-                        data['band_energy_up'], data['wavefunction'], data['band_gap_up'], data['H_sym'] = self.cal_band_energy(
+                        data['band_energy_up'], data['wavefunction'], HK_up, SK_up, dSK_up, data['band_gap_up'] = self.cal_band_energy(
                             data['Hon'][:,0,:], data['Hoff'][:,0,:], 
                             data['edge_index'], data['cell'], data['z'], 
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
-                        data['band_energy_down'], data['wavefunction'], data['band_gap_down'], data['H_sym'] = self.cal_band_energy(
+                        data['band_energy_down'], data['wavefunction'], HK_down, SK_down, dSK_down, data['band_gap_down'] = self.cal_band_energy(
                             data['Hon'][:,1,:], data['Hoff'][:,1,:], 
                             data['edge_index'], data['cell'], data['z'], 
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
                         data['band_energy'] = torch.cat([data['band_energy_up'], data['band_energy_down']])
                         data['band_gap'] = torch.cat([data['band_gap_up'], data['band_gap_down']])
+                        # H_sym在这种情况下不可用
+                        data['H_sym'] = torch.empty((0,), dtype=data['band_energy'].dtype, device=data['band_energy'].device)
                 else:
-                    band_energy = None
-                    wavefunction = None
-                    gap = None
-                    H_sym = None        
+                    # TorchScript兼容: 保持类型一致，使用空tensor而非None
+                    band_energy = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+                    wavefunction = torch.empty((0,), dtype=torch.complex64, device=node_attr.device)
+                    gap = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+                    H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)        
         
         # non-soc and non-magnetic
         else:                
@@ -3441,27 +3467,38 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             data['node_counts'], data['batch'],
                             data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
                             data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
-                        H_sym = None
+                        H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                     else:
-                        band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy_debug(Hon, Hoff, Son, Soff, data, True)
-                        H_sym = None
+                        # TorchScript兼容: 使用cal_band_energy替代cal_band_energy_debug
+                        band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(
+                            Hon, Hoff, 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
+                            data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
+                        H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                 else:
-                    band_energy, wavefunction, gap, H_sym = self.cal_band_energy(
+                    band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(
                         Hon, Hoff, 
                         data['edge_index'], data['cell'], data['z'], 
                         data['node_counts'], data['batch'],
                         data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
+                    # 当不导出倒易空间值时，H_sym通过其他方式获得
+                    H_sym = torch.empty((0,), dtype=band_energy.dtype, device=band_energy.device)
                 with torch.no_grad():
-                    data['band_energy'], data['wavefunction'], data['band_gap'], data['H_sym'] = self.cal_band_energy(
+                    data['band_energy'], data['wavefunction'], HK, SK, dSK, data['band_gap'] = self.cal_band_energy(
                         data['Hon'], data['Hoff'], 
                         data['edge_index'], data['cell'], data['z'], 
                         data['node_counts'], data['batch'],
                         data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
+                    # H_sym在这种情况下不可用
+                    data['H_sym'] = torch.empty((0,), dtype=data['band_energy'].dtype, device=data['band_energy'].device)
             else:
-                band_energy = None
-                wavefunction = None
-                gap = None
-                H_sym = None
+                # TorchScript兼容: 保持类型一致，使用空tensor而非None
+                band_energy = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device) 
+                wavefunction = torch.empty((0,), dtype=torch.complex64, device=node_attr.device)
+                gap = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
+                H_sym = torch.empty((0,), dtype=node_attr.dtype, device=node_attr.device)
                       
         # Combining on-site and off-site Hamiltonians
         # openmx
