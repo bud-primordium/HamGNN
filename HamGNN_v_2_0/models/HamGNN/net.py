@@ -2023,6 +2023,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
         num_val = scatter(num_val, batch, dim=0) # 形状: [N_batch]
                 
         # 初始化能带窗口控制参数
+        # TorchScript兼容: 确保band_num_win在所有分支中都被定义
+        band_num_win = torch.zeros_like(num_val)
         if self.band_num_control_is_dict:
             band_num_win = self.band_num_control_tensor.type_as(z)
             band_num_win = band_num_win[z] # 形状: [N_atoms,]   
@@ -2041,6 +2043,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hoff_split = torch.tensor_split(Hoff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         Soff_split = torch.tensor_split(Soff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+        # TorchScript兼容: 确保dSon_split和dSoff_split在所有分支中都被定义
+        dSon_split = []
+        dSoff_split = []
         if export_reciprocal_values:
             # TorchScript兼容: 使用tensor_split替代split(...tolist())
             if dSon is not None:
@@ -2056,6 +2061,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         dS_reciprocal = []
         gap = []
         
+        # TorchScript兼容: 在循环外初始化dSK为空tensor，确保类型一致
+        dSK = torch.empty((0, 0, 0, 0), dtype=torch.complex64, device=Hon.device)
+        
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
             k_vec = k_vecs[idx]   
@@ -2068,26 +2076,30 @@ class HamGNNPlusPlusOutCore(nn.Module):
             # 初始化 k 点矩阵
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
             SK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))            
+            # TorchScript兼容: 总是创建dSK张量，根据export_reciprocal_values决定尺寸
             if export_reciprocal_values:
                 dSK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 3, 2)).type_as(Hon))
+            else:
+                # 当不需要导出倒易空间值时，创建一个dummy变量避免TorchScript编译错误
+                dSK = torch.empty((0, 0, 0, 0), dtype=torch.complex64, device=Hon.device)
 
             # 添加 On-site 部分 (k 点无关)
             na = torch.arange(natoms).type_as(j)
             HK[:,na,na,:,:] +=  Hon_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,na,:,:].type_as(HK) # shape (num_k, natoms, nao_max, nao_max)
             SK[:,na,na,:,:] +=  Son_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,na,:,:].type_as(SK)
-            if export_reciprocal_values and dSon is not None:
+            if export_reciprocal_values and dSon is not None and len(dSon_split) > 0:
                 dSK[:,na,na,:,:,:] +=  dSon_split[idx].reshape(-1, self.nao_max, self.nao_max, 3)[None,na,:,:,:].type_as(dSK)
 
             # 添加 Off-site 部分 (傅里叶变换)
-            for iedge in range(edge_num[idx]):
+            for iedge in range(int(edge_num[idx])):
                 # shape (num_k, nao_max, nao_max) += (num_k, 1, 1)*(1, nao_max, nao_max)
                 j_idx = j[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
                 i_idx = i[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
                 HK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Hoff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
                 SK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Soff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
             
-            if export_reciprocal_values and dSoff is not None:
-                for iedge in range(edge_num[idx]):
+            if export_reciprocal_values and dSoff is not None and len(dSoff_split) > 0:
+                for iedge in range(int(edge_num[idx])):
                     j_idx = j[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
                     i_idx = i[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
                     dSK[:,j_idx,i_idx,:,:,:] += coe[iedge,:,None,None,None] * dSoff_split[idx].reshape(-1, self.nao_max, self.nao_max, 3)[None,iedge,:,:,:]
@@ -2111,7 +2123,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             SK = torch.masked_select(SK, mask_slice.repeat(self.num_k,1,1) > 0)
             norbs = int(math.sqrt(SK.numel()/self.num_k))
             SK = SK.reshape(self.num_k, norbs, norbs)
-            if export_reciprocal_values and dSoff is not None:
+            if export_reciprocal_values and dSoff is not None and len(dSoff_split) > 0:
                 dSK = torch.masked_select(dSK, mask_slice.unsqueeze(-1).repeat(self.num_k,1,1,3) > 0)
                 dSK = dSK.reshape(self.num_k, norbs, norbs, 3)            
             
@@ -2156,7 +2168,12 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         
                 H_reciprocal.append(HK)
                 S_reciprocal.append(SK)
-                dS_reciprocal.append(dSK)
+                # TorchScript兼容: 只在真正需要时才添加dSK
+                if dSoff is not None and len(dSoff_split) > 0:
+                    dS_reciprocal.append(dSK)
+                else:
+                    # 添加空tensor以保持列表长度一致
+                    dS_reciprocal.append(torch.empty((0, 0, 0, 0), dtype=dSK.dtype, device=dSK.device))
             
             # 计算带隙
             numc = math.ceil(num_val[idx]/2)
@@ -2171,9 +2188,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     # TorchScript兼容: 使用局部变量而不是修改实例属性
                     band_num_control_local = self.band_num_control_int
                     if isinstance(band_num_control_local, float):
-                        band_num_control_local = max([1, int(float(band_num_control_local)*numc)])
+                        band_num_control_local = max(1, int(float(band_num_control_local)*numc))
                     else:
-                        band_num_control_local = min([int(band_num_control_local), numc])
+                        band_num_control_local = min(int(band_num_control_local), numc)
                     orbital_energies = orbital_energies[:,numc-band_num_control_local:numc+band_num_control_local]   
                     orbital_coefficients = orbital_coefficients[:,numc-band_num_control_local:numc+band_num_control_local,:]               
             band_energy.append(torch.transpose(orbital_energies, dim0=-1, dim1=-2)) # [shape:(Nbands, num_k)]
@@ -2188,8 +2205,13 @@ class HamGNNPlusPlusOutCore(nn.Module):
         if export_reciprocal_values:
             wavefunction = torch.stack(wavefunction, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
             HK = torch.stack(H_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
-            SK = torch.stack(S_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs]  
-            dSK = torch.stack(dS_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs, 3]   
+            SK = torch.stack(S_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs]
+            # TorchScript兼容: 只有当dS_reciprocal包含有效数据时才stack
+            if len(dS_reciprocal) > 0 and dS_reciprocal[0].numel() > 0:
+                dSK = torch.stack(dS_reciprocal, dim=0) # shape:[Nbatch, num_k, norbs, norbs, 3]
+            else:
+                # 创建与其他张量匹配形状的空tensor
+                dSK = torch.empty((Nbatch, 0, 0, 0, 0), dtype=torch.complex64, device=HK.device)
             return band_energy, wavefunction, HK, SK, dSK, gap
         else:
             wavefunction = [wavefunction[idx].reshape(-1) for idx in range(Nbatch)]
@@ -2745,6 +2767,14 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Hoff = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
         Hcol_on = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
         Hcol_off = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        # TorchScript兼容: 初始化Son和Soff变量，避免未定义错误
+        Son = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Soff = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        # TorchScript兼容: 初始化返回值变量
+        band_energy = None
+        wavefunction = None
+        gap = None
+        H_sym = None
         
         if not self.ham_only and self.onsitenet_s is not None:
             node_sph = self.onsitenet_s(node_attr)
