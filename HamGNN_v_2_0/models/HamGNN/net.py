@@ -720,12 +720,19 @@ class HamGNNPlusPlusOutCore(nn.Module):
             
             # 仅用于测试目的，请谨慎使用！
             if self.soc_basis == 'su2':
-                self.onsitenet_h = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=2*self.ham_irreps_su2)
-                self.offsitenet_h = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=2*self.ham_irreps_su2)
+                # TorchScript兼容: 使用不同的属性名称避免覆盖
+                self.onsitenet_h_su2 = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=2*self.ham_irreps_su2)
+                self.offsitenet_h_su2 = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=2*self.ham_irreps_su2)
+                # TorchScript兼容: 所有属性都需要初始化
+                self.onsitenet_ksi = None
+                self.offsitenet_ksi = None
             
             elif self.soc_basis == 'so3':                
                 self.onsitenet_ksi = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=(self.nao_max**2*o3.Irreps("0e")).simplify())
                 self.offsitenet_ksi = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=(self.nao_max**2*o3.Irreps("0e")).simplify())
+                # TorchScript兼容: 所有属性都需要初始化
+                self.onsitenet_h_su2 = None
+                self.offsitenet_h_su2 = None
             
             else:
                 raise NotImplementedError(f"不支持的 SOC 基组: {soc_basis}！")
@@ -733,6 +740,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
             # TorchScript兼容性: 始终初始化属性避免运行时错误
             self.onsitenet_ksi = None
             self.offsitenet_ksi = None
+            self.onsitenet_h_su2 = None
+            self.offsitenet_h_su2 = None
 
         # --- 自旋约束相关网络 ---
         if self.spin_constrained:
@@ -744,16 +753,29 @@ class HamGNNPlusPlusOutCore(nn.Module):
             if self.add_quartic:
                 self.onsitenet_K = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=self.K_irreps)
                 self.offsitenet_K = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=self.K_irreps)
+            else:
+                # TorchScript要求所有属性必须在__init__中初始化
+                self.onsitenet_K = None
+                self.offsitenet_K = None
             
             # 权重矩阵
             if self.use_learned_weight:
                 self.onsitenet_weight = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=self.ham_irreps)
                 self.offsitenet_weight = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=self.ham_irreps)
+            else:
+                # TorchScript要求所有属性必须在__init__中初始化  
+                self.onsitenet_weight = None
+                self.offsitenet_weight = None
         
         # --- 重叠矩阵预测网络 ---
+        # TorchScript兼容: 所有属性必须初始化
         if not self.ham_only:            
             self.onsitenet_s = self._create_ham_layer(irreps_in=irreps_in_node, irreps_out=self.ham_irreps)
-            self.offsitenet_s = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=self.ham_irreps) 
+            self.offsitenet_s = self._create_ham_layer(irreps_in=irreps_in_edge, irreps_out=self.ham_irreps)
+        else:
+            # TorchScript要求所有属性必须在__init__中初始化
+            self.onsitenet_s = None
+            self.offsitenet_s = None 
         
         # --- TorchScript兼容: 将字典转换为张量查找表 ---
         self._init_tensor_lookups() 
@@ -2656,7 +2678,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # Calculate the on-site Hamiltonian 
         self.ham_irreps_dim = self.ham_irreps_dim.type_as(j)  
         
-        if not self.ham_only:
+        if not self.ham_only and self.onsitenet_s is not None:
             node_sph = self.onsitenet_s(node_attr)
             # TorchScript兼容: 使用tensor_split替代split(...tolist())
             node_sph = torch.tensor_split(node_sph, torch.cumsum(self.ham_irreps_dim[:-1], dim=0).cpu(), dim=-1)
@@ -2737,42 +2759,43 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
 
                     # build Hsoc
-                    ksi_on = self.onsitenet_ksi(node_attr)
-                    ksi_on = self.reduce(ksi_on)
+                    if self.onsitenet_ksi is not None:
+                        ksi_on = self.onsitenet_ksi(node_attr)
+                        ksi_on = self.reduce(ksi_on)
 
-                    ksi_off = self.offsitenet_ksi(edge_attr)
-                    ksi_off = self.reduce(ksi_off)  
+                        ksi_off = self.offsitenet_ksi(edge_attr)
+                        ksi_off = self.reduce(ksi_off)  
 
-                    Hsoc_on_real = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
-                    Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_real = Hsoc_on_real.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_on_real = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
+                        Hsoc_on_real[:,:self.nao_max,:self.nao_max] = Hon.reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,1]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_real[:,self.nao_max:,self.nao_max:] = Hon.reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_real = Hsoc_on_real.reshape(-1, (2*self.nao_max)**2)
 
-                    Hsoc_on_imag = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
-                    Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_on_imag = Hsoc_on_imag.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_on_imag = torch.zeros((Hon.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hon)
+                        Hsoc_on_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,0]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hon((ksi_on*data['Lon'][:,:,2]), sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_on_imag = Hsoc_on_imag.reshape(-1, (2*self.nao_max)**2)
 
-                    Hsoc_off_real = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
-                    Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_real = Hsoc_off_real.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_off_real = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
+                        Hsoc_off_real[:,:self.nao_max,:self.nao_max] = Hoff.reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_real[:,:self.nao_max,self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_real[:,self.nao_max:,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,1]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_real[:,self.nao_max:,self.nao_max:] = Hoff.reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_real = Hsoc_off_real.reshape(-1, (2*self.nao_max)**2)
 
-                    Hsoc_off_imag = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
-                    Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
-                    Hsoc_off_imag = Hsoc_off_imag.reshape(-1, (2*self.nao_max)**2)
+                        Hsoc_off_imag = torch.zeros((Hoff.shape[0], 2*self.nao_max, 2*self.nao_max)).type_as(Hoff)
+                        Hsoc_off_imag[:,:self.nao_max,:self.nao_max] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_imag[:,:self.nao_max, self.nao_max:] = self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_imag[:,self.nao_max:,:self.nao_max] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,0]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_imag[:,self.nao_max:,self.nao_max:] = -self.symmetrize_Hoff((ksi_off*data['Loff'][:,:,2]), inv_edge_idx, sign='-').reshape(-1, self.nao_max, self.nao_max)
+                        Hsoc_off_imag = Hsoc_off_imag.reshape(-1, (2*self.nao_max)**2)
 
                 elif self.soc_basis == 'su2':
-                    node_sph = self.onsitenet_h(node_attr) 
+                    node_sph = self.onsitenet_h_su2(node_attr) 
 
                     Hon = self.hamDecomp.get_H(node_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
                     Hon = self.change_index(Hon)
@@ -2781,7 +2804,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                     # Calculate the off-site Hamiltonian
                     # Calculate the contribution of the edges       
-                    edge_sph = self.offsitenet_h(edge_attr)
+                    edge_sph = self.offsitenet_h_su2(edge_attr)
 
                     Hoff = self.hamDecomp.get_H(edge_sph) # shape [Nbatchs, (4 spin components,) H_flattened_concatenated]
                     Hoff = self.change_index(Hoff)
@@ -2844,7 +2867,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 cell_index_map = data['cell_index_map']
                 
                 # learn a weight matrix
-                if self.use_learned_weight:
+                if self.use_learned_weight and self.onsitenet_weight is not None:
                     node_sph = self.onsitenet_weight(node_attr)     
                     # TorchScript兼容: 使用tensor_split替代split(...tolist())
                     node_sph = torch.tensor_split(node_sph, torch.cumsum(self.ham_irreps_dim[:-1], dim=0).cpu(), dim=-1)
@@ -2878,7 +2901,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     J_off = self.offsitenet_J(edge_attr) # shape: (Nedges, Nblocks)    
                     J_off = self.J_merge(J_off) # shape: (Nedges, nao_max, nao_max, 3, 3)
 
-                    if self.add_quartic:
+                    if self.add_quartic and self.onsitenet_K is not None:
                         K_on = self.onsitenet_K(node_attr) # shape: (Natoms, Nblocks)    
                         K_on = self.K_merge(K_on) # shape: (Natoms, nao_max, nao_max)
 
@@ -2942,7 +2965,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     J_off = self.offsitenet_J(edge_attr) # shape: (Nedges, Nblocks)
                     J_off = self.J_merge(J_off) # shape: (Nedges, nao_max, nao_max,)
     
-                    if self.add_quartic:
+                    if self.add_quartic and self.onsitenet_K is not None:
                         K_on = self.onsitenet_K(node_attr) # shape: (Natoms, Nblocks)    
                         K_on = self.K_merge(K_on) # shape: (Natoms, nao_max, nao_max)
                                         
