@@ -766,6 +766,14 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 # TorchScript要求所有属性必须在__init__中初始化  
                 self.onsitenet_weight = None
                 self.offsitenet_weight = None
+        else:
+            # TorchScript兼容: 当spin_constrained为False时，所有相关属性必须初始化为None
+            self.onsitenet_J = None
+            self.offsitenet_J = None
+            self.onsitenet_K = None
+            self.offsitenet_K = None
+            self.onsitenet_weight = None
+            self.offsitenet_weight = None
         
         # --- 重叠矩阵预测网络 ---
         # TorchScript兼容: 所有属性必须初始化
@@ -1353,16 +1361,30 @@ class HamGNNPlusPlusOutCore(nn.Module):
     def _set_band_num_control(self, band_num_control):
         """设置计算能带时每个原子类型贡献的能带数量。"""
         # 能带数量控制
+        # TorchScript兼容: 创建band_num_control_tensor来避免字典操作
+        self.band_num_control_tensor = torch.zeros(99, dtype=torch.long)
+        
         if band_num_control is not None and not self.export_reciprocal_values:
             if isinstance(band_num_control, dict):
                 # 为保持一致性，将原子序数转换为整数
                 self.band_num_control = {int(k): v for k, v in band_num_control.items()}
+                self.band_num_control_is_dict = True
+                self.band_num_control_int = 0  # TorchScript兼容：设置默认值
+                # 填充tensor
+                for k, v in band_num_control.items():
+                    self.band_num_control_tensor[int(k)] = v
             elif isinstance(band_num_control, int):
-                self.band_num_control = band_num_control
+                self.band_num_control = None  # TorchScript兼容：统一类型
+                self.band_num_control_int = band_num_control
+                self.band_num_control_is_dict = False
             else:
                 self.band_num_control = None
+                self.band_num_control_int = 0
+                self.band_num_control_is_dict = False
         else:
             self.band_num_control = None
+            self.band_num_control_int = 0
+            self.band_num_control_is_dict = False
 
     def _create_ham_layer(self, irreps_in, irreps_out):
         """
@@ -1773,10 +1795,8 @@ class HamGNNPlusPlusOutCore(nn.Module):
         num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
                 
         # 初始化 band_num_win
-        if self.band_num_control is not None:
-            band_num_win = torch.zeros((99,)).type_as(data['z'])
-            for k in self.band_num_control.keys():
-                band_num_win[k] = self.band_num_control[k]
+        if self.band_num_control_is_dict:
+            band_num_win = self.band_num_control_tensor.type_as(data['z'])
             band_num_win = band_num_win[data['z']] # 形状: [N_atoms,]   
             band_num_win = scatter(band_num_win, data['batch'], dim=0) # 形状: (N_batch,)
              
@@ -1809,11 +1829,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
         gap = []
         for idx in range(Nbatch):
             k_vec = data['k_vecs'][idx]   
-            natoms = int(data['node_counts'][idx])
+            natoms = int(node_counts[idx])
             
             # 初始化 H(k) 和 S(k)       
             # 傅里叶变换的相位因子
-            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (n_edges, 1, 3)*(1, num_k, 3) -> (n_edges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], dim=-1)) # (n_edges, 1, 3)*(1, num_k, 3) -> (n_edges, num_k)     
             
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
             SK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))  
@@ -1913,7 +1933,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 S_reciprocal.append(SK_pred)
                 dS_reciprocal.append(dSK)
             
-            if self.band_num_control is not None:
+            if self.band_num_control_is_dict:
                 orbital_energies = orbital_energies[:,:band_num_win[idx]]
                 orbital_coefficients = orbital_coefficients[:,:band_num_win[idx],:]                
             band_energy.append(torch.transpose(orbital_energies, dim0=-1, dim1=-2)) # [形状:(N_bands, num_k)]
@@ -1938,7 +1958,13 @@ class HamGNNPlusPlusOutCore(nn.Module):
             H_sym = torch.cat(H_sym, dim=0) # 形状:(N_batch*num_k*n_orbs*n_orbs)
             return band_energy, wavefunction, gap, H_sym   
     
-    def cal_band_energy(self, Hon: torch.Tensor, Hoff: torch.Tensor, data, export_reciprocal_values: bool = False):
+    def cal_band_energy(self, Hon: torch.Tensor, Hoff: torch.Tensor, 
+                        edge_index: torch.Tensor, cell: torch.Tensor, z: torch.Tensor,
+                        node_counts: torch.Tensor, batch: torch.Tensor, 
+                        Son: torch.Tensor, Soff: torch.Tensor, nbr_shift: torch.Tensor,
+                        k_vecs: torch.Tensor, 
+                        dSon: Optional[torch.Tensor] = None, dSoff: Optional[torch.Tensor] = None,
+                        export_reciprocal_values: bool = False):
         """计算能带结构（非调试的正式版本）。
 
         此函数通过给定的 onsite 和 offsite 矩阵块，为一批晶体构建 k 点依赖的哈密顿量
@@ -1951,7 +1977,17 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Args:
             Hon (torch.Tensor): 批处理中所有原子/轨道的 Onsite 矩阵块，形状通常为 `(N_nodes, nao_max*nao_max)`。
             Hoff (torch.Tensor): 批处理中所有边的 Offsite 矩阵块，形状通常为 `(N_edges, nao_max*nao_max)`。
-            data (Data): PyG 图数据对象，包含原子结构、k点等信息。
+            edge_index (torch.Tensor): 边的索引张量，形状为 (2, num_edges)。
+            cell (torch.Tensor): 晶胞参数张量，形状为 (N_batch, 3, 3)。
+            z (torch.Tensor): 原子序数张量。
+            node_counts (torch.Tensor): 每个图中的节点数。
+            batch (torch.Tensor): 批次索引张量。
+            Son (torch.Tensor): Onsite 重叠矩阵块。
+            Soff (torch.Tensor): Offsite 重叠矩阵块。
+            nbr_shift (torch.Tensor): 邻居晶胞偏移张量。
+            k_vecs (torch.Tensor): k点向量张量。
+            dSon (Optional[torch.Tensor], optional): Onsite 重叠矩阵的导数，默认为 None。
+            dSoff (Optional[torch.Tensor], optional): Offsite 重叠矩阵的导数，默认为 None。
             export_reciprocal_values (bool, optional): 如果为 True，则额外返回倒易空间中的
                 哈密顿量 `HK`、重叠矩阵 `SK`、`SK`的导数`dSK` 和波函数。默认为 `False`。
 
@@ -1960,52 +1996,57 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 如果 `export_reciprocal_values` 为 `False`，返回 `(band_energy, wavefunction, gap, H_sym)`。
                 如果 `export_reciprocal_values` 为 `True`，返回 `(band_energy, wavefunction, HK, SK, dSK, gap)`。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        cell = data['cell'] # 形状:(N_batch, 3, 3)
+        j = edge_index[0]
+        i = edge_index[1]
+        # cell 已经是参数了 # 形状:(N_batch, 3, 3)
         Nbatch = cell.shape[0]
         
         # --- 步骤 1: 解析和准备掩码及参数 ---
         # 解析原子轨道基组定义，用于后续的掩码操作
-        basis_definition = self.basis_def_tensor.type_as(data['z'])
+        basis_definition = self.basis_def_tensor.type_as(z)
             
-        orb_mask = basis_definition[data['z']] # 形状: [N_atoms, nao_max] 
+        orb_mask = basis_definition[z] # 形状: [N_atoms, nao_max] 
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
-        orb_mask = torch.tensor_split(orb_mask, torch.cumsum(data['node_counts'][:-1], dim=0).cpu(), dim=0) # 形状: [n_atoms, nao_max]
-        orb_mask_batch = []
+        orb_mask = torch.tensor_split(orb_mask, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0) # 形状: [n_atoms, nao_max]
+        
+        # TorchScript兼容: 预分配张量替代动态列表
+        max_atoms = int(torch.max(node_counts))
+        orb_mask_batch = torch.zeros((Nbatch, max_atoms * self.nao_max, max_atoms * self.nao_max)).type_as(z)
         for idx in range(Nbatch):
             # 为每个晶体创建轨道掩码，用于从 full-nao 矩阵中提取有效轨道
-            orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # 形状: [n_atoms*nao_max, n_atoms*nao_max]
+            natoms = int(node_counts[idx])
+            mask = orb_mask[idx][:natoms].reshape(-1, 1) * orb_mask[idx][:natoms].reshape(1, -1)  # [natoms*nao_max, natoms*nao_max]
+            orb_mask_batch[idx, :natoms*self.nao_max, :natoms*self.nao_max] = mask
         
         # 设置每个晶体的价电子数
-        num_val = self.num_valence_tensor.type_as(data['z'])[data['z']] # 形状: [N_atoms]
-        num_val = scatter(num_val, data['batch'], dim=0) # 形状: [N_batch]
+        num_val = self.num_valence_tensor.type_as(z)[z] # 形状: [N_atoms]
+        num_val = scatter(num_val, batch, dim=0) # 形状: [N_batch]
                 
         # 初始化能带窗口控制参数
-        if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data['z'])
-            for k in self.band_num_control.keys():
-                band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data['z']] # 形状: [N_atoms,]   
-            band_num_win = scatter(band_num_win, data['batch'], dim=0) # 形状: (N_batch,)   
+        if self.band_num_control_is_dict:
+            band_num_win = self.band_num_control_tensor.type_as(z)
+            band_num_win = band_num_win[z] # 形状: [N_atoms,]   
+            band_num_win = scatter(band_num_win, batch, dim=0) # 形状: (N_batch,)   
              
         # --- 步骤 2: 按批次分离输入张量 ---
-        node_counts = data['node_counts']
+        # node_counts 已经是参数了
         node_counts_shift = torch.cumsum(node_counts, dim=0) - node_counts
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hon_split = torch.tensor_split(Hon, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
-        Son_split = torch.tensor_split(data['Son'], torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
+        Son_split = torch.tensor_split(Son, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
         
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data['batch'][j], dim=0) # 形状: (N_batch,)
+        edge_num = scatter(edge_num, batch[j], dim=0) # 形状: (N_batch,)
         edge_num_shift = torch.cumsum(edge_num, dim=0) - edge_num
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hoff_split = torch.tensor_split(Hoff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
-        Soff_split = torch.tensor_split(data['Soff'], torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+        Soff_split = torch.tensor_split(Soff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         if export_reciprocal_values:
             # TorchScript兼容: 使用tensor_split替代split(...tolist())
-            dSon_split = torch.tensor_split(data['dSon'], torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
-            dSoff_split = torch.tensor_split(data['dSoff'], torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+            if dSon is not None:
+                dSon_split = torch.tensor_split(dSon, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
+            if dSoff is not None:
+                dSoff_split = torch.tensor_split(dSoff, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         
         band_energy = []
         wavefunction = []
@@ -2017,12 +2058,12 @@ class HamGNNPlusPlusOutCore(nn.Module):
         
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
-            k_vec = data['k_vecs'][idx]   
-            natoms = int(data['node_counts'][idx])
+            k_vec = k_vecs[idx]   
+            natoms = int(node_counts[idx])
             
             # --- 3a: 构建 k 点依赖的矩阵 HK 和 SK ---
             # 计算傅里叶变换的相位因子
-            coe = torch.exp(2j*torch.pi*torch.sum(data['nbr_shift'][edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], axis=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
+            coe = torch.exp(2j*torch.pi*torch.sum(nbr_shift[edge_num_shift[idx]+torch.arange(edge_num[idx]).type_as(j),None,:]*k_vec[None,:,:], dim=-1)) # (nedges, 1, 3)*(1, num_k, 3) -> (nedges, num_k)     
             
             # 初始化 k 点矩阵
             HK = torch.view_as_complex(torch.zeros((self.num_k, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Hon))
@@ -2034,7 +2075,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             na = torch.arange(natoms).type_as(j)
             HK[:,na,na,:,:] +=  Hon_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,na,:,:].type_as(HK) # shape (num_k, natoms, nao_max, nao_max)
             SK[:,na,na,:,:] +=  Son_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,na,:,:].type_as(SK)
-            if export_reciprocal_values:
+            if export_reciprocal_values and dSon is not None:
                 dSK[:,na,na,:,:,:] +=  dSon_split[idx].reshape(-1, self.nao_max, self.nao_max, 3)[None,na,:,:,:].type_as(dSK)
 
             # 添加 Off-site 部分 (傅里叶变换)
@@ -2045,7 +2086,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 HK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Hoff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
                 SK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Soff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
             
-            if export_reciprocal_values:
+            if export_reciprocal_values and dSoff is not None:
                 for iedge in range(edge_num[idx]):
                     j_idx = j[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
                     i_idx = i[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
@@ -2061,15 +2102,17 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 dSK = dSK.reshape(-1, natoms*self.nao_max, natoms*self.nao_max, 3)
             
             # 使用预先计算的轨道掩码，去除无效的轨道
-            HK = torch.masked_select(HK, orb_mask_batch[idx].repeat(self.num_k,1,1) > 0)
+            natoms = int(node_counts[idx])
+            mask_slice = orb_mask_batch[idx, :natoms*self.nao_max, :natoms*self.nao_max]
+            HK = torch.masked_select(HK, mask_slice.repeat(self.num_k,1,1) > 0)
             norbs = int(math.sqrt(HK.numel()/self.num_k))
             HK = HK.reshape(self.num_k, norbs, norbs)
             
-            SK = torch.masked_select(SK, orb_mask_batch[idx].repeat(self.num_k,1,1) > 0)
+            SK = torch.masked_select(SK, mask_slice.repeat(self.num_k,1,1) > 0)
             norbs = int(math.sqrt(SK.numel()/self.num_k))
             SK = SK.reshape(self.num_k, norbs, norbs)
-            if export_reciprocal_values:
-                dSK = torch.masked_select(dSK, orb_mask_batch[idx].unsqueeze(-1).repeat(self.num_k,1,1,3) > 0)
+            if export_reciprocal_values and dSoff is not None:
+                dSK = torch.masked_select(dSK, mask_slice.unsqueeze(-1).repeat(self.num_k,1,1,3) > 0)
                 dSK = dSK.reshape(self.num_k, norbs, norbs, 3)            
             
             # --- 3c: 求解广义本征值问题 ---
@@ -2120,17 +2163,19 @@ class HamGNNPlusPlusOutCore(nn.Module):
             gap.append((torch.min(orbital_energies[:,numc]) - torch.max(orbital_energies[:,numc-1])).unsqueeze(0))
             
             # 根据配置控制输出的能带数量
-            if self.band_num_control is not None:
-                if isinstance(self.band_num_control, dict):
+            if self.band_num_control_is_dict or self.band_num_control_int > 0:
+                if self.band_num_control_is_dict:
                     orbital_energies = orbital_energies[:,:band_num_win[idx]]   
                     orbital_coefficients = orbital_coefficients[:,:band_num_win[idx],:]
                 else:
-                    if isinstance(self.band_num_control, float):
-                        self.band_num_control = max([1, int(self.band_num_control*numc)])
+                    # TorchScript兼容: 使用局部变量而不是修改实例属性
+                    band_num_control_local = self.band_num_control_int
+                    if isinstance(band_num_control_local, float):
+                        band_num_control_local = max([1, int(float(band_num_control_local)*numc)])
                     else:
-                        self.band_num_control = min([self.band_num_control, numc])
-                    orbital_energies = orbital_energies[:,numc-self.band_num_control:numc+self.band_num_control]   
-                    orbital_coefficients = orbital_coefficients[:,numc-self.band_num_control:numc+self.band_num_control,:]               
+                        band_num_control_local = min([int(band_num_control_local), numc])
+                    orbital_energies = orbital_energies[:,numc-band_num_control_local:numc+band_num_control_local]   
+                    orbital_coefficients = orbital_coefficients[:,numc-band_num_control_local:numc+band_num_control_local,:]               
             band_energy.append(torch.transpose(orbital_energies, dim0=-1, dim1=-2)) # [shape:(Nbands, num_k)]
             wavefunction.append(orbital_coefficients)  
             H_sym.append(Hs.view(-1))   
@@ -2153,7 +2198,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
             return band_energy, wavefunction, gap, H_sym  
 
     def cal_band_energy_soc(self, Hsoc_on_real: torch.Tensor, Hsoc_on_imag: torch.Tensor, 
-                              Hsoc_off_real: torch.Tensor, Hsoc_off_imag: torch.Tensor, data) -> tuple:
+                              Hsoc_off_real: torch.Tensor, Hsoc_off_imag: torch.Tensor,
+                              edge_index: torch.Tensor, cell: torch.Tensor, z: torch.Tensor,
+                              node_counts: torch.Tensor, batch: torch.Tensor, Son: torch.Tensor,
+                              Soff: torch.Tensor, cell_shift: torch.Tensor, nbr_shift: torch.Tensor,
+                              k_vecs: torch.Tensor, Hon: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """计算包含自旋轨道耦合（SOC）的能带结构。
 
         此方法通过给定的 onsite 和 offsite SOC 哈密顿量的实部和虚部，构建一个 2x2 
@@ -2173,9 +2222,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Returns:
             tuple: 返回一个包含能带能量 `band_energy` 和扁平化的波函数 `wavefunction` 的元组。
         """
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]
-        cell = data['cell'] # shape:(Nbatch, 3, 3)
+        j = edge_index[0]
+        i = edge_index[1]
+        # cell = cell # 已经是参数，不需要赋值
         Nbatch = cell.shape[0]
         
         # --- 步骤 1: 重塑输入并准备掩码 ---
@@ -2185,44 +2234,45 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Hsoc_off_imag = Hsoc_off_imag.reshape(-1, 2*self.nao_max, 2*self.nao_max)
         
         # 解析原子轨道基组
-        basis_definition = self.basis_def_tensor.type_as(data['z'])
+        basis_definition = self.basis_def_tensor.type_as(z)
             
-        orb_mask = basis_definition[data['z']] # shape: [Natoms, nao_max] 
+        orb_mask = basis_definition[z] # shape: [Natoms, nao_max] 
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
-        orb_mask = torch.tensor_split(orb_mask, torch.cumsum(data['node_counts'][:-1], dim=0).cpu(), dim=0) # shape: [natoms, nao_max]
+        orb_mask = torch.tensor_split(orb_mask, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0) # shape: [natoms, nao_max]
         orb_mask_batch = []
         for idx in range(Nbatch):
             orb_mask_batch.append(orb_mask[idx].reshape(-1, 1)* orb_mask[idx].reshape(1, -1)) # shape: [natoms*nao_max, natoms*nao_max]
         
         # 设置价电子数
-        num_val = self.num_valence_tensor.type_as(data['z'])[data['z']] # shape: [Natoms]
-        num_val = scatter(num_val, data['batch'], dim=0) # shape: [Nbatch]
+        num_val = self.num_valence_tensor.type_as(z)[z] # shape: [Natoms]
+        num_val = scatter(num_val, batch, dim=0) # shape: [Nbatch]
                 
         # 初始化能带窗口
-        if isinstance(self.band_num_control, dict):
-            band_num_win = torch.zeros((99,)).type_as(data['z'])
-            for k in self.band_num_control.keys():
-                band_num_win[k] = self.band_num_control[k]
-            band_num_win = band_num_win[data['z']] # shape: [Natoms,]   
-            band_num_win = scatter(band_num_win, data['batch'], dim=0) # shape: (Nbatch,)       
+        if self.band_num_control_is_dict:
+            band_num_win = self.band_num_control_tensor.type_as(z)
+            band_num_win = band_num_win[z] # shape: [Natoms,]   
+            band_num_win = scatter(band_num_win, batch, dim=0) # shape: (Nbatch,)       
+        else:
+            # TorchScript兼容: 确保band_num_win在所有分支中都被定义
+            band_num_win = torch.zeros_like(num_val)
             
         # --- 步骤 2: 按批次分离输入张量 ---
-        node_counts = data['node_counts']
+        # node_counts = node_counts # 已经是参数
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hon_split = torch.tensor_split(Hsoc_on_real, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
         iHon_split = torch.tensor_split(Hsoc_on_imag, torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
-        Son_split = torch.tensor_split(data['Son'].reshape(-1, self.nao_max, self.nao_max), torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
+        Son_split = torch.tensor_split(Son.reshape(-1, self.nao_max, self.nao_max), torch.cumsum(node_counts[:-1], dim=0).cpu(), dim=0)
         
         edge_num = torch.ones_like(j)
-        edge_num = scatter(edge_num, data['batch'][j], dim=0)
+        edge_num = scatter(edge_num, batch[j], dim=0)
         # TorchScript兼容: 使用tensor_split替代split(...tolist())
         Hoff_split = torch.tensor_split(Hsoc_off_real, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         iHoff_split = torch.tensor_split(Hsoc_off_imag, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
-        Soff_split = torch.tensor_split(data['Soff'].reshape(-1, self.nao_max, self.nao_max), torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+        Soff_split = torch.tensor_split(Soff.reshape(-1, self.nao_max, self.nao_max), torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
         
-        cell_shift_split = torch.tensor_split(data['cell_shift'], torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
-        nbr_shift_split = torch.tensor_split(data['nbr_shift'], torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
-        edge_index_split = torch.tensor_split(data['edge_index'], torch.cumsum(edge_num[:-1], dim=0), dim=1)
+        cell_shift_split = torch.tensor_split(cell_shift, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+        nbr_shift_split = torch.tensor_split(nbr_shift, torch.cumsum(edge_num[:-1], dim=0).cpu(), dim=0)
+        edge_index_split = torch.tensor_split(edge_index, torch.cumsum(edge_num[:-1], dim=0), dim=1)
         node_num = torch.cumsum(node_counts, dim=0) - node_counts
         edge_index_split = [edge_index_split[idx]-node_num[idx] for idx in range(len(node_num))]
         
@@ -2230,9 +2280,9 @@ class HamGNNPlusPlusOutCore(nn.Module):
         wavefunction = []
         # --- 步骤 3: 遍历批处理中的每个晶体 ---
         for idx in range(Nbatch):
-            k_vec = data['k_vecs'][idx]   
+            k_vec = k_vecs[idx]   
             # TorchScript兼容: 使用int()代替.item()
-            natoms = int(data['node_counts'][idx]) 
+            natoms = int(node_counts[idx]) 
             
             # --- 3a: 构建 k 点依赖的 SOC 重叠矩阵 SK ---
             # 初始化晶胞索引
@@ -2242,11 +2292,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
             ncells = unique_cell_shift.shape[0]
             
             # 初始化 SK
-            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(data['Son']))
+            phase = torch.view_as_complex(torch.zeros((self.num_k, ncells, 2)).type_as(Son))
             phase[:, cell_index] = torch.exp(2j*torch.pi*torch.sum(nbr_shift_split[idx][None,:,:]*k_vec[:,None,:], dim=-1))
             na = torch.arange(natoms).type_as(j)
 
-            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
+            S_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Son))
             S_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Soff_split[idx]
 
             SK = torch.einsum('ijklm, ni->njklm', S_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2258,7 +2308,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             norbs = int(math.sqrt(SK.numel()/self.num_k))
             SK = SK.reshape(self.num_k, norbs, norbs)
             # 构建 SOC 基下的重叠矩阵 (对角块)
-            I = torch.eye(2).type_as(data['Hon'])
+            I = torch.eye(2).type_as(Hon)
             SK = torch.kron(I, SK)
             
             # --- 3b: 构建 k 点依赖的 SOC 哈密顿量 HK ---
@@ -2279,7 +2329,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             HK_list = []
             # 分别为 H11, H12, H21, H22 构建 k 点哈密顿量
             for Hon, Hoff in zip(Hon_soc, Hoff_soc):
-                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(data['Son']))
+                H_cell = torch.view_as_complex(torch.zeros((ncells, natoms, natoms, self.nao_max, self.nao_max, 2)).type_as(Son))
                 H_cell[cell_index, edge_index_split[idx][0], edge_index_split[idx][1], :, :] += Hoff    
 
                 HK = torch.einsum('ijklm, ni->njklm', H_cell, phase) # (nk, natoms, natoms, nao_max, nao_max)
@@ -2309,18 +2359,18 @@ class HamGNNPlusPlusOutCore(nn.Module):
             orbital_coefficients = torch.bmm(L_t_inv, orbital_coefficients) # shape:(num_k, Nbands, Nbands)
             
             # --- 3d: 后处理和存储结果 ---
-            if self.band_num_control is not None:
-                if isinstance(self.band_num_control, dict):
+            if self.band_num_control_is_dict or self.band_num_control_int > 0:
+                if self.band_num_control_is_dict:
                     orbital_energies = orbital_energies[:,:band_num_win[idx]]   
                     orbital_coefficients = orbital_coefficients[:,:band_num_win[idx],:]
                 else:
-                    orbital_energies = orbital_energies[:,num_val[idx]-self.band_num_control:num_val[idx]+self.band_num_control]   
-                    orbital_coefficients = orbital_coefficients[:,num_val[idx]-self.band_num_control:num_val[idx]+self.band_num_control,:]
+                    orbital_energies = orbital_energies[:,num_val[idx]-self.band_num_control_int:num_val[idx]+self.band_num_control_int]   
+                    orbital_coefficients = orbital_coefficients[:,num_val[idx]-self.band_num_control_int:num_val[idx]+self.band_num_control_int,:]
             band_energy.append(torch.transpose(orbital_energies, dim0=-1, dim1=-2)) # [shape:(Nbands, num_k)]
             wavefunction.append(orbital_coefficients)
         return torch.cat(band_energy, dim=0), torch.cat(wavefunction, dim=0).reshape(-1)
 
-    def mask_Ham(self, Hon: torch.Tensor, Hoff: torch.Tensor, data: Dict[str, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def mask_Ham(self, Hon: torch.Tensor, Hoff: torch.Tensor, z: torch.Tensor, edge_index: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """根据每种原子的实际轨道数，对哈密顿量和重叠矩阵进行掩码操作。
 
         此函数确保只有在物理上存在的原子轨道之间的矩阵元才具有非零值，
@@ -2329,13 +2379,14 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Args:
             Hon (torch.Tensor): Onsite 矩阵块 (哈密顿量或重叠矩阵)。
             Hoff (torch.Tensor): Offsite 矩阵块 (哈密顿量或重叠矩阵)。
-            data (Data): 输入数据，需要 `z` 和 `edge_index`。
+            z (torch.Tensor): 原子序数张量。
+            edge_index (torch.Tensor): 边的索引张量，形状为 (2, num_edges)。
 
         Returns:
             tuple: 返回一个元组，包含掩码后的 `(Hon, Hoff)`。
         """
         # 解析原子轨道基组定义
-        basis_definition = self.basis_def_tensor.type_as(data['z'])
+        basis_definition = self.basis_def_tensor.type_as(z)
         
         # 保存原始形状以便最后恢复
         original_shape_on = Hon.shape
@@ -2347,7 +2398,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             Hoff = Hoff.reshape(original_shape_off[0], -1)
         
         # 首先掩码 on-site 矩阵
-        orb_mask = basis_definition[data['z']].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
+        orb_mask = basis_definition[z].view(-1, self.nao_max) # shape: [Natoms, nao_max] 
         # 通过外积创建 (i, j) 轨道对的掩码
         orb_mask = orb_mask[:,:,None] * orb_mask[:,None,:]       # shape: [Natoms, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Natoms, nao_max*nao_max]
@@ -2356,10 +2407,10 @@ class HamGNNPlusPlusOutCore(nn.Module):
         Hon_mask[orb_mask>0] = Hon[orb_mask>0]
         
         # 接着掩码 off-site 矩阵
-        j = data['edge_index'][0]
-        i = data['edge_index'][1]        
-        orb_mask_j = basis_definition[data['z'][j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
-        orb_mask_i = basis_definition[data['z'][i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
+        j = edge_index[0]
+        i = edge_index[1]        
+        orb_mask_j = basis_definition[z[j]].view(-1, self.nao_max) # shape: [Nedges, nao_max]
+        orb_mask_i = basis_definition[z[i]].view(-1, self.nao_max) # shape: [Nedges, nao_max] 
         # 通过外积创建 (i, j) 轨道对的掩码
         orb_mask = orb_mask_j[:,:,None] * orb_mask_i[:,None,:]       # shape: [Nedges, nao_max, nao_max]
         orb_mask = orb_mask.reshape(-1, int(self.nao_max*self.nao_max)) # shape: [Nedges, nao_max*nao_max]
@@ -2452,17 +2503,17 @@ class HamGNNPlusPlusOutCore(nn.Module):
             cell_index_map[tuple(cell_tuple)] = index
         return cell_index_map
 
-    def get_unique_cell_shift_and_cell_shift_indices(self, data):
+    def get_unique_cell_shift_and_cell_shift_indices(self, cell_shift: torch.Tensor):
         """从边的晶胞位移中找到唯一的位移向量，并为每条边提供其对应的唯一位移索引。
         
         Args:
-            data (Data): PyG 图数据对象。
+            cell_shift (torch.Tensor): 边的晶胞位移张量。
 
         Returns:
-            tuple: 返回 `(unique_cell_shift, cell_shift_indices, cell_index_map)`。
+            tuple: 返回 `(unique_cell_shift, cell_shift_indices, zero_shift_idx)`。
+                   zero_shift_idx 是 (0,0,0) 向量在 unique_cell_shift 中的索引
         """
         # 匹配 cell_shift 在 unique_cell_shift 中的行索引
-        cell_shift = data['cell_shift']
         unique_cell_shift = torch.unique(cell_shift, dim=0)
         
         zero_vector = torch.tensor([[0, 0, 0]]).type_as(unique_cell_shift)
@@ -2471,6 +2522,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # 如果 (0, 0, 0) 不存在，则将其添加到 unique_cell_shift 中
         if not is_zero_vector_present:
             unique_cell_shift = torch.cat((zero_vector, unique_cell_shift), dim=0)
+            zero_shift_idx = 0  # 零向量在开头
+        else:
+            # 找到零向量的索引
+            zero_mask = (unique_cell_shift == zero_vector).all(dim=1)
+            zero_shift_idx = int(zero_mask.nonzero()[0, 0])
         
         # 扩展张量以便进行广播比较
         expanded_cell_shift = cell_shift.unsqueeze(1).expand(-1, unique_cell_shift.size(0), -1)
@@ -2480,12 +2536,11 @@ class HamGNNPlusPlusOutCore(nn.Module):
         matches = (expanded_cell_shift == expanded_unique_cell_shift).all(dim=2)
         
         # 获取匹配行的索引
-        cell_shift_indices = matches.nonzero(as_tuple=True)[1] # (Nedges,)
+        # TorchScript兼容: nonzero不支持as_tuple参数
+        nonzero_indices = matches.nonzero()  # 返回 (N, 2) 张量
+        cell_shift_indices = nonzero_indices[:, 1]  # 获取第二列
         
-        # 获取晶胞索引映射字典
-        cell_index_map = self.index_cells(unique_cell_shift.tolist())
-        
-        return unique_cell_shift, cell_shift_indices, cell_index_map
+        return unique_cell_shift, cell_shift_indices, zero_shift_idx
 
     def edge_hunter(self, data, inv_edge_idx=None):
         # ... (此函数逻辑复杂且高度特化，保持原有注释风格)
@@ -2493,7 +2548,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
         tar = data['edge_index'][1]
         unique_cell_shift = data['unique_cell_shift']
         cell_shift_indices = data['cell_shift_indices']
-        cell_index_map = data['cell_index_map']
+        zero_shift_idx = int(data['zero_shift_idx'])
 
         num_nodes = len(data['z'])
         num_shifts = len(unique_cell_shift)
@@ -2681,6 +2736,16 @@ class HamGNNPlusPlusOutCore(nn.Module):
         # Calculate the on-site Hamiltonian 
         self.ham_irreps_dim = self.ham_irreps_dim.type_as(j)  
         
+        # TorchScript兼容: 在方法开始时初始化所有可能使用的变量
+        Hsoc_on_real = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hsoc_off_real = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        Hsoc_on_imag = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hsoc_off_imag = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        Hon = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hoff = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        Hcol_on = torch.empty(0, dtype=node_attr.dtype, device=node_attr.device)
+        Hcol_off = torch.empty(0, dtype=edge_attr.dtype, device=edge_attr.device)
+        
         if not self.ham_only and self.onsitenet_s is not None:
             node_sph = self.onsitenet_s(node_attr)
             # TorchScript兼容: 使用tensor_split替代split(...tolist())
@@ -2704,7 +2769,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
             Soff = self.symmetrize_Hoff(Soff, inv_edge_idx)
         
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
-                Son, Soff = self.mask_Ham(Son, Soff, data)
+                Son, Soff = self.mask_Ham(Son, Soff, data['z'], data['edge_index'])
         
         if self.soc_switch or self.spin_constrained:            
             if self.soc_switch:
@@ -2759,7 +2824,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         # Impose Hermitian symmetry for Hoff
                         Hoff = self.symmetrize_Hoff(Hoff, inv_edge_idx)
     
-                        Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
+                        Hon, Hoff = self.mask_Ham(Hon, Hoff, data['z'], data['edge_index'])
 
                     # build Hsoc
                     if self.onsitenet_ksi is not None:
@@ -2818,7 +2883,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                         # mask zeros         
                         for i in range(2):
                             for j in range(2):
-                                Hon[:,i,:,j,:], Hoff[:,i,:,j,:] = self.mask_Ham(Hon[:,i,:,j,:], Hoff[:,i,:,j,:], data)
+                                Hon[:,i,:,j,:], Hoff[:,i,:,j,:] = self.mask_Ham(Hon[:,i,:,j,:], Hoff[:,i,:,j,:], data['z'], data['edge_index'])
                         # TorchScript兼容: 确保reshape参数是int
                         Hon = Hon.reshape(-1, int((2*self.nao_max)**2))
                         # TorchScript兼容: 确保reshape参数是int
@@ -2850,7 +2915,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 Hoff = self.change_index(Hoff)        
                 # Impose Hermitian symmetry for Hoff
                 Hoff = self.symmetrize_Hoff(Hoff, inv_edge_idx)
-                Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
+                Hon, Hoff = self.mask_Ham(Hon, Hoff, data['z'], data['edge_index'])
                 
                 if not self.collinear_spin:
                     Hsoc_on_real = torch.zeros_like(data['Hon']).reshape(Hon.shape[0], 2*self.nao_max, 2*self.nao_max)
@@ -2868,12 +2933,20 @@ class HamGNNPlusPlusOutCore(nn.Module):
             
             if self.spin_constrained:
                 magnetic_atoms = (data['spin_length'] > self.minMagneticMoment)
-                data['unique_cell_shift'], data['cell_shift_indices'], data['cell_index_map'] = self.get_unique_cell_shift_and_cell_shift_indices(data)
-                cell_shift_indices = data['cell_shift_indices']
-                cell_index_map = data['cell_index_map']
+                # TorchScript兼容: 传递具体的tensor而不是整个data字典
+                cell_shift = data['cell_shift']
+                unique_cell_shift, cell_shift_indices, zero_shift_idx = self.get_unique_cell_shift_and_cell_shift_indices(cell_shift)
+                # 将结果存储回data以保持兼容性
+                data['unique_cell_shift'] = unique_cell_shift
+                data['cell_shift_indices'] = cell_shift_indices  
+                data['zero_shift_idx'] = torch.tensor(zero_shift_idx, dtype=torch.long)  # 转换为tensor以兼容Dict[str, Tensor]
                 
                 # learn a weight matrix
-                if self.use_learned_weight and self.onsitenet_weight is not None:
+                if self.use_learned_weight:
+                    # TorchScript兼容: 确保属性不是None
+                    assert self.onsitenet_weight is not None
+                    assert self.offsitenet_weight is not None
+                    
                     node_sph = self.onsitenet_weight(node_attr)     
                     # TorchScript兼容: 使用tensor_split替代split(...tolist())
                     node_sph = torch.tensor_split(node_sph, torch.cumsum(self.ham_irreps_dim[:-1], dim=0).cpu(), dim=-1)
@@ -2895,19 +2968,27 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     # Impose Hermitian symmetry for Hoff
                     weight_off = self.symmetrize_Hoff(weight_off, inv_edge_idx)
                     
-                    weight_on, weight_off = self.mask_Ham(weight_on, weight_off, data)
+                    weight_on, weight_off = self.mask_Ham(weight_on, weight_off, data['z'], data['edge_index'])
                     weight_on, weight_off = weight_on.reshape(-1, self.nao_max, self.nao_max), weight_off.reshape(-1, self.nao_max, self.nao_max)
                     data['weight_on'] = weight_on
                     data['weight_off'] = weight_off
 
                 if self.soc_switch:
+                    # TorchScript兼容: 确保属性不是None
+                    assert self.onsitenet_J is not None
+                    assert self.offsitenet_J is not None
+                    
                     J_on = self.onsitenet_J(node_attr)     
                     J_on = self.J_merge(J_on) # shape: (Natoms, nao_max, nao_max, 3, 3)
 
                     J_off = self.offsitenet_J(edge_attr) # shape: (Nedges, Nblocks)    
                     J_off = self.J_merge(J_off) # shape: (Nedges, nao_max, nao_max, 3, 3)
 
-                    if self.add_quartic and self.onsitenet_K is not None:
+                    if self.add_quartic:
+                        # TorchScript兼容: 确保属性不是None
+                        assert self.onsitenet_K is not None
+                        assert self.offsitenet_K is not None
+                        
                         K_on = self.onsitenet_K(node_attr) # shape: (Natoms, Nblocks)    
                         K_on = self.K_merge(K_on) # shape: (Natoms, nao_max, nao_max)
 
@@ -2931,7 +3012,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     H_heisen_J_on[magnetic_atoms] += torch.einsum('mijkl, mij, kop, ml -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))    
                     H_heisen_J_on[magnetic_atoms] += torch.einsum('mijkl, mij, lop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
 
-                    zero_shift_idx = cell_index_map[(0, 0, 0)]
+                    zero_shift_idx = int(data['zero_shift_idx'])
                     for ia in range(len(J_on)):
                         # src
                         if magnetic_atoms[ia]:
@@ -2962,17 +3043,25 @@ class HamGNNPlusPlusOutCore(nn.Module):
                             idx_cell_shift = int(cell_shift_indices[i_edge])
                             Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
                             H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ijkl, mij, lop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                            if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
+                            if idx_cell_shift == int(data['zero_shift_idx']):
                                 Won = weight_on[ja]
                                 H_heisen_J_on[ja] += torch.einsum('ijkl, ij, lop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))   
                 else:
+                    # TorchScript兼容: 确保属性不是None
+                    assert self.onsitenet_J is not None
+                    assert self.offsitenet_J is not None
+                    
                     J_on = self.onsitenet_J(node_attr) # shape: (Natoms, Nblocks)  
                     J_on = self.J_merge(J_on) # shape: (Natoms, nao_max, nao_max,)
     
                     J_off = self.offsitenet_J(edge_attr) # shape: (Nedges, Nblocks)
                     J_off = self.J_merge(J_off) # shape: (Nedges, nao_max, nao_max,)
     
-                    if self.add_quartic and self.onsitenet_K is not None:
+                    if self.add_quartic:
+                        # TorchScript兼容: 确保属性不是None
+                        assert self.onsitenet_K is not None
+                        assert self.offsitenet_K is not None
+                        
                         K_on = self.onsitenet_K(node_attr) # shape: (Natoms, Nblocks)    
                         K_on = self.K_merge(K_on) # shape: (Natoms, nao_max, nao_max)
                                         
@@ -2993,7 +3082,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                         H_heisen_J_on[magnetic_atoms] += torch.einsum('mij, mij, op, m -> moipj', J_on[magnetic_atoms], weight_on[magnetic_atoms], sigma_z, spin_vec[magnetic_atoms,2])
 
-                        zero_shift_idx = cell_index_map[(0, 0, 0)]
+                        zero_shift_idx = int(data['zero_shift_idx'])
                         for ia in range(len(J_on)):
                             # src
                             if magnetic_atoms[ia]:
@@ -3023,7 +3112,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                                 idx_cell_shift = int(cell_shift_indices[i_edge])
                                 Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
                                 H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ij, mij, op -> moipj', J_off[i_edge], Woff_tar, sigma_z)*spin_vec[ia,2]
-                                if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
+                                if idx_cell_shift == int(data['zero_shift_idx']):
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += torch.einsum('ij, ij, op-> oipj', J_off[i_edge], Won, sigma_z)*spin_vec[ia,2]
 
@@ -3044,7 +3133,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
 
                         H_heisen_J_on[magnetic_atoms] += torch.einsum('mij, mij, kop, mk -> moipj', J_on[magnetic_atoms].type_as(sigma), weight_on[magnetic_atoms].type_as(sigma), sigma, spin_vec[magnetic_atoms].type_as(sigma))
 
-                        zero_shift_idx = cell_index_map[(0, 0, 0)]
+                        zero_shift_idx = int(data['zero_shift_idx'])
                         for ia in range(len(J_on)):
                             # src
                             if magnetic_atoms[ia]:
@@ -3074,7 +3163,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                                 idx_cell_shift = int(cell_shift_indices[i_edge])
                                 Woff_tar = weight_off[edge_matcher_tar[ja][idx_cell_shift]]
                                 H_heisen_J_off[edge_matcher_tar[ja][idx_cell_shift]] += torch.einsum('ij, mij, kop, k -> moipj', J_off[i_edge].type_as(sigma), Woff_tar.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))
-                                if idx_cell_shift == data['cell_index_map'][(0,0,0)]:
+                                if idx_cell_shift == int(data['zero_shift_idx']):
                                     Won = weight_on[ja]
                                     H_heisen_J_on[ja] += torch.einsum('ij, ij, kop, k -> oipj', J_off[i_edge].type_as(sigma), Won.type_as(sigma), sigma, spin_vec[ia].type_as(sigma))                                
 
@@ -3130,9 +3219,19 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     #     k_vec = torch.Tensor(k_vec).type_as(Hon)
                     #     k_vecs.append(k_vec)  
                     # data['k_vecs'] = torch.stack(k_vecs, dim=0)
-                    band_energy, wavefunction = self.cal_band_energy_soc(Hsoc_on_real, Hsoc_on_imag, Hsoc_off_real, Hsoc_off_imag, data) 
+                    band_energy, wavefunction = self.cal_band_energy_soc(
+                        Hsoc_on_real, Hsoc_on_imag, Hsoc_off_real, Hsoc_off_imag,
+                        data['edge_index'], data['cell'], data['z'], data['node_counts'], 
+                        data['batch'], data['Son'], data['Soff'], data['cell_shift'], 
+                        data['nbr_shift'], data['k_vecs'], data['Hon']
+                    ) 
                     with torch.no_grad():
-                        data['band_energy'], data['wavefunction'] = self.cal_band_energy_soc(data['Hon'], data['iHon'], data['Hoff'], data['iHoff'], data)
+                        data['band_energy'], data['wavefunction'] = self.cal_band_energy_soc(
+                            data['Hon'], data['iHon'], data['Hoff'], data['iHoff'],
+                            data['edge_index'], data['cell'], data['z'], data['node_counts'], 
+                            data['batch'], data['Son'], data['Soff'], data['cell_shift'], 
+                            data['nbr_shift'], data['k_vecs'], data['Hon']
+                        )
                 else:
                     band_energy = None
                     wavefunction = None
@@ -3183,22 +3282,48 @@ class HamGNNPlusPlusOutCore(nn.Module):
                     #     k_vecs.append(k_vec)  
                     # data['k_vecs'] = torch.stack(k_vecs, dim=0)
                     if self.export_reciprocal_values:
-                        band_energy_up, wavefunction_up, HK_up, SK_up, dSK_up, gap_up = self.cal_band_energy(Hcol_on[:,0,:], Hcol_off[:,0,:], data, True)
-                        band_energy_down, wavefunction_down, HK_down, SK_down, dSK_down, gap_down = self.cal_band_energy(Hcol_on[:,1,:], Hcol_off[:,1,:], data, True)
+                        band_energy_up, wavefunction_up, HK_up, SK_up, dSK_up, gap_up = self.cal_band_energy(
+                            Hcol_on[:,0,:], Hcol_off[:,0,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
+                            data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
+                        band_energy_down, wavefunction_down, HK_down, SK_down, dSK_down, gap_down = self.cal_band_energy(
+                            Hcol_on[:,1,:], Hcol_off[:,1,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
+                            data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
                         H_sym = None
                         band_energy = torch.cat([band_energy_up, band_energy_down])
                         wavefunction = torch.cat([wavefunction_up, wavefunction_down])
                         HK = torch.cat([HK_up, HK_down])
                         gap = torch.cat([gap_up, gap_down])
                     else:
-                        band_energy_up, wavefunction_up, gap_up, H_sym = self.cal_band_energy(Hcol_on[:,0,:], Hcol_off[:,0,:], data)
-                        band_energy_down, wavefunction_down, gap_down, H_sym = self.cal_band_energy(Hcol_on[:,1,:], Hcol_off[:,1,:], data)
+                        band_energy_up, wavefunction_up, gap_up, H_sym = self.cal_band_energy(
+                            Hcol_on[:,0,:], Hcol_off[:,0,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
+                        band_energy_down, wavefunction_down, gap_down, H_sym = self.cal_band_energy(
+                            Hcol_on[:,1,:], Hcol_off[:,1,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
                         band_energy = torch.cat([band_energy_up, band_energy_down])
                         wavefunction = torch.cat([wavefunction_up, wavefunction_down])
                         gap = torch.cat([gap_up, gap_down])
                     with torch.no_grad():
-                        data['band_energy_up'], data['wavefunction'], data['band_gap_up'], data['H_sym'] = self.cal_band_energy(data['Hon'][:,0,:], data['Hoff'][:,0,:], data)
-                        data['band_energy_down'], data['wavefunction'], data['band_gap_down'], data['H_sym'] = self.cal_band_energy(data['Hon'][:,1,:], data['Hoff'][:,1,:], data)
+                        data['band_energy_up'], data['wavefunction'], data['band_gap_up'], data['H_sym'] = self.cal_band_energy(
+                            data['Hon'][:,0,:], data['Hoff'][:,0,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
+                        data['band_energy_down'], data['wavefunction'], data['band_gap_down'], data['H_sym'] = self.cal_band_energy(
+                            data['Hon'][:,1,:], data['Hoff'][:,1,:], 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
                         data['band_energy'] = torch.cat([data['band_energy_up'], data['band_energy_down']])
                         data['band_gap'] = torch.cat([data['band_gap_up'], data['band_gap_down']])
                 else:
@@ -3235,7 +3360,7 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 Hoff = Hoff + data['Hoff0']
         
             if self.ham_type in ['openmx','pasp', 'siesta', 'abacus']:
-                Hon, Hoff = self.mask_Ham(Hon, Hoff, data)
+                Hon, Hoff = self.mask_Ham(Hon, Hoff, data['z'], data['edge_index'])
         
             if self.calculate_band_energy:
                 # 原HamGNNPlusPlusOut中的k_path移出，由外部包装器管理
@@ -3280,15 +3405,28 @@ class HamGNNPlusPlusOutCore(nn.Module):
                 # data['k_vecs'] = torch.stack(k_vecs, dim=0)
                 if self.export_reciprocal_values:
                     if self.ham_only:
-                        band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(Hon, Hoff, data, True)
+                        band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy(
+                            Hon, Hoff, 
+                            data['edge_index'], data['cell'], data['z'], 
+                            data['node_counts'], data['batch'],
+                            data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'],
+                            data['dSon'] if 'dSon' in data else None, data['dSoff'] if 'dSoff' in data else None, True)
                         H_sym = None
                     else:
                         band_energy, wavefunction, HK, SK, dSK, gap = self.cal_band_energy_debug(Hon, Hoff, Son, Soff, data, True)
                         H_sym = None
                 else:
-                    band_energy, wavefunction, gap, H_sym = self.cal_band_energy(Hon, Hoff, data)
+                    band_energy, wavefunction, gap, H_sym = self.cal_band_energy(
+                        Hon, Hoff, 
+                        data['edge_index'], data['cell'], data['z'], 
+                        data['node_counts'], data['batch'],
+                        data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
                 with torch.no_grad():
-                    data['band_energy'], data['wavefunction'], data['band_gap'], data['H_sym'] = self.cal_band_energy(data['Hon'], data['Hoff'], data)
+                    data['band_energy'], data['wavefunction'], data['band_gap'], data['H_sym'] = self.cal_band_energy(
+                        data['Hon'], data['Hoff'], 
+                        data['edge_index'], data['cell'], data['z'], 
+                        data['node_counts'], data['batch'],
+                        data['Son'], data['Soff'], data['nbr_shift'], data['k_vecs'])
             else:
                 band_energy = None
                 wavefunction = None
@@ -3377,7 +3515,7 @@ class HamGNNPlusPlusOut(nn.Module):
         super().__init__()
         
         # 提取K点生成所需的配置参数
-        self.calculate_band_energy = kwargs.get('calculate_band_energy', False)
+        self.calculate_band_energy = kwargs.pop('calculate_band_energy', False)
         
         # 使用 .pop() 来获取参数，并将其从kwargs中移除，
         # 这样它就不会被传递给不支持它的Core模型
@@ -3385,7 +3523,7 @@ class HamGNNPlusPlusOut(nn.Module):
         
         # 如果需要计算能带，则创建K点转换器实例
         if self.calculate_band_energy:
-            num_k = kwargs.get('num_k', 8)
+            num_k = kwargs.pop('num_k', 8)
             self.k_point_transform = KPointTransform(k_path_config, num_k)
         
         # 实例化核心的、可JIT编译的计算模块
