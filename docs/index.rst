@@ -7,11 +7,11 @@ HamGNN 中文注释版文档
 由社区贡献者添加了中文注释，旨在帮助中文开发者更好地理解和使用 HamGNN。
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: API 文档
 
    source/main_entry
-   source/model_structure
+   source/model_structure  
    source/gnn_core
    source/model_components
    source/data_processing

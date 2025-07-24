@@ -55,3 +55,24 @@
 [data-theme="dark"] .sig-param .pre:contains("None") {
     color: #66aaff;
 }
+
+/* 导航栏折叠/展开视觉提示 */
+.sidebar-tree .toctree-l1 > a::before {
+    content: "▸ ";
+    color: var(--color-foreground-muted);
+    transition: transform 0.2s;
+}
+
+.sidebar-tree .toctree-l1.current > a::before,
+.sidebar-tree .toctree-l1:hover > a::before {
+    content: "▾ ";
+}
+
+/* 让 logo 可点击返回主页 */
+.sidebar-brand {
+    transition: opacity 0.2s;
+}
+
+.sidebar-brand:hover {
+    opacity: 0.8;
+}
