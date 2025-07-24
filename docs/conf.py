@@ -42,6 +42,12 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../HamGNN_v_2_0/models/e3_layers.py']
 language = 'zh_CN'
 
+# 多语言支持配置
+locale_dirs = ['locale/']   # 翻译文件目录
+gettext_compact = False     # 每个文档生成单独的 .pot 文件
+gettext_uuid = True         # 使用 UUID 追踪翻译
+gettext_location = False    # 不在 .pot 文件中包含行号
+
 # -- Options for HTML output -------------------------------------------------
 # 使用 Furo 主题，现代化设计和更好的插件支持
 html_theme = 'furo'
@@ -59,6 +65,8 @@ html_sourcelink_suffix = ''
 html_theme_options = {
     "sidebar_hide_name": True,
     "top_of_page_buttons": ["view"],
+    "navigation_with_keys": True,  # 允许键盘导航
+    "announcement": None,
 }
 
 # 代码复制按钮配置

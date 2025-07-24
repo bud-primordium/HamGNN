@@ -1,0 +1,36 @@
+{# 版本切换器模板 #}
+<div class="version-switcher">
+  <label for="version-select">版本：</label>
+  <select id="version-select" onchange="switchVersion(this.value)">
+    <option value="v2.0" {% if version == "v2.0" %}selected{% endif %}>v2.0 (当前)</option>
+    <option value="v1.0" {% if version == "v1.0" %}selected{% endif %}>v1.0</option>
+  </select>
+</div>
+
+<script>
+function switchVersion(version) {
+  const currentPath = window.location.pathname;
+  const newPath = currentPath.replace(/\/v\d+\.\d+\//, `/${version}/`);
+  if (newPath !== currentPath) {
+    window.location.href = newPath;
+  }
+}
+</script>
+
+<style>
+.version-switcher {
+  margin: 1em 0;
+  padding: 0.5em;
+  background-color: var(--color-background-secondary);
+  border-radius: 0.25em;
+}
+
+.version-switcher select {
+  margin-left: 0.5em;
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+  border: 1px solid var(--color-foreground-border);
+  background-color: var(--color-background-primary);
+  color: var(--color-foreground-primary);
+}
+</style>

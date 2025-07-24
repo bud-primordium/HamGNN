@@ -49,3 +49,4 @@ dependencies:
     - torch-ema
     - torch-runstats
     - lie_learn
+    - sphinx-intl  # 多语言支持
