@@ -214,7 +214,7 @@ class TensorExpansion(nn.Module):
         前向传播，将输入矩阵展开为球谐函数基组。
 
         Args:
-            x (torch.Tensor): 输入张量，形状为 (*, row.dim, col.dim)。
+            x (torch.Tensor): 输入张量，形状为 (\\*, row.dim, col.dim)。
 
         Returns:
             torch.Tensor: 展开后的张量，其不可约表示由 `self.irreps_out` 定义。
@@ -1302,13 +1302,12 @@ def irreps2gate(
         nonlinearity_gates (Dict[int, str]): 门控组件的激活函数字典，键为宇称(parity)。
 
     Returns:
-        Tuple[
-            o3.Irreps: 标量不可约表示。
-            o3.Irreps: 门控不可约表示。
-            o3.Irreps: 门控后的不可约表示。
-            List[Callable]: 标量激活函数列表。
-            List[Callable]: 门控激活函数列表。
-        ]
+        Tuple: 包含以下元素的元组：
+            - o3.Irreps: 标量不可约表示。
+            - o3.Irreps: 门控不可约表示。
+            - o3.Irreps: 门控后的不可约表示。
+            - List[Callable]: 标量激活函数列表。
+            - List[Callable]: 门控激活函数列表。
     """
     # 将irreps分解为标量和门控组件
     irreps_scalars = o3.Irreps([(mul, ir) for mul, ir in irreps if ir.l == 0]).simplify()
