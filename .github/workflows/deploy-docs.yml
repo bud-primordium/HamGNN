@@ -25,6 +25,11 @@ jobs:
           # 修正路径：移除多余的 "HamGNN/" 前缀
           environment-file: docs/environment.yml
           activate-environment: hamgnn-docs
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
           
       - name: Install HamGNN project
         shell: bash -l {0}

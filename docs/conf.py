@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 project = 'HamGNN'
-copyright = '2025, HamGNN Team'
+copyright = 'HamGNN Team'
 author = 'HamGNN Team'
 release = '2.0'
 
@@ -22,15 +22,49 @@ extensions = [
     'myst_parser',                 # 支持 Markdown 文件 (.md)
     'sphinx.ext.intersphinx',      # 链接到其他项目的文档 (Python, NumPy, PyTorch)
     'sphinx.ext.mathjax',          # 渲染 LaTeX 公式
+    'sphinx_copybutton',           # 代码复制按钮
+    'sphinx.ext.graphviz',         # 生成类继承图
 ]
+
+# MyST parser 配置
+myst_enable_extensions = [
+    "html_admonition",
+    "dollarmath",  # 支持 LaTeX 数学公式 $...$ 和 $$...$$
+]
+myst_heading_anchors = 3
+
+# Autodoc 配置 - 优化设置
+autodoc_member_order = "bysource"
+autosummary_generate = True
+source_suffix = [".rst", ".md"]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../HamGNN_v_2_0/models/e3_layers.py']
 language = 'zh_CN'
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'sphinx_rtd_theme'
+# 使用 Furo 主题，现代化设计和更好的插件支持
+html_theme = 'furo'
 html_static_path = ['_static']
+
+html_title = "HamGNN 中文文档"
+html_logo = "_static/logo.png"
+html_favicon = "_static/logo.png"
+html_css_files = ["custom.css"]
+
+html_copy_source = True
+html_show_sourcelink = True
+html_sourcelink_suffix = ''
+
+html_theme_options = {
+    "sidebar_hide_name": True,
+    "top_of_page_buttons": ["view"],
+}
+
+# 代码复制按钮配置
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+copybutton_exclude = '.linenos, .gp'
 
 # -- Intersphinx configuration -----------------------------------------------
 # 配置跨项目文档链接
@@ -39,6 +73,9 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'torch': ('https://pytorch.org/docs/stable/', None),
     'pytorch_lightning': ('https://lightning.ai/docs/pytorch/stable/', None),
+    'e3nn': ('https://docs.e3nn.org/en/stable/', None),
+    'torchmetrics': ('https://lightning.ai/docs/torchmetrics/stable/', None),
+    'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
 }
 
 # -- Custom event handler to skip specific headers -----------------------------

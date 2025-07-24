@@ -13,6 +13,9 @@ dependencies:
   - sphinx_rtd_theme
   - sphinx-autodoc-typehints
   - myst-parser
+  - sphinx-copybutton
+  - graphviz  # 系统依赖，用于 sphinx.ext.graphviz
+  - furo  # 现代化主题，更好的插件支持
 
   # HamGNN 核心依赖
   - numpy
