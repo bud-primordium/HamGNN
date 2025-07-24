@@ -35,11 +35,19 @@ GRID_SIZE = 3
 GRID_RANGE = [-1, 1]
 
 class TensorExpansion(nn.Module):
-    """
-    将哈密顿量或重叠矩阵从标准基组展开为球谐函数基组。
+    r"""将哈密顿量或重叠矩阵从原子轨道基组展开为球谐函数基组。
 
-    该模块处理不同DFT软件代码（如 'openmx', 'siesta', 'abacus'）的原子轨道排序约定，
-    并将它们转换为 e3nn 库兼容的不可约表示(irreps)形式。
+    该模块的核心操作是执行以下基组变换，将原子轨道 :math:`|l_i, m_i \rangle` 和 :math:`|l_j, m_j \rangle`
+    耦合为总角动量 :math:`|L, M \rangle` 的不可约表示：
+
+    .. math::
+
+       O_{LM} = \frac{1}{N} \sum_{m_i, m_j} C_{l_i m_i, l_j m_j}^{L M} \cdot H_{l_i m_i, l_j m_j}
+
+    其中 :math:`C` 是 Clebsch-Gordan 系数。
+
+    该模块还能处理不同DFT软件（如 'openmx', 'siesta', 'abacus'）的原子轨道排序约定，
+    并将它们统一转换为 e3nn 库兼容的不可约表示 (irreps) 形式。
 
     Attributes:
         ham_type (str): 哈密顿矩阵类型 ('openmx', 'siesta', 'abacus', 'pasp')。
@@ -214,7 +222,7 @@ class TensorExpansion(nn.Module):
         前向传播，将输入矩阵展开为球谐函数基组。
 
         Args:
-            x (torch.Tensor): 输入张量，形状为 (\\*, row.dim, col.dim)。
+            x (torch.Tensor): 输入张量，形状为 (\*, row.dim, col.dim)。
 
         Returns:
             torch.Tensor: 展开后的张量，其不可约表示由 `self.irreps_out` 定义。
@@ -275,11 +283,18 @@ class OverlapExpand(nn.Module):
 
 @compile_mode("script")
 class ClebschGordanCoefficients(nn.Module):
-    """
-    用于预计算和存储 Clebsch-Gordan 系数的模块。
-    
-    通过将系数注册为缓冲区(buffer)，可以在模型的前向传播过程中高效访问，
-    避免重复计算。
+    r"""预计算和存储 Clebsch-Gordan (CG) 系数的模块。
+
+    该模块利用 `e3nn.o3.wigner_3j` 来计算 Wigner 3j 符号，并通过它们得到 CG 系数。
+    Wigner 3j 符号与 CG 系数通过以下关系相关联：
+
+    .. math::
+
+       \langle l_1 m_1, l_2 m_2 | l_3 m_3 \rangle =
+       (-1)^{l_1 - l_2 + m_3} \sqrt{2l_3 + 1}
+       \begin{pmatrix} l_1 & l_2 & l_3 \\ m_1 & m_2 & -m_3 \end{pmatrix}
+
+    通过将系数注册为缓冲区 (buffer)，可以在模型的前向传播过程中高效访问，避免重复计算。
     """
 
     def __init__(self, max_l=8):
@@ -1302,12 +1317,13 @@ def irreps2gate(
         nonlinearity_gates (Dict[int, str]): 门控组件的激活函数字典，键为宇称(parity)。
 
     Returns:
-        Tuple: 包含以下元素的元组：
-            - o3.Irreps: 标量不可约表示。
-            - o3.Irreps: 门控不可约表示。
-            - o3.Irreps: 门控后的不可约表示。
-            - List[Callable]: 标量激活函数列表。
-            - List[Callable]: 门控激活函数列表。
+        Tuple[o3.Irreps, o3.Irreps, o3.Irreps, List[Callable], List[Callable]]:
+            一个元组，包含：
+            - ``irreps_scalars`` (o3.Irreps): 标量不可约表示。
+            - ``irreps_gates`` (o3.Irreps): 门控不可约表示。
+            - ``irreps_gated`` (o3.Irreps): 门控后的不可约表示。
+            - ``act_scalars`` (List[Callable]): 标量激活函数列表。
+            - ``act_gates`` (List[Callable]): 门控激活函数列表。
     """
     # 将irreps分解为标量和门控组件
     irreps_scalars = o3.Irreps([(mul, ir) for mul, ir in irreps if ir.l == 0]).simplify()
@@ -1444,8 +1460,10 @@ class RadialBasisEdgeEncoding(GraphModuleMixin, torch.nn.Module):
 
 @compile_mode('script')
 class VectorToAttentionHeads(nn.Module):
-    """
-    将形状为 [N, irreps_mid] 的向量重塑为 [N, num_heads, irreps_head] 的多头注意力形式。
+    """将形状为 :math:`[N, D_{mid}]` 的向量重塑为 :math:`[N, H, D_{head}]` 的多头形式。
+
+    其中 :math:`H` 是注意力头的数量 (num_heads)，:math:`D_{mid}` 是中间特征维度，
+    :math:`D_{head}` 是每个头的特征维度。
 
     Attributes:
         num_heads (int): 注意力头的数量。
@@ -1487,8 +1505,10 @@ class VectorToAttentionHeads(nn.Module):
 
 @compile_mode('script')
 class AttentionHeadsToVector(nn.Module):
-    """
-    将形状为 [N, num_heads, irreps_head] 的多头注意力向量转换回 [N, irreps_head * num_heads] 的扁平向量。
+    """将 :math:`[N, H, D_{head}]` 的多头注意力向量转换回 :math:`[N, D_{flat}]` 的扁平向量。
+
+    其中 :math:`H` 是注意力头的数量, :math:`D_{head}` 是每个头的维度, 
+    :math:`D_{flat}` 是扁平化后的总维度。
     
     Attributes:
         irreps_head (o3.Irreps): 定义注意力头结构的不可约表示列表。
@@ -1694,7 +1714,7 @@ class AttentionAggregationV2(nn.Module):
     """
 
     def __init__(
-        self, 
+        self,
         num_heads: int, 
         irreps_value: o3.Irreps, 
     ):
@@ -1749,8 +1769,16 @@ class AttentionAggregationV2(nn.Module):
 
 @compile_mode("script")
 class AttentionAggregation(nn.Module):
-    """
-    处理键(key)、值(value)和查询(query)向量的等变注意力机制，在图的边上应用注意力。
+    r"""处理键(key)、值(value)和查询(query)向量的等变注意力机制。
+
+    该模块在图的边上应用缩放点积注意力机制。注意力权重 :math:`\alpha_{ij}` 的计算方式如下：
+
+    .. math::
+
+        \alpha_{ij} = \frac{(Q_i \cdot K_j)}{\sqrt{d_k}}
+
+    其中 :math:`Q_i` 是目标节点的查询向量，:math:`K_j` 是源节点的键向量，:math:`d_k` 是键向量的维度。
+    然后使用 softmax 对权重进行归一化，并用于加权聚合值向量 :math:`V_j`。
     """
 
     def __init__(
@@ -1787,20 +1815,20 @@ class AttentionAggregation(nn.Module):
     
     def forward(
         self, 
-        key: torch.Tensor,  # (num_edges, hidden_feat_len)
-        value: torch.Tensor, # (num_edges, hidden_feat_len) 
-        query: torch.Tensor,  # (num_edges, hidden_feat_len) 
-        edge_weight_cutoff: torch.Tensor, # (num_edges,)
+        key: torch.Tensor,  
+        value: torch.Tensor, 
+        query: torch.Tensor,  
+        edge_weight_cutoff: torch.Tensor, 
         edge_index: torch.LongTensor
     ) -> torch.Tensor:
         """
         注意力机制的前向传播。
 
         Args:
-            key (torch.Tensor): 键向量。
-            value (torch.Tensor): 值向量。
-            query (torch.Tensor): 查询向量。
-            edge_weight_cutoff (torch.Tensor): 边的截断权重。
+            key (torch.Tensor): 键向量，形状为 :math:`(N_{edges}, d_{hidden})`。
+            value (torch.Tensor): 值向量，形状为 :math:`(N_{edges}, d_{hidden})`。
+            query (torch.Tensor): 查询向量，形状为 :math:`(N_{edges}, d_{hidden})`。
+            edge_weight_cutoff (torch.Tensor): 边的截断权重，形状为 :math:`(N_{edges},)`。
             edge_index (torch.LongTensor): 边索引。
 
         Returns:
@@ -1948,7 +1976,9 @@ class AttentionBlockE3(nn.Module):
         )
 
     def init_weight_generator(self, input_dim, weight_numel):
-        """初始化权重生成器。"""
+        """
+        初始化权重生成器。
+        """
         if self.use_kan:
             return KAN([input_dim] + self.radial_MLP + [weight_numel], grid_size=GRID_SIZE, grid_range=GRID_RANGE)
         return FullyConnectedNet(
@@ -1957,7 +1987,9 @@ class AttentionBlockE3(nn.Module):
         )
 
     def create_nonlinearity(self, nonlinearity_type, nonlinearity_scalars, nonlinearity_gates):
-        """创建非线性模块。"""
+        """
+        创建非线性模块。
+        """
         if nonlinearity_type == "gate":
             irreps_scalars, irreps_gates, irreps_gated, act_scalars, act_gates = irreps2gate(
                 self.irreps_in, nonlinearity_scalars, nonlinearity_gates
@@ -2111,7 +2143,9 @@ class PairInteractionEmbeddingBlock(nn.Module):
         )
 
     def init_weight_generator(self, input_dim, weight_numel):
-        """初始化权重生成器。"""
+        """
+        初始化权重生成器。
+        """
         if self.use_kan:
             return KAN([input_dim] + self.radial_MLP + [weight_numel], grid_size=GRID_SIZE, grid_range=GRID_RANGE)
         return FullyConnectedNet(

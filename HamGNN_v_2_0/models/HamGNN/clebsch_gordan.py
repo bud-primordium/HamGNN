@@ -9,13 +9,19 @@ from itertools import permutations
 """
 
 class ClebschGordan(nn.Module):
-    """一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。
+    r"""一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。
 
     CG系数在耦合角动量理论中至关重要，用于将两个角动量的状态分解为总角动量的状态。
     这个类从一个预先计算好的 `.npz` 文件中加载 CG 系数张量。由于原始文件
     只存储了满足 l1 <= l2 <= l3 的系数以减少冗余，该类在初始化时会
     自动生成所有可能的 (l1, l2, l3) 排列组合，并将它们注册为 PyTorch 的
     缓冲区 (buffers)，以便高效访问。
+
+    CG 系数 :math:`\langle l_1 m_1, l_2 m_2 | l_3 m_3 \rangle` 定义了角动量耦合的规则：
+
+    .. math::
+
+       |l_3, m_3 \rangle = \sum_{m_1, m_2} \langle l_1 m_1, l_2 m_2 | l_3 m_3 \rangle |l_1, m_1 \rangle |l_2, m_2 \rangle
 
     .. note::
         该类继承自 `torch.nn.Module`，这使得它可以被无缝集成到任何
@@ -63,12 +69,14 @@ class ClebschGordan(nn.Module):
         """获取指定角动量组合的 Clebsch-Gordan 系数张量。
 
         Args:
-            l1 (int): 第一个角动量的量子数。
-            l2 (int): 第二个角动量的量子数。
-            l3 (int): 耦合后的总角动量的量子数。
+            l1 (int): 第一个角动量的量子数 :math:`l_1`。
+            l2 (int): 第二个角动量的量子数 :math:`l_2`。
+            l3 (int): 耦合后的总角动量的量子数 :math:`l_3`。
 
         Returns:
-            torch.Tensor: 对应于 (l1, l2, l3) 组合的 CG 系数张量。
+            torch.Tensor: 
+                对应于 :math:`(l_1, l_2, l_3)` 组合的 CG 系数张量，
+                其形状为 :math:`(2l_1+1, 2l_2+1, 2l_3+1)`。
         """
         # 使用 getattr() 动态地从 self 中获取名为 'cg_l1_l2_l3' 的属性
         return getattr(self, 'cg_{}_{}_{}'.format(l1, l2, l3))

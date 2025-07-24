@@ -1,8 +1,14 @@
-"""此模块提供了计算维格纳D矩阵 (Wigner D-matrix) 的函数。
+r"""此模块提供了计算维格纳D矩阵 (Wigner D-matrix) 的函数。
 
-维格纳D矩阵是三维空间中旋转算符在角动量本征态基矢下的矩阵表示，
-在处理具有旋转对称性的物理问题（如分子轨道、张量场等）中至关重要。
-此实现目前支持 l=0, 1, 2 的情况。
+维格纳D矩阵是三维空间中旋转算符 :math:`\mathcal{R}(\alpha, \beta, \gamma)` 在角动量
+本征态基矢 :math:`|l, m \rangle` 下的矩阵表示：
+
+.. math::
+
+   D^l_{m',m}(\mathcal{R}) = \langle l, m' | \mathcal{R} | l, m \rangle
+
+它在处理具有旋转对称性的物理问题（如分子轨道、张量场等）中至关重要。
+此实现目前支持 :math:`l=0, 1, 2` 的情况。
 """
 
 import torch
@@ -28,7 +34,7 @@ def wigner(l: int, axis: torch.Tensor, angle: torch.Tensor) -> torch.Tensor:
 
     Returns:
         torch.Tensor:
-            计算出的维格纳D矩阵，形状为 (2l+1, 2l+1)。
+            计算出的维格纳D矩阵，形状为 :math:`(2l+1, 2l+1)`。
 
     Raises:
         ValueError: 如果 `l` 不是 0, 1, 或 2，则抛出此异常。
@@ -47,5 +53,3 @@ def wigner(l: int, axis: torch.Tensor, angle: torch.Tensor) -> torch.Tensor:
     else:
         raise ValueError("l must be 0, 1, or 2")
     return w
-            
-        
