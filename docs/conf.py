@@ -62,11 +62,24 @@ html_copy_source = True
 html_show_sourcelink = True
 html_sourcelink_suffix = ''
 
+# GitHub 源代码链接配置
+html_context = {
+    "display_github": True,
+    "github_user": "bud-primordium",
+    "github_repo": "HamGNN",
+    "github_version": "chinese_annotated",
+    "conf_py_path": "/docs/",
+}
+
 html_theme_options = {
     "sidebar_hide_name": True,
     "top_of_page_buttons": ["view"],
     "navigation_with_keys": True,  # 允许键盘导航
     "announcement": None,
+    # GitHub 集成
+    "source_repository": "https://github.com/bud-primordium/HamGNN/",
+    "source_branch": "chinese_annotated",
+    "source_directory": "docs/",
 }
 
 # 代码复制按钮配置
