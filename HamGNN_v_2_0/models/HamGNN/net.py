@@ -1864,19 +1864,34 @@ class HamGNNPlusPlusOut(nn.Module):
             if export_reciprocal_values:
                 dSK[:,na,na,:,:,:] +=  dSon_split[idx].reshape(-1, self.nao_max, self.nao_max, 3)[None,na,:,:,:].type_as(dSK)
 
-            # 添加 Off-site 部分 (傅里叶变换)
-            for iedge in range(edge_num[idx]):
-                # shape (num_k, nao_max, nao_max) += (num_k, 1, 1)*(1, nao_max, nao_max)
-                j_idx = j[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
-                i_idx = i[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
-                HK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Hoff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
-                SK[:,j_idx,i_idx,:,:] += coe[iedge,:,None,None] * Soff_split[idx].reshape(-1, self.nao_max, self.nao_max)[None,iedge,:,:]
+            # 计算所有边的索引
+            edge_indices = torch.arange(edge_num[idx], device=j.device)
+            j_indices = j[edge_num_shift[idx] + edge_indices] - node_counts_shift[idx]
+            i_indices = i[edge_num_shift[idx] + edge_indices] - node_counts_shift[idx]
+
+            # 重塑系数和矩阵以便于向量化操作
+            Hoff_reshaped = Hoff_split[idx].reshape(edge_num[idx], self.nao_max, self.nao_max)
+            Soff_reshaped = Soff_split[idx].reshape(edge_num[idx], self.nao_max, self.nao_max)
             
+            for k_idx in range(self.num_k):
+                # 预计算当前 k 点的所有值
+                coe_k = coe[:edge_num[idx], k_idx].unsqueeze(-1).unsqueeze(-1)  # 形状: (edge_num, 1, 1)
+                HK_values = coe_k * Hoff_reshaped  # 形状: (edge_num, nao_max, nao_max)
+                SK_values = coe_k * Soff_reshaped  # 形状: (edge_num, nao_max, nao_max)
+
+                # 使用 index_put 进行累加
+                HK[k_idx] = torch.index_put(HK[k_idx], (j_indices, i_indices), HK_values, accumulate=True)
+                SK[k_idx] = torch.index_put(SK[k_idx], (j_indices, i_indices), SK_values, accumulate=True)
             if export_reciprocal_values:
-                for iedge in range(edge_num[idx]):
-                    j_idx = j[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
-                    i_idx = i[edge_num_shift[idx]+iedge] - node_counts_shift[idx]
-                    dSK[:,j_idx,i_idx,:,:,:] += coe[iedge,:,None,None,None] * dSoff_split[idx].reshape(-1, self.nao_max, self.nao_max, 3)[None,iedge,:,:,:]
+                dSoff_reshaped = dSoff_split[idx].reshape(edge_num[idx], self.nao_max, self.nao_max, 3)
+
+                for k_idx in range(self.num_k):
+                    # 预计算当前 k 点的所有值
+                    coe_k = coe[:edge_num[idx], k_idx].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)  # 形状: (edge_num, 1, 1, 1)
+                    dSK_values = coe_k * dSoff_reshaped  # 形状: (edge_num, nao_max, nao_max, 3)
+
+                    # 使用 index_put 进行累加
+                    dSK[k_idx] = torch.index_put(dSK[k_idx], (j_indices, i_indices), dSK_values, accumulate=True)
 
             # --- 3b: 重塑并掩码矩阵 ---
             HK = torch.swapaxes(HK,-2,-3) #(nk, natoms, nao_max, natoms, nao_max)
