@@ -5,10 +5,6 @@ import numpy as np
 from itertools import permutations
 from collections import OrderedDict
 
-"""
-Helper class that stores Clebsch-Gordan coefficients
-"""
-
 class _TensorWrapper(nn.Module):
     """内部包装器，用于在ModuleDict中正确注册张量并兼容TorchScript。"""
     def __init__(self, tensor: torch.Tensor):
@@ -28,28 +24,28 @@ class ClebschGordan(nn.Module):
     def __init__(self):
         super(ClebschGordan, self).__init__()
         
-        # Use ModuleDict for JIT compatibility
+        # 使用 ModuleDict 以兼容 JIT (即时编译)
         self.cg_storage = nn.ModuleDict()
         
-        # Load CG coefficients
+        # 加载 CG 系数
         tmp = np.load(os.path.join(os.path.dirname(__file__), 'clebsch_gordan_coefficients_L10.npz'), allow_pickle=True)['cg'][()]
         
         l_max = 0
         
-        # Store only canonical form (l1 <= l2 <= l3)
+        # 仅存储规范形式 (l1 <= l2 <= l3)
         for l123, cg_array in tmp.items():
             l_max = max(l_max, max(l123))
-            # Create canonical key without cg_ prefix
+            # 创建不带 "cg_" 前缀的规范键
             key = '{}_{}_{}' .format(l123[0], l123[1], l123[2])
-            # Wrap and store
+            # 包装并存储
             self.cg_storage[key] = _TensorWrapper(torch.tensor(cg_array, dtype=torch.get_default_dtype()))
         
-        # Register l_max as buffer
+        # 将 l_max 注册为缓冲区
         self.register_buffer('_l_max', torch.tensor(l_max))
 
     def forward(self, l1, l2, l3):
         """动态计算并返回所需的CG系数张量。"""
-        # Check all possible permutations to find canonical form
+        # 检查所有可能的排列以找到规范形式
         input_tuple = (l1, l2, l3)
         
         for perm_indices in permutations((0, 1, 2)):
@@ -64,10 +60,10 @@ class ClebschGordan(nn.Module):
                         inverse_perm[perm_indices[i]] = i
                     return base_tensor.permute(inverse_perm)
         
-        # If not found, raise error
+        # 如果未找到，则引发错误
         raise ValueError('No CG coefficient for combination ({}, {}, {})'.format(l1, l2, l3))
 
-    # --- 以下是实现双向兼容性的核心魔法 ---
+    # --- 以下是实现双向兼容性的核心 ---
 
     def state_dict(self, *args, **kwargs):
         """
@@ -82,7 +78,7 @@ class ClebschGordan(nn.Module):
         for key, value in original_dict.items():
             stripped_key = key[len(prefix):]
             if stripped_key.startswith('cg_storage.'):
-                # 'cg_storage.0_1_1.data' -> 'cg_0_1_1'
+                # 例如: 'cg_storage.0_1_1.data' -> 'cg_0_1_1'
                 new_key_part = 'cg_' + stripped_key.replace('cg_storage.', '').replace('.data', '')
                 new_dict[prefix + new_key_part] = value
             else:
@@ -105,13 +101,13 @@ class ClebschGordan(nn.Module):
         ]
         
         for old_key in keys_to_remap:
-            # old_key = '...cg_cal.cg_0_1_1'
-            cg_part = old_key[len(prefix):]  # 'cg_0_1_1'
+            # 旧键示例: '...cg_cal.cg_0_1_1'
+            cg_part = old_key[len(prefix):]  # 提取部分: 'cg_0_1_1'
             
             if cg_part.startswith('cg_'):
-                # '0_1_1'
+                # 字典中的键: '0_1_1'
                 key_in_dict = cg_part.replace('cg_', '')
-                # '...cg_cal.cg_storage.0_1_1.data'
+                # 新键示例: '...cg_cal.cg_storage.0_1_1.data'
                 new_key = prefix + 'cg_storage.' + key_in_dict + '.data'
                 
                 # 更新字典
