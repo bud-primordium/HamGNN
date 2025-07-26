@@ -31,7 +31,7 @@ HamGNN 模型的基类定义
 该动态图构建功能对于处理多样化的化学环境和实现更具适应性的模型至关重要。
 """
 
-# 不同 DFT 软件使用的原子半径 (单位：Angstrom，abacus 除外)
+# 不同 DFT 软件使用的原子半径 (单位：:math:`\AA` (Angstrom)，abacus 除外)
 # 这些半径用于在动态图构建时确定初始的邻居搜索范围
 ATOMIC_RADII = {
     'openmx': {
@@ -50,7 +50,7 @@ ATOMIC_RADII = {
         'Au': 7.0, 'Hg': 8.0, 'Tl': 8.0, 'Pb': 8.0, 'Bi': 8.0
     },
     'siesta':{},
-    'abacus': { # unit: au
+    'abacus': { # unit: a.u. (Bohr)
     'Ag':7,  'Cu':8,  'Mo':7,  'Sc':8,
     'Al':7,  'Fe':8,  'Na':8,  'Se':8,
     'Ar':7,  'F' :7,  'Nb':8,  'S' :7,
@@ -110,17 +110,19 @@ def neighbor_list_and_relative_vec(
     - `edge_index[1]` 是 *目标* (邻居)。
 
     Args:
-        pos (shape [N, 3]): 原子位置坐标；可以是 Tensor 或 numpy 数组。
+        pos (torch.Tensor): 原子位置坐标，形状为 :math:`(N, 3)`。
         r_max (float): 用于寻找邻居的径向截断距离。
-        cell (numpy shape [3, 3]): 周期性边界条件的晶胞矩阵。
-        pbc (bool or 3-tuple of bool): 三个维度上的周期性。
+        cell (torch.Tensor): 周期性边界条件的晶胞矩阵，形状为 :math:`(3, 3)`。
+        pbc (bool or Tuple[bool, bool, bool]): 三个维度上的周期性。
         self_interaction (bool): 是否包括相同周期性镜像的自相互作用边。
         strict_self_interaction (bool): 是否包括任何自相互作用边。
 
     Returns:
-        edge_index (torch.Tensor [2, num_edges]): 边的列表。
-        shifts (torch.Tensor [num_edges, 3]): 相对晶胞平移向量。
-        cell_tensor (torch.Tensor [3, 3]): 晶胞张量。
+        Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+            一个元组，包含：
+            - ``edge_index`` (torch.Tensor): 边的列表，形状为 :math:`(2, N_{edges})`。
+            - ``shifts`` (torch.Tensor): 相对晶胞平移向量，形状为 :math:`(N_{edges}, 3)`。
+            - ``cell_tensor`` (torch.Tensor): 晶胞张量，形状为 :math:`(3, 3)`。
     """
     if isinstance(pbc, bool):
         pbc = (pbc,) * 3

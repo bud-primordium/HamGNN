@@ -1,0 +1,78 @@
+/* HamGNN 自定义CSS样式 - 专业级文档设计 */
+
+/* 改善类型注解显示 */
+.sig-param .n {
+    color: var(--color-foreground-primary);
+    font-weight: normal;
+}
+
+.sig-param .o {
+    color: var(--color-foreground-muted);
+}
+
+/* 类型注解样式 */
+.sig-param .sig-param-type {
+    color: #0066cc;
+    font-style: italic;
+}
+
+/* 默认值样式 */
+.sig-param .default_value {
+    color: #666;
+    font-style: normal;
+}
+
+/* 函数/类签名的参数类型颜色 */
+.sig .sig-param {
+    color: var(--color-foreground-primary);
+}
+
+.sig .sig-param .sig-param-type {
+    color: #0066cc !important;
+}
+
+/* None 值的特殊样式 */
+.sig-param .pre:contains("None") {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+/* 字典和联合类型的样式 */
+.sig-param .pre:contains("Dict"),
+.sig-param .pre:contains("Union") {
+    color: #0066cc;
+}
+
+/* 暗色模式下的类型注解 */
+[data-theme="dark"] .sig-param .sig-param-type {
+    color: #66aaff !important;
+}
+
+[data-theme="dark"] .sig-param .default_value {
+    color: #aaa;
+}
+
+[data-theme="dark"] .sig-param .pre:contains("None") {
+    color: #66aaff;
+}
+
+/* 导航栏折叠/展开视觉提示 */
+.sidebar-tree .toctree-l1 > a::before {
+    content: "▸ ";
+    color: var(--color-foreground-muted);
+    transition: transform 0.2s;
+}
+
+.sidebar-tree .toctree-l1.current > a::before,
+.sidebar-tree .toctree-l1:hover > a::before {
+    content: "▾ ";
+}
+
+/* 让 logo 可点击返回主页 */
+.sidebar-brand {
+    transition: opacity 0.2s;
+}
+
+.sidebar-brand:hover {
+    opacity: 0.8;
+}

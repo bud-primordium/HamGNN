@@ -1,0 +1,57 @@
+# HamGNN 多版本文档配置
+
+## 版本定义
+versions:
+  v2.0:
+    path: HamGNN_v_2_0
+    display_name: "v2.0 (最新)"
+    languages: ["zh_CN", "en"]
+    status: "stable"
+    has_chinese_annotations: true
+    
+  v1.0:
+    path: HamGNN_v_1_0  
+    display_name: "v1.0"
+    languages: ["zh_CN"]
+    status: "maintenance"
+    has_chinese_annotations: false  # 待补充
+
+## 分支版本对应
+branches:
+  chinese_annotated:
+    versions: ["v2.0", "v1.0"]
+    default: "v2.0"
+    
+  torchscript_export:
+    versions: ["v2.0"]
+    default: "v2.0"
+    note: "包含 TorchScript 优化"
+
+## 构建配置
+build:
+  # 每个版本独立构建
+  separate_builds: true
+  
+  # 输出目录结构
+  output_structure: |
+    _build/
+      html/
+        zh_CN/
+          v2.0/
+          v1.0/
+        en/
+          v2.0/
+          (v1.0 待翻译)
+          
+## 语言切换规则
+language_switching:
+  default_language: "zh_CN"
+  fallback_language: "zh_CN"
+  
+  # URL 模式: /{language}/{version}/
+  url_pattern: "/{lang}/{version}/"
+  
+  # 语言显示名称
+  language_names:
+    zh_CN: "中文"
+    en: "English"

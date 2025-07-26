@@ -16,7 +16,7 @@ class _TensorWrapper(nn.Module):
         self.register_buffer('data', tensor)
 
 class ClebschGordan(nn.Module):
-    """一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。
+    r"""一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。
 
     此版本经过重构，实现了三个关键目标：
     1. **TorchScript兼容**：使用ModuleDict和"实时排列"策略，移除了不兼容的getattr调用。
@@ -32,6 +32,12 @@ class ClebschGordan(nn.Module):
     - 只存储规范形式的CG系数（l1 <= l2 <= l3）
     - 在forward时动态计算所需的排列
     - 完全兼容TorchScript，支持设备自动移动
+
+    CG 系数 :math:`\langle l_1 m_1, l_2 m_2 | l_3 m_3 \rangle` 定义了角动量耦合的规则：
+
+    .. math::
+
+       |l_3, m_3 \rangle = \sum_{m_1, m_2} \langle l_1 m_1, l_2 m_2 | l_3 m_3 \rangle |l_1, m_1 \rangle |l_2, m_2 \rangle
 
     .. note::
         该类继承自 `torch.nn.Module`，这使得它可以被无缝集成到任何
@@ -78,12 +84,14 @@ class ClebschGordan(nn.Module):
         动态计算从规范形式到请求形式的排列。
 
         Args:
-            l1 (int): 第一个角动量的量子数。
-            l2 (int): 第二个角动量的量子数。
-            l3 (int): 耦合后的总角动量的量子数。
+            l1 (int): 第一个角动量的量子数 :math:`l_1`。
+            l2 (int): 第二个角动量的量子数 :math:`l_2`。
+            l3 (int): 耦合后的总角动量的量子数 :math:`l_3`。
 
         Returns:
-            torch.Tensor: 对应于 (l1, l2, l3) 组合的 CG 系数张量。
+            torch.Tensor: 
+                对应于 :math:`(l_1, l_2, l_3)` 组合的 CG 系数张量，
+                其形状为 :math:`(2l_1+1, 2l_2+1, 2l_3+1)`。
         """
         # 动态计算并返回所需的CG系数张量
         input_tuple = (l1, l2, l3)
