@@ -39,7 +39,7 @@ autosummary_generate = True
 source_suffix = [".rst", ".md"]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../HamGNN_v_2_0/models/e3_layers.py']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/e3_layers.py']
 language = 'zh_CN'
 
 # 多语言支持配置
@@ -98,6 +98,63 @@ intersphinx_mapping = {
     'torchmetrics': ('https://lightning.ai/docs/torchmetrics/stable/', None),
     'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
 }
+
+# -- Multi-version configuration ----------------------------------------------
+# 版本和语言配置（用于自定义多版本系统）
+import os
+
+# 从环境变量或默认值获取当前版本
+CURRENT_VERSION = os.environ.get('HAMGNN_DOC_VERSION', 'v2.0')
+CURRENT_LANGUAGE = os.environ.get('HAMGNN_DOC_LANGUAGE', 'zh_CN')
+
+# 获取当前分支名（sphinx-multiversion会设置）
+CURRENT_BRANCH = os.environ.get('SPHINX_MULTIVERSION_NAME', 'torchscript_export')
+
+# 添加版本信息到模板上下文
+html_context.update({
+    'current_version': CURRENT_VERSION,
+    'current_branch': CURRENT_BRANCH,
+    'current_language': CURRENT_LANGUAGE,
+})
+
+# sphinx-multiversion 配置
+# 检查是否在sphinx-multiversion环境中运行
+is_multiversion = os.environ.get('SPHINX_MULTIVERSION_NAME') is not None
+
+if is_multiversion:
+    try:
+        import sphinx_multiversion
+        extensions.append('sphinx_multiversion')
+        
+        # 包含multiversion配置
+        if os.path.exists('multiversion.conf.py'):
+            exec(open('multiversion.conf.py').read())
+        
+        # 配置版本选择器模板
+        if '_templates/multiversion' not in templates_path:
+            templates_path.append('_templates/multiversion')
+        
+        # 更新HTML上下文以支持版本切换
+        html_context['versions'] = [
+            ('torchscript_export', '/torchscript_export/'),
+            ('chinese_annotated', '/chinese_annotated/'),
+        ]
+        
+        # Furo主题的版本切换器配置 - 动态生成当前分支选项
+        branch_options = {
+            'torchscript_export': 'TorchScript Export',
+            'chinese_annotated': 'Chinese Annotated'
+        }
+        
+        options_html = ''.join([
+            f'<option value="/{branch}/v2.0/" {"selected" if branch == CURRENT_BRANCH else ""}>{label}</option>'
+            for branch, label in branch_options.items()
+        ])
+        
+        html_theme_options['announcement'] = \
+            f"<b>分支:</b> <select onchange='window.location.href=this.value'>{options_html}</select>"
+    except ImportError:
+        print("Warning: sphinx-multiversion not installed")
 
 # -- Custom event handler to skip specific headers -----------------------------
 
