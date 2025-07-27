@@ -1,0 +1,73 @@
+name: Deploy Multi-branch Documentation with sphinx-multiversion
+
+on:
+  push:
+    branches: 
+      - torchscript_export
+      - chinese_annotated
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史
+        
+    - name: Fetch all branches  
+      run: |
+        git fetch --all
+        git branch -a
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y graphviz
+
+    - name: Cache conda environment
+      uses: actions/cache@v3
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-conda-${{ hashFiles('docs/environment.yml') }}
+
+    - name: Setup Conda environment
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        environment-file: docs/environment.yml
+        activate-environment: hamgnn-docs
+        auto-activate-base: false
+
+    - name: Build documentation with sphinx-multiversion
+      shell: bash -l {0}
+      run: |
+        cd docs
+        
+        # 确保脚本可执行
+        chmod +x build_multiversion.sh
+        
+        # 构建文档
+        ./build_multiversion.sh
+        
+        # 显示构建结果
+        find _build/html -type f -name "*.html" | head -20
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
+        force_orphan: true
+        commit_message: "Deploy documentation from ${{ github.ref_name }} [skip ci]"
