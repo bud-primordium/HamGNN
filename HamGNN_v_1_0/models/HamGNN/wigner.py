@@ -21,7 +21,7 @@ from typing import Union
 from ..layers import GaussianSmearing, cuttoff_envelope, CosineCutoff, BesselBasis
 from .nequip.data import AtomicDataDict, AtomicDataset
 import math
-from ..PhiSNet.modules.clebsch_gordan import ClebschGordan
+# from ..PhiSNet.modules.clebsch_gordan import ClebschGordan  # PhiSNet目录不存在，暂时注释
 import copy
 from typing import Dict, Callable
 
