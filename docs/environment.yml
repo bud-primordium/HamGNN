@@ -50,3 +50,4 @@ dependencies:
     - torch-runstats
     - lie_learn
     - sphinx-intl  # 多语言支持
+    - sphinx-multiversion  # 多版本文档支持
