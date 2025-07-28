@@ -57,12 +57,8 @@ jobs:
         
         # 确保脚本可执行
         chmod +x build_docs.py
-        chmod +x generate_translations.py
         
-        # 生成翻译模板（如果需要）
-        python generate_translations.py
-        
-        # 构建所有文档
+        # 构建所有文档（暂时跳过翻译生成）
         python build_docs.py
         
         # 显示构建结果

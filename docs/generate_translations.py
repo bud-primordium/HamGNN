@@ -7,14 +7,16 @@ import os
 import subprocess
 import sys
 
-def run_command(cmd, cwd=None):
+def run_command(cmd, cwd=None, ignore_errors=False):
     """运行命令并检查返回值"""
     print(f"运行命令: {cmd}")
     result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
-    if result.returncode != 0:
+    if result.returncode != 0 and not ignore_errors:
         print(f"错误: {result.stderr}")
         sys.exit(1)
     print(result.stdout)
+    if result.stderr and ignore_errors:
+        print(f"警告: {result.stderr}")
     return result.stdout
 
 def main():
