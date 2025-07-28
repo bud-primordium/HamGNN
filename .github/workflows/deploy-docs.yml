@@ -59,8 +59,8 @@ jobs:
         chmod +x build_docs.py
         chmod +x generate_translations.py
         
-        # 生成翻译模板（如果需要）
-        python generate_translations.py
+        # 注意：翻译文件应该在本地生成后提交到仓库
+        # python generate_translations.py  # 移除：这是本地开发活动
         
         # 构建所有文档
         python build_docs.py
