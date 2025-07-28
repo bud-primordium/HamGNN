@@ -1,0 +1,49 @@
+# HamGNN 多维文档配置
+# 结构：分支 -> 版本 -> 语言
+
+branches:
+  chinese_annotated:
+    display_name: "中文注释版"
+    versions:
+      v2.0:
+        display_name: "2.0"
+        source_dir: "source_v2"
+        languages:
+          - code: "zh"
+            name: "中文"
+          - code: "en"
+            name: "English"
+      v1.0:
+        display_name: "1.0"
+        source_dir: "source_v1"
+        languages:
+          - code: "zh"
+            name: "中文"
+          - code: "en"
+            name: "English"
+  
+  torchscript_export:
+    display_name: "TorchScript导出版"
+    versions:
+      v2.0:
+        display_name: "2.0"
+        source_dir: "source_v2"
+        languages:
+          - code: "zh"
+            name: "中文"
+          - code: "en"
+            name: "English"
+      v1.0:
+        display_name: "1.0" 
+        source_dir: "source_v1"
+        languages:
+          - code: "zh"
+            name: "中文"
+          - code: "en"
+            name: "English"
+
+# 默认配置
+defaults:
+  branch: "chinese_annotated"
+  version: "v2.0"
+  language: "zh"

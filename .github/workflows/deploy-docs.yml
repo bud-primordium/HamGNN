@@ -1,4 +1,4 @@
-name: Deploy Multi-branch Documentation with sphinx-multiversion
+name: Deploy Multi-dimensional Documentation
 
 on:
   push:
@@ -50,24 +50,29 @@ jobs:
         activate-environment: hamgnn-docs
         auto-activate-base: false
 
-    - name: Build documentation with sphinx-multiversion
+    - name: Build multi-dimensional documentation
       shell: bash -l {0}
       run: |
         cd docs
         
         # 确保脚本可执行
-        chmod +x build_multiversion.sh
+        chmod +x build_docs.py
+        chmod +x generate_translations.py
         
-        # 构建文档
-        ./build_multiversion.sh
+        # 生成翻译模板（如果需要）
+        python generate_translations.py
+        
+        # 构建所有文档
+        python build_docs.py
         
         # 显示构建结果
-        find _build/html -type f -name "*.html" | head -20
+        echo "=== 构建完成，文档结构 ==="
+        find _build/all_docs -type d -name "zh" -o -name "en" | sort
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_build/html
+        publish_dir: ./docs/_build/all_docs
         force_orphan: true
-        commit_message: "Deploy documentation from ${{ github.ref_name }} [skip ci]"
+        commit_message: "Deploy 3D documentation from ${{ github.ref_name }} [skip ci]"
