@@ -110,7 +110,13 @@ def main():
     
     # 创建根目录的重定向页面
     defaults = config.get("defaults", {})
-    default_url = f"{defaults['branch']}/{defaults['version']}/{defaults['language']}/index.html"
+    default_branch = defaults['branch']
+    default_version = defaults['version'] 
+    default_language = defaults['language']
+    
+    # 获取默认版本的source_dir
+    default_source_dir = config['branches'][default_branch]['versions'][default_version]['source_dir']
+    default_url = f"{default_branch}/{default_version}/{default_language}/{default_source_dir}/index.html"
     
     index_html = f"""<!DOCTYPE html>
 <html>

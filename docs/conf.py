@@ -184,17 +184,29 @@ if build_all_docs is not None:
     
     # 构建分支列表
     for branch_key, branch_info in versions_config['branches'].items():
-        branch_url = f"{pages_root}/{branch_key}/{current_version}/{current_language}"
-        html_context['branches'].append([
-            branch_key,
-            branch_info['display_name'],
-            branch_url
-        ])
+        # 获取目标分支中对应版本的source_dir（如果不存在则跳过）
+        if current_version in branch_info['versions']:
+            target_source_dir = branch_info['versions'][current_version]['source_dir']
+            if branch_key == current_branch:
+                branch_url = "index.html"  # 当前分支，不需要跳转
+            else:
+                # 分支切换：上升4级到根目录，然后进入目标分支
+                branch_url = f"../../../../{branch_key}/{current_version}/{current_language}/{target_source_dir}/index.html"
+            html_context['branches'].append([
+                branch_key,
+                branch_info['display_name'],
+                branch_url
+            ])
     
     # 构建版本列表
     if current_branch in versions_config['branches']:
         for version_key, version_info in versions_config['branches'][current_branch]['versions'].items():
-            version_url = f"{pages_root}/{current_branch}/{version_key}/{current_language}"
+            target_source_dir = version_info['source_dir']
+            if version_key == current_version:
+                version_url = "index.html"  # 当前版本，不需要跳转
+            else:
+                # 版本切换：上升3级到分支层，然后进入目标版本
+                version_url = f"../../../{version_key}/{current_language}/{target_source_dir}/index.html"
             html_context['versions'].append([
                 version_key,
                 version_info['display_name'],
@@ -203,8 +215,13 @@ if build_all_docs is not None:
     
     # 构建语言列表
     if current_branch in versions_config['branches'] and current_version in versions_config['branches'][current_branch]['versions']:
+        current_version_source_dir = versions_config['branches'][current_branch]['versions'][current_version]['source_dir']
         for lang_info in versions_config['branches'][current_branch]['versions'][current_version]['languages']:
-            lang_url = f"{pages_root}/{current_branch}/{current_version}/{lang_info['code']}"
+            if lang_info['code'] == current_language:
+                lang_url = "index.html"  # 当前语言，不需要跳转
+            else:
+                # 语言切换：上升2级到版本层，然后进入目标语言
+                lang_url = f"../../{lang_info['code']}/{current_version_source_dir}/index.html"
             html_context['languages'].append([
                 lang_info['code'],
                 lang_info['name'],
