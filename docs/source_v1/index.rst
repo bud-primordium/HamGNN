@@ -6,9 +6,10 @@ HamGNN v1.0 中文注释版文档
 本文档基于 `QuantumLab-ZY/HamGNN <https://github.com/QuantumLab-ZY/HamGNN>`_ 项目生成，
 由社区贡献者添加了中文注释，旨在帮助中文开发者更好地理解和使用 HamGNN。
 
-.. note::
+.. tip::
    
-   版本切换：`查看 v2.0 文档 <../v2.0/index.html>`_
+   使用左下角的文档版本菜单可以在不同分支、版本和语言之间切换
+
 
 .. toctree::
    :maxdepth: 3
