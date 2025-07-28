@@ -21,3 +21,9 @@ HamGNN v2.0 中文注释版文档
    model_components
    data_processing
    utilities
+
+.. toctree::
+   :maxdepth: 2
+   :caption: TorchScript 工具包
+   
+   torchscript_tools

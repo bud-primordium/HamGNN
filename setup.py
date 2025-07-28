@@ -28,7 +28,8 @@ setup(
             "HamGNN2.0 = HamGNN_v_2_0.main:HamGNN",
             "band_cal = utils_openmx.band_cal:main",
             "graph_data_gen = utils_openmx.graph_data_gen:main",
-            "poscar2openmx = utils_openmx.poscar2openmx:main"
+            "poscar2openmx = utils_openmx.poscar2openmx:main",
+            "hamgnn-compile = torchscript_tools.tools.compile:main"
         ]
     },
     install_requires=[
