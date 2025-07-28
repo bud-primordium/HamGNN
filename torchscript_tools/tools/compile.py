@@ -67,10 +67,11 @@ def load_checkpoint(checkpoint_path: str, config: Dict[str, Any], device: str) -
     Returns:
         (representation, output_module): 模型的两个主要组件
         
-    TODO: HamGNN 当前的 checkpoint 不包含配置信息，因为 Model.py 中的
-          self.save_hyperparameters() 被注释掉了。未来应该启用该功能，
-          这样就可以像 nequip 一样直接从 checkpoint 编译，而不需要额外的配置文件。
-          参见: HamGNN_v_2_0/models/Model.py:100
+    .. note::
+        HamGNN 当前的 checkpoint 不包含配置信息，因为 Model.py 中的
+        ``self.save_hyperparameters()`` 被注释掉了。未来应该启用该功能，
+        这样就可以像 nequip 一样直接从 checkpoint 编译，而不需要额外的配置文件。
+        参见: `HamGNN_v_2_0/models/Model.py:100 <https://github.com/bud-primordium/HamGNN/blob/313af4fe09d36b55ec17d9fa7eea143c565465b1/HamGNN_v_2_0/models/Model.py#L100>`_
     """
     # 延迟导入HamGNN特定的重量级模块
     from HamGNN_v_2_0.main import build_model

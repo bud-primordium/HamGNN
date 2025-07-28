@@ -68,41 +68,41 @@ HamGNN 采用以下 TorchScript 编译策略：
 主要历史改造
 --------------
 
-从 commit 164c2d2 开始，我们进行了系统性的 TorchScript 兼容性改造：
+从 commit `164c2d2 <https://github.com/bud-primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_ 开始，我们进行了系统性的 TorchScript 兼容性改造（`完整提交历史 <https://github.com/bud-primordium/HamGNN/commits/torchscript_export/>`_）：
 
-1. **字典访问模式改造** (164c2d2)
+1. **字典访问模式改造** (`164c2d2 <https://github.com/bud-primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_)
    
    * 将属性访问 (``data.attribute``) 替换为字典访问 (``data['attribute']``)
    * 解决 PyTorch Geometric 数据对象与 TorchScript 的兼容性问题
 
-2. **hasattr() 替换为 try-except** (9b69a9d)
+2. **hasattr() 替换为 try-except** (`9b69a9d <https://github.com/bud-primordium/HamGNN/commit/9b69a9d>`_)
    
    * TorchScript 不支持 ``hasattr()`` 函数
    * 系统性地替换为 try-except 模式
 
-3. **ClebschGordan 惰性排列策略** (dd2a830)
+3. **ClebschGordan 惰性排列策略** (`dd2a830 <https://github.com/bud-primordium/HamGNN/commit/dd2a830>`_)
    
    * 实现惰性加载机制以支持 TorchScript
-   * 添加向后兼容性处理 (829cfa5, 95dded3)
+   * 添加向后兼容性处理 (`829cfa5 <https://github.com/bud-primordium/HamGNN/commit/829cfa5>`_, `95dded3 <https://github.com/bud-primordium/HamGNN/commit/95dded3>`_)
 
-4. **BaseModel 架构重设计与 DynamicGraphTransform 拆分** (bb3ffb2)
+4. **BaseModel 架构重设计与 DynamicGraphTransform 拆分** (`bb3ffb2 <https://github.com/bud-primordium/HamGNN/commit/bb3ffb2>`_)
    
    * 将动态图构建逻辑从 BaseModel 拆分为独立的 DynamicGraphTransform 类
    * 实现数据预处理与模型计算的分离
    * 完全移除 ASE 依赖，支持 TorchScript 编译
    * 修复 DataLoader 兼容性问题
 
-5. **HamGNNPlusPlusOut 模块拆分** (58e175a)
+5. **HamGNNPlusPlusOut 模块拆分** (`58e175a <https://github.com/bud-primordium/HamGNN/commit/58e175a>`_)
    
    * 将复杂模块拆分为 wrapper 和 core 部分
-   * 优化网络前向传播逻辑 (616bbd4)
+   * 优化网络前向传播逻辑 (`616bbd4 <https://github.com/bud-primordium/HamGNN/commit/616bbd4>`_)
 
 6. **其他重要修复**
    
-   * 添加 @compile_mode 装饰器 (96e169c)
-   * 解决条件属性初始化问题 (617bc13)
-   * 确保 tensor 操作的整数参数 (2c18358)
-   * 解决变量作用域兼容性问题 (27b0aec, 6eba7c8)
+   * 添加 @compile_mode 装饰器 (`96e169c <https://github.com/bud-primordium/HamGNN/commit/96e169c>`_)
+   * 解决条件属性初始化问题 (`617bc13 <https://github.com/bud-primordium/HamGNN/commit/617bc13>`_)
+   * 确保 tensor 操作的整数参数 (`2c18358 <https://github.com/bud-primordium/HamGNN/commit/2c18358>`_)
+   * 解决变量作用域兼容性问题 (`27b0aec <https://github.com/bud-primordium/HamGNN/commit/27b0aec>`_, `6eba7c8 <https://github.com/bud-primordium/HamGNN/commit/6eba7c8>`_)
 
 技术细节
 ========
@@ -369,12 +369,9 @@ HamGNN 的计算瓶颈主要在等变张量积操作：
 参考资源
 ========
 
-学术文献
---------
-
-* TorchScript 和 PyTorch 编译器相关文献
-* Triton 编程模型和优化技术文档
-* 等变神经网络的高性能计算研究
+* **高性能深度等变原子间势训练与推理**
+  
+  Tan, C. W., Descoteaux, M. L., Kotak, M., Nascimento, G. D. M., Kavanagh, S. R., Zichi, L., Wang, M., Saluja, A., Hu, Y. R., Smidt, T., Johansson, A., Witt, W. C., Kozinsky, B., & Musaelian, A. (2025). High-performance training and inference for deep equivariant interatomic potentials. arXiv preprint arXiv:2504.16068. `链接 <https://arxiv.org/abs/2504.16068>`_
 
 技术文档
 --------
