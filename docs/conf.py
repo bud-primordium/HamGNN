@@ -4,7 +4,7 @@ import os
 import sys
 
 # -- Path setup --------------------------------------------------------------
-# 将项目根目录添加到 sys.path，以便 Sphinx 能找到 HamGNN_v_2_0 模块
+# 将项目根目录添加到 sys.path，以便 Sphinx 能找到 HamGNN 模块
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
@@ -40,6 +40,26 @@ source_suffix = [".rst", ".md"]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/e3_layers.py']
+
+# 多版本构建时的额外排除规则
+build_all_docs = os.environ.get("build_all_docs")
+if build_all_docs:
+    current_version = os.environ.get("current_version", "v2.0")
+    current_source_dir = os.environ.get("current_source_dir", "source_v2")
+    
+    # 设置主文档入口为版本特定的index
+    master_doc = f"{current_source_dir}/index"
+    
+    # 构建 v2.0 时排除 v1.0 的内容和主index
+    if current_version == "v2.0":
+        exclude_patterns.extend(['source_v1/**', 'source_v1', 'index.rst'])
+    # 构建 v1.0 时排除 v2.0 的内容和主index  
+    elif current_version == "v1.0":
+        exclude_patterns.extend(['source_v2/**', 'source_v2', 'index.rst'])
+else:
+    # 单版本构建时使用主index
+    master_doc = 'index'
+
 language = 'zh_CN'
 
 # 多语言支持配置
@@ -49,8 +69,8 @@ gettext_uuid = True         # 使用 UUID 追踪翻译
 gettext_location = False    # 不在 .pot 文件中包含行号
 
 # -- Options for HTML output -------------------------------------------------
-# 使用 Furo 主题，现代化设计和更好的插件支持
-html_theme = 'furo'
+# 使用 RTD 主题，原生支持版本切换器
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 html_title = "HamGNN 中文文档"
@@ -71,15 +91,26 @@ html_context = {
     "conf_py_path": "/docs/",
 }
 
+# RTD 主题配置 - 充分利用其特性
 html_theme_options = {
-    "sidebar_hide_name": True,
-    "top_of_page_buttons": ["view"],
-    "navigation_with_keys": True,  # 允许键盘导航
-    "announcement": None,
-    # GitHub 集成
-    "source_repository": "https://github.com/bud-primordium/HamGNN/",
-    "source_branch": "torchscript_export",
-    "source_directory": "docs/",
+    # 导航栏配置
+    'navigation_depth': 4,  # 显示更深层级的导航
+    'collapse_navigation': False,  # 默认展开导航
+    'sticky_navigation': True,  # 滚动时导航栏固定
+    'includehidden': True,
+    'titles_only': False,  # 显示子标题
+    
+    # 显示配置
+    'display_version': True,  # 显示版本号
+    'prev_next_buttons_location': 'both',  # 上下页按钮显示在顶部和底部
+    
+    # 样式配置
+    'style_nav_header_background': '#2980B9',  # 导航栏背景色
+    'style_external_links': True,  # 外部链接添加图标
+    
+    # Logo 配置
+    'logo_only': False,
+    'display_version': True,
 }
 
 # 代码复制按钮配置
@@ -107,7 +138,7 @@ import os
 CURRENT_VERSION = os.environ.get('HAMGNN_DOC_VERSION', 'v2.0')
 CURRENT_LANGUAGE = os.environ.get('HAMGNN_DOC_LANGUAGE', 'zh_CN')
 
-# 获取当前分支名（sphinx-multiversion会设置）
+# 获取当前分支名
 CURRENT_BRANCH = os.environ.get('SPHINX_MULTIVERSION_NAME', 'torchscript_export')
 
 # 添加版本信息到模板上下文
@@ -117,44 +148,68 @@ html_context.update({
     'current_language': CURRENT_LANGUAGE,
 })
 
-# sphinx-multiversion 配置
-# 检查是否在sphinx-multiversion环境中运行
-is_multiversion = os.environ.get('SPHINX_MULTIVERSION_NAME') is not None
+# 三维文档构建配置
+# 检查是否在构建所有文档
+build_all_docs = os.environ.get("build_all_docs")
+pages_root = os.environ.get("pages_root", "")
 
-if is_multiversion:
-    try:
-        import sphinx_multiversion
-        extensions.append('sphinx_multiversion')
+if build_all_docs is not None:
+    import yaml
+    
+    # 获取当前构建的三个维度
+    current_branch = os.environ.get("current_branch", "torchscript_export")
+    current_version = os.environ.get("current_version", "v2.0") 
+    current_language = os.environ.get("current_language", "zh")
+    current_source_dir = os.environ.get("current_source_dir", "source_v2")
+    
+    
+    # 更新版本和标题
+    version = current_version
+    release = current_version
+    html_title = f"HamGNN {current_version} 中文文档"
         
-        # 包含multiversion配置
-        if os.path.exists('multiversion.conf.py'):
-            exec(open('multiversion.conf.py').read())
-        
-        # 配置版本选择器模板
-        if '_templates/multiversion' not in templates_path:
-            templates_path.append('_templates/multiversion')
-        
-        # 更新HTML上下文以支持版本切换
-        html_context['versions'] = [
-            ('torchscript_export', '/torchscript_export/'),
-            ('chinese_annotated', '/chinese_annotated/'),
-        ]
-        
-        # Furo主题的版本切换器配置 - 动态生成当前分支选项
-        branch_options = {
-            'torchscript_export': 'TorchScript Export',
-            'chinese_annotated': 'Chinese Annotated'
-        }
-        
-        options_html = ''.join([
-            f'<option value="/{branch}/v2.0/" {"selected" if branch == CURRENT_BRANCH else ""}>{label}</option>'
-            for branch, label in branch_options.items()
+    # 加载版本配置
+    with open("versions.yaml", "r") as yaml_file:
+        versions_config = yaml.safe_load(yaml_file)
+    
+    # 构建 html_context
+    html_context.update({
+        'current_branch': current_branch,
+        'current_version': current_version,
+        'current_language': current_language,
+        'branches': [],
+        'versions': [],
+        'languages': [],
+    })
+    
+    # 构建分支列表
+    for branch_key, branch_info in versions_config['branches'].items():
+        branch_url = f"{pages_root}/{branch_key}/{current_version}/{current_language}"
+        html_context['branches'].append([
+            branch_key,
+            branch_info['display_name'],
+            branch_url
         ])
-        
-        html_theme_options['announcement'] = \
-            f"<b>分支:</b> <select onchange='window.location.href=this.value'>{options_html}</select>"
-    except ImportError:
-        print("Warning: sphinx-multiversion not installed")
+    
+    # 构建版本列表
+    if current_branch in versions_config['branches']:
+        for version_key, version_info in versions_config['branches'][current_branch]['versions'].items():
+            version_url = f"{pages_root}/{current_branch}/{version_key}/{current_language}"
+            html_context['versions'].append([
+                version_key,
+                version_info['display_name'],
+                version_url
+            ])
+    
+    # 构建语言列表
+    if current_branch in versions_config['branches'] and current_version in versions_config['branches'][current_branch]['versions']:
+        for lang_info in versions_config['branches'][current_branch]['versions'][current_version]['languages']:
+            lang_url = f"{pages_root}/{current_branch}/{current_version}/{lang_info['code']}"
+            html_context['languages'].append([
+                lang_info['code'],
+                lang_info['name'],
+                lang_url
+            ])
 
 # -- Custom event handler to skip specific headers -----------------------------
 
@@ -162,7 +217,7 @@ def remove_custom_header(app, what, name, obj, options, lines):
     """
     在 Sphinx 处理文档字符串时被调用，用于移除特定的文件头部。
     """
-    # 定义一个元组，包含所有需要被识别和移除的头部“指纹”
+    # 定义一个元组，包含所有需要被识别和移除的头部"指纹"
     header_signatures = (
         "Descripttion:",
         "/*",
@@ -172,7 +227,7 @@ def remove_custom_header(app, what, name, obj, options, lines):
     if not lines:
         return
 
-    # 检查前几行内容是否包含任何一个“指纹”
+    # 检查前几行内容是否包含任何一个"指纹"
     # 我们将前5行拼接起来检查，以应对各种格式
     docstring_head = "".join(lines[:5])
     for signature in header_signatures:
