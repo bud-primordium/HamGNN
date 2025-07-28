@@ -8,7 +8,7 @@ HamGNN v2.0 中文注释版文档
 
 .. tip::
    
-   使用左下角的文档版本菜单可以在不同分支、版本和语言之间切换
+   使用左下角的文档版本菜单可以在不同分支、版本和语言之间切换 | Use the documentation version menu in the bottom-left corner to switch between different branches, versions, and languages
 
 
 .. toctree::
