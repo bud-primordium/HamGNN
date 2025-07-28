@@ -172,11 +172,20 @@ if build_all_docs is not None:
     with open("versions.yaml", "r") as yaml_file:
         versions_config = yaml.safe_load(yaml_file)
     
+    # 获取显示名称
+    current_branch_display = versions_config['branches'][current_branch]['display_name']
+    current_language_display = next(
+        lang['name'] for lang in versions_config['branches'][current_branch]['versions'][current_version]['languages'] 
+        if lang['code'] == current_language
+    )
+    
     # 构建 html_context
     html_context.update({
         'current_branch': current_branch,
         'current_version': current_version,
         'current_language': current_language,
+        'current_branch_display': current_branch_display,
+        'current_language_display': current_language_display,
         'branches': [],
         'versions': [],
         'languages': [],

@@ -58,7 +58,10 @@ jobs:
         # 确保脚本可执行
         chmod +x build_docs.py
         
-        # 构建所有文档（暂时跳过翻译生成）
+        # 注意：翻译文件应该在本地生成后提交到仓库
+        # python generate_translations.py  # 移除：这是本地开发活动
+        
+        # 构建所有文档
         python build_docs.py
         
         # 显示构建结果
