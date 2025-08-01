@@ -9,6 +9,5 @@ HamGNN.egg-info/
 docs/_build/
 docs/_test_en/
 docs/_build_temp_*/
-docs/locale/
-GEMINI.md
+docs/TRANSLATION_README.md
 */.DS_Store
