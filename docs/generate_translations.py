@@ -97,11 +97,31 @@ msgstr "English translation"
 
 ```
 请帮我翻译这个 gettext .po 文件，从中文翻译到英文。
-要求：
-1. 保持专业术语准确
-2. 保留所有格式标记
-3. 只翻译 msgstr 部分
-4. 代码和数学公式保持原样
+
+  要求：
+  1. 保持专业术语准确（如 Hamiltonian, irreps, tensor product, equivariant 等）
+  2. 保留所有格式标记（如 :math:`...`, :py:class:`...`, **粗体**, `代码` 等）
+  3. 只翻译 msgstr "" 部分，msgid 部分保持不变
+  4. 数学公式、代码片段、文件路径保持原样
+  5. 参数类型格式保持一致（如 "int", "float", "torch.Tensor" 等）
+
+  特殊注意事项：
+  - 空的 msgstr "" 需要填入对应的英文翻译
+  - 保持 reStructuredText (rst) 格式的完整性
+  - 注意跨行的长字符串要保持正确的引号格式
+  - 专业术语翻译参考：
+    - 不可约表示 → irreducible representations (irreps)
+    - 张量积 → tensor product
+    - 球谐函数 → spherical harmonics
+    - 等变 → equivariant
+    - 哈密顿量 → Hamiltonian
+    - 基组 → basis set
+    - 角动量 → angular momentum
+
+  示例：
+  #: 522371d761274a24bed68d1527daad4b
+  msgid "将哈密顿量或重叠矩阵从原子轨道基组展开为球谐函数基组。"
+  msgstr "Expand Hamiltonian or overlap matrices from atomic orbital basis sets to spherical harmonic basis sets."
 ```
 """
     
