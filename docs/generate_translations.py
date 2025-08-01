@@ -38,7 +38,8 @@ def main():
     # 先清理旧的 locale 目录
     if os.path.exists("locale/en"):
         run_command("rm -rf locale/en")
-    run_command("sphinx-intl update -p _build/gettext -l en")
+    # 使用 -j 1 禁用并发，避免文件冲突
+    run_command("sphinx-intl update -p _build/gettext -l en -j 1")
     
     # 4. 统计需要翻译的条目
     print("\n4. 统计翻译情况...")
@@ -49,13 +50,21 @@ def main():
                 po_files.append(os.path.join(root, file))
     
     total_entries = 0
-    for po_file in po_files:
+    file_stats = []
+    for po_file in sorted(po_files):
         with open(po_file, 'r', encoding='utf-8') as f:
             content = f.read()
-            # 简单统计 msgid 的数量
-            entries = content.count('msgid "')
+            # 统计实际的 msgid（排除空的 msgid ""）
+            entries = len([1 for line in content.split('\n') 
+                          if line.startswith('msgid "') and line != 'msgid ""'])
             total_entries += entries
-            print(f"  {po_file}: {entries} 条")
+            rel_path = os.path.relpath(po_file, "locale/en/LC_MESSAGES")
+            file_stats.append((rel_path, entries))
+    
+    # 按条目数排序输出
+    file_stats.sort(key=lambda x: x[1], reverse=True)
+    for file_path, count in file_stats:
+        print(f"  {file_path}: {count} 条")
     
     print(f"\n总计需要翻译的条目: {total_entries}")
     

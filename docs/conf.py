@@ -39,7 +39,7 @@ autosummary_generate = True
 source_suffix = [".rst", ".md"]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/e3_layers.py']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/e3_layers.py', 'TRANSLATION_README.md']
 
 # 多版本构建时的额外排除规则
 build_all_docs = os.environ.get("build_all_docs")
