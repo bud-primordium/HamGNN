@@ -1,28 +1,58 @@
 #!/usr/bin/env python3
 """
 生成和更新 HamGNN 文档的翻译文件
+
+支持两种模式：
+1. --clean: 清理并重新生成所有翻译文件（会丢失已有翻译）
+2. 默认: 增量更新，保留已有翻译
 """
 
 import os
 import subprocess
 import sys
+import argparse
+import shutil
+from datetime import datetime
 
-def run_command(cmd, cwd=None):
+def run_command(cmd, cwd=None, ignore_errors=False):
     """运行命令并检查返回值"""
     print(f"运行命令: {cmd}")
     result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
-    if result.returncode != 0:
+    if result.returncode != 0 and not ignore_errors:
         print(f"错误: {result.stderr}")
         sys.exit(1)
     print(result.stdout)
+    if result.stderr and ignore_errors:
+        print(f"警告: {result.stderr}")
     return result.stdout
+
+def backup_translations():
+    """备份现有的翻译文件"""
+    if os.path.exists("locale/en"):
+        backup_name = f"locale_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        print(f"\n备份现有翻译到 {backup_name}...")
+        shutil.copytree("locale/en", backup_name)
+        print(f"备份完成！")
+        return backup_name
+    return None
 
 def main():
     """主函数"""
+    parser = argparse.ArgumentParser(description='生成和更新 HamGNN 文档翻译文件')
+    parser.add_argument('--clean', action='store_true', 
+                        help='清理并重新生成所有翻译文件（警告：会丢失已有翻译）')
+    parser.add_argument('--backup', action='store_true', 
+                        help='在更新前备份现有翻译')
+    args = parser.parse_args()
+    
     docs_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(docs_dir)
     
     print("=== 生成 HamGNN 文档翻译文件 ===")
+    
+    # 备份处理
+    if args.backup and os.path.exists("locale/en"):
+        backup_translations()
     
     # 1. 清理旧的 gettext 文件
     print("\n1. 清理旧的 gettext 文件...")
@@ -34,39 +64,49 @@ def main():
     run_command("make gettext")
     
     # 3. 创建/更新 .po 文件
-    print("\n3. 创建/更新英文 .po 文件...")
-    # 先清理旧的 locale 目录
-    if os.path.exists("locale/en"):
-        run_command("rm -rf locale/en")
-    # 使用 -j 1 禁用并发，避免文件冲突
-    run_command("sphinx-intl update -p _build/gettext -l en -j 1")
+    if args.clean:
+        print("\n3. 清理模式：删除并重新创建翻译文件...")
+        print("警告：这将删除所有已有的翻译！")
+        if os.path.exists("locale/en"):
+            run_command("rm -rf locale/en")
+        run_command("sphinx-intl update -p _build/gettext -l en -j 1")
+    else:
+        print("\n3. 增量更新模式：保留已有翻译...")
+        # sphinx-intl update 会自动合并已有翻译
+        run_command("sphinx-intl update -p _build/gettext -l en -j 1")
     
-    # 4. 统计需要翻译的条目
+    # 4. 使用 sphinx-intl stat 统计翻译情况
     print("\n4. 统计翻译情况...")
-    po_files = []
-    for root, dirs, files in os.walk("locale/en/LC_MESSAGES"):
-        for file in files:
-            if file.endswith(".po"):
-                po_files.append(os.path.join(root, file))
+    print("\n使用 sphinx-intl stat 获取详细统计：")
+    print("=" * 70)
     
-    total_entries = 0
-    file_stats = []
-    for po_file in sorted(po_files):
-        with open(po_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            # 统计实际的 msgid（排除空的 msgid ""）
-            entries = len([1 for line in content.split('\n') 
-                          if line.startswith('msgid "') and line != 'msgid ""'])
-            total_entries += entries
-            rel_path = os.path.relpath(po_file, "locale/en/LC_MESSAGES")
-            file_stats.append((rel_path, entries))
+    # 运行 sphinx-intl stat 命令
+    stat_output = run_command("sphinx-intl stat -d locale -l en")
     
-    # 按条目数排序输出
-    file_stats.sort(key=lambda x: x[1], reverse=True)
-    for file_path, count in file_stats:
-        print(f"  {file_path}: {count} 条")
+    # 解析 sphinx-intl stat 输出，计算总计
+    import re
+    total_translated = 0
+    total_fuzzy = 0
+    total_untranslated = 0
     
-    print(f"\n总计需要翻译的条目: {total_entries}")
+    # 匹配每行的统计信息
+    stat_pattern = re.compile(r': (\d+) translated, (\d+) fuzzy, (\d+) untranslated\.')
+    for line in stat_output.split('\n'):
+        match = stat_pattern.search(line)
+        if match:
+            total_translated += int(match.group(1))
+            total_fuzzy += int(match.group(2))
+            total_untranslated += int(match.group(3))
+    
+    total_entries = total_translated + total_fuzzy + total_untranslated
+    
+    print("\n" + "=" * 70)
+    print("总计统计：")
+    print(f"  总条目数: {total_entries}")
+    print(f"  已翻译: {total_translated} ({total_translated/total_entries*100:.1f}%)")
+    print(f"  模糊匹配: {total_fuzzy} ({total_fuzzy/total_entries*100:.1f}%)")
+    print(f"  未翻译: {total_untranslated} ({total_untranslated/total_entries*100:.1f}%)")
+    print("=" * 70)
     
     # 5. 创建翻译说明文件
     readme_content = """# HamGNN 文档翻译指南
@@ -135,6 +175,9 @@ msgstr "English translation"
     print(f"\n下一步：")
     print(f"   1. 编辑 locale/en/LC_MESSAGES/*.po 文件进行翻译")
     print(f"   2. 使用 'python build_docs.py' 构建多语言文档")
+    print(f"\n提示：")
+    print(f"   - 使用 --backup 参数在更新前备份翻译")
+    print(f"   - 使用 --clean 参数重新生成所有翻译文件（警告：会丢失已有翻译）")
 
 if __name__ == "__main__":
     main()
