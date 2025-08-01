@@ -1,0 +1,853 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 850d869f6499453180d69a8f4210fb6f
+msgid "神经网络模块 (net.py)"
+msgstr "Neural Network Module (net.py)"
+
+#: ffc10776fb2444239dd260933e8a39ec
+msgid "这个模块定义了 HamGNN 的核心网络架构。"
+msgstr "This module defines the core network architecture of HamGNN."
+
+#: 3f8fe49b4cba43adaf7cd4f0efd43278
+msgid ""
+"主要包含三个部分： 1.  `HamGNN_pre` / `HamGNN_pre2` / `HamGNN_pre_charge`: "
+"这一系列是特征提取网络（或称为表示网络），"
+msgstr ""
+"It mainly consists of three parts: 1. `HamGNN_pre` / `HamGNN_pre2` / "
+"`HamGNN_pre_charge`: This series of networks are feature extraction networks "
+"(or representation networks),"
+
+#: e24d907f2a7541a691d498b699db8c08
+msgid ""
+"负责从输入的原子结构（节点、边）中学习具有 O(3) 等变性的特征表示。它们基于 `nequip` 框架， "
+"通过多层消息传递（卷积）来构建节点和边的特征。"
+msgstr ""
+"responsible for learning O(3) equivariant feature representations from the "
+"input atomic structure (nodes, edges). They are based on the `nequip` "
+"framework and build node and edge features through multi-layer message "
+"passing (convolution)."
+
+#: 480597a81c5547b8b457ba0f87aa8d0d
+msgid ""
+"`HamGNN_out`: 这是输出网络，它接收来自表示网络的等变特征，并利用这些特征构建 等变的哈密顿量 (Hamiltonian) 和重叠矩阵"
+" (Overlap Matrix)。"
+msgstr ""
+"`HamGNN_out`: This is the output network, which receives equivariant "
+"features from the representation network and uses them to construct an "
+"equivariant Hamiltonian and Overlap Matrix."
+
+#: 6336ef2882a7441da16ae9e68e7ae082
+msgid ""
+"辅助模块和类: 如 `residual_block`, `Edge_builder`, `Triplet_builder` 等， "
+"这些是构成上述核心网络的积木块。"
+msgstr ""
+"Auxiliary modules and classes: such as `residual_block`, `Edge_builder`, "
+"`Triplet_builder`, etc., which are the building blocks of the core networks "
+"mentioned above."
+
+#: 1eeff73329524b2bb868e4872350c7e5 2a126f8d690b41008a1510e72d0c863e
+#: 6314a532168c42709891972028b0792f 632d42935b2e4800a9963133aa064c8a
+#: cda2d78648254735bbbd715d06746853 e675253ecebc49c5bb4f3d8c5f410057
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Base class: :py:class:`~torch.nn.modules.module.Module`"
+
+#: df7a4512da9144d2b5ad04ff214e3a95
+msgid "一个带有残差连接的等变模块。"
+msgstr "An equivariant module with a residual connection."
+
+#: 8baf120b9f8444af9083a4a2f5dd6117
+msgid "它包含两个线性层和一个非线性激活层。 可以作为网络中的一个基本构建块。"
+msgstr ""
+"It contains two linear layers and a non-linear activation layer. It can be "
+"used as a basic building block in the network."
+
+#: 8d9cfa4d18c542688812b71c76a50319
+msgid "输入的不可约表示。"
+msgstr "Input irreducible representations."
+
+#: 03231e70c3b344d59fe2dc5ad312502e 03337c5a209640eabd2a7108a079f60f
+#: 042b6caf0cfd4e75bd284be02c335b5c 080728a9e26e49d69ad5a86695cf3e0c
+#: 0b69984b51a94d259cded03cbe609c2a 135a2071f0564f88afe3c91d38c4e38a
+#: 166e38cd738548acbe79d13612942fbd 192dca2ca212499db7e64c82719a46f6
+#: 1a2d5941047a45c5be224d893ff20877 22ca97176bde40d88b4eea952bfbde2a
+#: 34da662da1d8458a8b76e1e212d8f7a6 35035b48dfd04f5ba1a07b622428d7e6
+#: 369544731745413aaf7255e4830334f4 48928998cc9642f091cdb284926f9a01
+#: 489bcd903175462d9905e45ec39db2b9 50a1fcc1b3074991b1e7eacc06bd084f
+#: 53a1177fc741431bb646f4b0359c1af0 56cd5167447c4be5b6a6e6bdc2225aa6
+#: 5d448fa64fb84dc0b5a2da0d09ddaa89 6aceaba71d12427ca62fce2792dd7af6
+#: 6d01d403ef7f446abf73f2459c408cb8 708fea29124d4f3389768d8eb1975d16
+#: 869dd3de36004044888d8db839afa615 96bf44f9af4c4dd5b4988c6a8b5c7fe0
+#: 9941ea31d91c487987ec4c864cc911d3 a2f0225691e446c1aa616b99f82c3c71
+#: a58f306538ec4f9facf14a7d0a21466d ba35dab2b18b4f43b4e896ce81549813
+#: bc8b231e6da7493d84253a6f23152bfa c27e393779c3472f8ea17452a9e54ad6
+#: c47f6a02b77d47c1841e7569418dd995 c7853adf81024866b9a0114ab7e92252
+#: c78a2b3acbe1410ca20c9e7a2d9cd27b d94c7bcd4a304352b8d422e27bf28507
+#: d9da9c2c964a44e0a04b74d0dbefad9f da2f3edbea20475d8dcc82810c0d3160
+#: db8409e8a2354edeb0ea22849f49fabe db8665dfa520443b8989d739db85f3a5
+#: e1c1338a0d824340a0b5592105ecfff3 e9b51f05899d4ffe89989662928ec1ac
+#: ef4f6ebca28646e089bf61dba98911fa ff8028c1131c4095b4e4a1e753016b6f
+msgid "type"
+msgstr "type"
+
+#: a7dc0fb73ef74508831bc3828b4494d8 ee4bece9ac7540dda43eff0ee3645f95
+msgid "o3.Irreps"
+msgstr "o3.Irreps"
+
+#: 4025a80b4432466b8df50110914f48f7
+msgid "隐藏层的特征的不可约表示。"
+msgstr "Irreducible representations of features in the hidden layer."
+
+#: 3485113b8ed5497689fe543e66894e5e
+msgid "是否使用残差连接。"
+msgstr "Whether to use residual connections."
+
+#: 4b0fd705fa2a4679874a7735821f70d4 5e8962286b59423a97eb6c8e4db9009e
+#: a01c6895894740c48643313b4d7bc85f adb8d86e04ad4840ac0948d6cca80251
+#: b12d1dea41a5432ca8b3248348c28368 b6106c0d9ad44a619f90ac4eb5d7fe38
+#: c08b733a3cb74aa893d8b68813d1017a
+msgid "bool"
+msgstr "bool"
+
+#: cbaa58248d5a47cba298e807d75d0168
+msgid "等变非线性激活模块。"
+msgstr "Equivariant non-linear activation module."
+
+#: 19b4cca2151646d28510e110eed07b04
+msgid "torch.nn.Module"
+msgstr "torch.nn.Module"
+
+#: e070911dc6034db7b7625abdcc5f60e1
+msgid "第一个线性层。"
+msgstr "The first linear layer."
+
+#: 1450136d172746cc800c5029d9f07455 18185419145d433b8fadc3bd78722360
+#: 356b2dcd1bb74a85b29cf8dc17dafefe 54dce961d3f04c8b92dc9cc7c8122fad
+#: 90cf4e62377a4a74909e655f84e75e30 b8753d3f07834f96baff9296912a3cce
+#: bfcce2d04d124fce9e0b825e82c4a50c d996f529c34347cf8084ec7db7ce341a
+#: da08be14b9be4e9aa8088c65b426482b dd10762a8f484699aca3b41ba073003b
+#: e4500d9b8c6a4d6f87d7f37d7d1a5364 f2c3abdcd44a448dba563a27dc706734
+msgid "Linear"
+msgstr "Linear"
+
+#: 903b29344a5e48b8ae02314c18657ebe
+msgid "第二个线性层。"
+msgstr "The second linear layer."
+
+#: 113ccfdcb29b4028a0e7332ef0f652b0 240fa0a01c604070840c9ff41fd947dd
+#: 2a040fac4aed48afa5cbf952b65f5ceb b6eedf3e1d34472fb1d73ec529f81aff
+#: bbe79d8e2ae1481bb28b1fe258b4a5ce c01b1574f06b4d8084d6447ab316d853
+#: c9d0ca0f7b5e41f881454039c6cea89a d44682abb6a742079342f58262085c51
+msgid "前向传播。"
+msgstr "Forward pass."
+
+#: 166e06758f1548ef948b9e868f47fd4f 4d3d7dfeee914bb997da5198a11df9e6
+#: 7bfa4997e6f645e0bd490e3026dcec98
+msgid ""
+"基类：:py:class:`~HamGNN_v_1_0.models.HamGNN.nequip.nn._graph_mixin.GraphModuleMixin`,"
+" :py:class:`~torch.nn.modules.module.Module`"
+msgstr ""
+"Base class: "
+":py:class:`~HamGNN_v_1_0.models.HamGNN.nequip.nn._graph_mixin.GraphModuleMixin`, "
+":py:class:`~torch.nn.modules.module.Module`"
+
+#: 2ce2083f61734eb3b6263c9b0d9c4a95
+msgid "通过组合节点特征和边属性来构建边特征的模块。"
+msgstr "A module that builds edge features by combining node features and edge attributes."
+
+#: 95488e6344fb45e4b3e5954ee55661f9
+msgid ""
+"该模块的核心思想是使用一个可学习的张量积（Tensor Product）来融合来自 "
+"源节点、目标节点以及它们之间连线的几何信息（球谐函数表示的边属性）。 张量积的权重不是固定的，而是通过一个全连接网络（FCN）根据边的径向 "
+"距离嵌入动态生成的，这使得模型能够根据距离调整相互作用的强度和形式。"
+msgstr ""
+"The core idea of this module is to use a learnable Tensor Product to fuse "
+"geometric information (edge attributes represented by spherical harmonics) "
+"from the source node, target node, and the connection between them. The "
+"weights of the tensor product are not fixed but are dynamically generated by "
+"a fully connected network (FCN) based on the radial distance embedding of "
+"the edges. This allows the model to adjust the strength and form of "
+"interactions based on distance."
+
+#: 99f6cdd3894d4862976d2eb0379b0eb1 d237a4f189004a40adc9fc52c6ab7cfd
+msgid "用于处理源节点特征的线性层。"
+msgstr "Linear layer for processing source node features."
+
+#: 882eab3a49324697937d27db768a95f2 c5f84d9b28a9440bb42e006c123e40dc
+msgid "用于处理目标节点特征的线性层。"
+msgstr "Linear layer for processing target node features."
+
+#: 4b80ded1aa994219973220107736c040 646a0314cf704860bc587e7bddfcc892
+#: c2f61ccdbbd74accb55c28d3985945d1
+msgid "核心的张量积操作模块。"
+msgstr "The core tensor product operation module."
+
+#: 19c118e69ffd48ccbf4cfe9832770f1b a70355d6d26c46be8b243d740519834e
+#: c8956d997ef34cdba08c202d64cb0a0e
+msgid "TensorProduct"
+msgstr "TensorProduct"
+
+#: 8b67df0d0b05411185160dacba025532 c73be5f8b2bf4743b82d87223ad108f6
+msgid "根据边嵌入生成张量积权重的全连接网络。"
+msgstr "A fully connected network that generates tensor product weights based on edge embeddings."
+
+#: 7daf306a07024fdaad8adb47b3f19124 86c81f29aff44d3e9d9a24eb73e18956
+#: 990346a1a82743128a9d0459a4e6af33
+msgid "FullyConnectedNet"
+msgstr "FullyConnectedNet"
+
+#: 4b55546e876c4f6f83bfb89f00f67891 d22783e6ec4e4187ac2629e014ab6fa5
+#: defc22b157c94fc19556feebb1894585
+msgid "对张量积结果进行最终线性变换的层。"
+msgstr "A layer that performs a final linear transformation on the tensor product result."
+
+#: 08b4639b03e74222964e1b85b8b07125 1c78c03941084f7b9896299a649723f7
+#: 204766a472dc4ab389114b3c71b2d32c 28ea1d9a74f84a90a5d5c68196c67153
+#: 28eaa79504b14ef1a5073ddbd086d02b 2b510b2363ec4aeeb3def4ed20fe2e79
+#: 700d11ebe0704ec2addc7f111a07f56b 9a920b90d76c45bea6c049fb9ce958cc
+#: c3ec03391e684d30ad9b83e26b719be8 c8de82cfe6a1492bb0b89eea64391efa
+#: c97120e4f3984e9c84e164b1fecdf11e ca71deb927244503abc8522a65208954
+#: df4eb25e12104ee08be7c56380096416 dfc13722b67a4a4ebd8f47ab5b483d8a
+#: e601f30301b54378a7128a267d61eee3 f200f3d7d6f54dd280167c2b758a5611
+#: fe41e781ceaf4cdfb4535cd5c1b6e86d
+msgid "返回类型"
+msgstr "Return type"
+
+#: 57c5f4ceac3f475cb251c84963d4154e 99f2703d2c944add874c1e4d0fc523cb
+#: a1ebc70d01e64aeb847b8f118857263f
+msgid ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+msgstr ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+
+#: 5fe88013e78540c28882b086bfb16b41
+msgid "`Edge_builder` 的一个变体，使用两个不同节点特征的张量积。"
+msgstr "A variant of `Edge_builder` that uses the tensor product of two different node features."
+
+#: 6cfcbc177c634fc0800075f5d5744df6
+msgid ""
+"这个模块将源节点特征和目标节点特征分别进行线性变换后，直接进行张量积， 而不是像 `Edge_builder` "
+"那样先将它们相加。这允许模型学习更复杂的、 非对称的相互作用。最终计算出的特征会累加到已有的边特征上。"
+msgstr ""
+"This module performs a tensor product directly after linearly transforming "
+"the source and target node features, instead of adding them first like in "
+"`Edge_builder`. This allows the model to learn more complex, asymmetric "
+"interactions. The finally calculated features are accumulated onto the "
+"existing edge features."
+
+#: 73c47e7591b643ccb0e45e3a5bb09a5d
+msgid "构建三元组（triplet, k-j-i）特征的模块。"
+msgstr "A module for building triplet (k-j-i) features."
+
+#: 27b5d988771146d699ccd4dec7996fdf
+msgid ""
+"此模块旨在捕捉原子间的三体相互作用信息。它通过张量积组合两条 相连边（k->j 和 j->i）的特征来创建三元组特征。张量积的权重由 "
+"这三点形成的夹角嵌入（通过球谐函数计算）来动态调节。"
+msgstr ""
+"This module aims to capture three-body interaction information between "
+"atoms. It creates triplet features by combining the features of two "
+"connected edges (k->j and j->i) through a tensor product. The weights of "
+"the tensor product are dynamically adjusted by the angle embedding (calculated "
+"via spherical harmonics) formed by these three points."
+
+#: 51fc7a64e6244fb8a31256acea7909ce
+msgid "用于角度嵌入的球谐函数层。"
+msgstr "Spherical harmonics layer for angle embedding."
+
+#: bbdbc69bbd0a471c976c6903187e6dd9
+msgid "sph_harm_layer"
+msgstr "sph_harm_layer"
+
+#: 38a7f5c08fe44e73a1e6453e4fa4029c
+msgid "边 k->j 特征的线性变换层。"
+msgstr "Linear transformation layer for edge k->j features."
+
+#: 38356a0b82b149c99ba5b0ca6b41c087
+msgid "边 j->i 特征的线性变换层。"
+msgstr "Linear transformation layer for edge j->i features."
+
+#: c2fea7c0194f4c9cb024992eee6efdc0
+msgid "根据角度嵌入生成张量积权重的全连接网络。"
+msgstr "A fully connected network that generates tensor product weights based on angle embeddings."
+
+#: d1570e9a53ad4619bdc921536825ef11
+msgid "计算图中的所有三元组 (k->j->i)。"
+msgstr "Calculate all triplets (k->j->i) in the graph."
+
+#: 21bd001d9bdd42b0991cd6c6f2c58698
+msgid ""
+"利用 `torch_sparse` 的 `SparseTensor` 高效地寻找相连的边。 一个三元组由中心原子 j，以及两个邻居 i 和 k "
+"构成。"
+msgstr ""
+"Efficiently find connected edges using `torch_sparse.SparseTensor`. A "
+"triplet consists of a central atom j and two neighbors i and k."
+
+#: 0a6c1447d2b8434987c92964e8ca483d 0c22d65e7e8c48d889dbd12e1ef7adb1
+#: 22709cccfe0348d6b16fa46aef5db460 352e93de2e5946528c74bc48d756c24e
+#: 438908f00aca4f3daeb5b5e0c8c583fa 461bd9a94214472890f438758eb28347
+#: 5a06427d5b5f4fd08f4d21bac961844a 6e97527d015f433eb72179774e99c48c
+#: 8ad31d16cd234fda86d32439b671843e a0062b7fdc9d462a9731efd47bf9e2a2
+#: a130b42ee5554ca8ba774801b4cb1a4b c196d0e45e324638aca69f3ee20a596c
+#: cd13880372044cadb490e16662b38ff8 ea86ab81c8c74316a6a56da5740d881f
+#: ee0a984f97344547bb275950a023bc43
+msgid "参数"
+msgstr "Parameters"
+
+#: cce552b06b6743b18b1610aca3518427
+msgid "边索引, 形状为 [2, num_edges]。"
+msgstr "Edge index, shape [2, num_edges]."
+
+#: a7a55f2e9c7c435b9cf13ec45f687f2b
+msgid "节点总数。"
+msgstr "Total number of nodes."
+
+#: ae302c17a8124bc58c8fc434dd1ec12a
+msgid "边的周期性晶胞偏移, 形状为 [num_edges, 3]。"
+msgstr "Periodic cell offset of edges, shape [num_edges, 3]."
+
+#: 135d5766620f401f844dcd5b697260bc 234368979581437094848ed58e4090c2
+#: 3aaabd24daea41039260b4343671d96a 61f59fd8b7f049ca8fb2f182c79f73eb
+#: 6ae28fca362e4a3aa4fd132829091c04 6d5c0b5026e943a1b81869a835cb436b
+#: 783d167cc8ad40ca902b2b42faf5048c b28e3e5d58d24ace83a5f40a3728300c
+#: bd32305f10af45889c799e2e28248870 cab9c55315d343f0a3736c243dfda655
+#: d5120f85cbe5496693a074b0168c318d da06ef459c3a4b90b68fc46b9b765e28
+#: f4bd9ee641054d559f00774ed8f11cb6 fec4eafeed504a6ebf5c6cf6b178f5a0
+msgid "返回"
+msgstr "Returns"
+
+#: a300271032c94bc8bcbf869c415e5754
+msgid ""
+"包含三元组信息的元组 (col, row, idx_i, idx_j, idx_k, idx_kj, idx_ji)。        其中 "
+"idx_i, idx_j, idx_k 是三元组中原子的索引。        idx_kj, idx_ji 是构成三元组的两条边的索引。"
+msgstr ""
+"A tuple containing triplet information (col, row, idx_i, idx_j, idx_k, "
+"idx_kj, idx_ji). where idx_i, idx_j, idx_k are the indices of the atoms in "
+"the triplet. idx_kj, idx_ji are the indices of the two edges that form the "
+"triplet."
+
+#: bb67d46065304a84b67478b1ad9da950
+msgid "包含三元组信息的元组 (col, row, idx_i, idx_j, idx_k, idx_kj, idx_ji)。"
+msgstr ""
+"A tuple containing triplet information (col, row, idx_i, idx_j, idx_k, "
+"idx_kj, idx_ji)."
+
+#: 89cf62a746bd4ab18954ea0bbee3932c
+msgid "其中 idx_i, idx_j, idx_k 是三元组中原子的索引。 idx_kj, idx_ji 是构成三元组的两条边的索引。"
+msgstr ""
+"where idx_i, idx_j, idx_k are the indices of the atoms in the triplet. "
+"idx_kj, idx_ji are the indices of the two edges that form the triplet."
+
+#: 02c819da1d9d4d1fadff305b939a4525
+msgid "一个简单的哈密顿量预测层。"
+msgstr "A simple Hamiltonian prediction layer."
+
+#: f5f48fea5cde47a3885044f6b2cb9600
+msgid "该层由一个残差块和一个最终的线性层组成，用于将学习到的特征 映射到最终的输出空间（例如，哈密顿量矩阵的元素）。"
+msgstr ""
+"This layer consists of a residual block and a final linear layer, used to "
+"map the learned features to the final output space (e.g., the elements of "
+"the Hamiltonian matrix)."
+
+#: 09fc61e64ea745cead0fcf8552aad3c0
+msgid "一个残差连接块，用于深化网络和稳定训练。"
+msgstr "A residual connection block for deepening the network and stabilizing training."
+
+#: ecdee3df8d2143f7baf9bbf1681376c9
+msgid "residual_block"
+msgstr "residual_block"
+
+#: 8ddca76f13b94c20a58a1b3c09b036dd
+msgid "一个等变线性层，用于输出最终结果。"
+msgstr "An equivariant linear layer for outputting the final result."
+
+#: 819d105f6a7645b3a1f02a627010bf43
+msgid "HamGNN 的特征提取网络（也称为表示网络）。"
+msgstr "The feature extraction network of HamGNN (also known as the representation network)."
+
+#: d7fb558ea734441fb55287417b5373f3
+msgid ""
+"这个网络基于 `nequip` 架构，通过一系列精心设计的嵌入和等变卷积层， 从原子结构（节点、边、角度）中学习丰富的、考虑了对称性的特征表示。 "
+"这些特征随后可以被用于预测各种物理属性。"
+msgstr ""
+"This network is based on the `nequip` architecture and learns rich, "
+"symmetry-aware feature representations from the atomic structure (nodes, "
+"edges, angles) through a series of carefully designed embeddings and "
+"equivariant convolutional layers. These features can then be used to predict "
+"various physical properties."
+
+#: 818bf41851b64ebbaba489f2cc7b0286
+msgid "将原子类型编码为 one-hot 向量。"
+msgstr "Encodes atom types into one-hot vectors."
+
+#: 4736009935104218aadf752a5bfc3223
+msgid "OneHotAtomEncoding"
+msgstr "OneHotAtomEncoding"
+
+#: e94de954117c43b6b71eac38b2f98fc8
+msgid "将边的方向向量编码为球谐函数特征。"
+msgstr "Encodes the direction vectors of edges into spherical harmonic features."
+
+#: 57edfa37e364495786ef6d424316b6f4
+msgid "SphericalHarmonicEdgeAttrs"
+msgstr "SphericalHarmonicEdgeAttrs"
+
+#: 0c612200cb564b6a81e0b1cd115d8f2e
+msgid "将边的距离编码为径向基函数特征。"
+msgstr "Encodes the distances of edges into radial basis function features."
+
+#: 6edb59028f38423b88d9d83576308566
+msgid "RadialBasisEdgeEncoding"
+msgstr "RadialBasisEdgeEncoding"
+
+#: ce3d467336e34c238cfc2c6aabe6781a
+msgid "将 one-hot 编码线性映射到初始节点特征。"
+msgstr "Linearly maps one-hot encodings to initial node features."
+
+#: a5b7ebfbf61445cbb4ce2be2932785f6 f3d7f9df9ba8455584caea7157bf4867
+msgid "AtomwiseLinear"
+msgstr "AtomwiseLinear"
+
+#: 6a916aa21edb4ba78eb123b7800b249b
+msgid "包含多个等变卷积层的列表。"
+msgstr "A list containing multiple equivariant convolutional layers."
+
+#: 8406fb1d3fe043238ed51370c7411b7c
+msgid "nn.ModuleList"
+msgstr "nn.ModuleList"
+
+#: 1801b3b3c350479e85b13482e1e5c400
+msgid "将卷积后的节点特征映射到最终输出。"
+msgstr "Maps the convolved node features to the final output."
+
+#: ad34fae2111c4941a999d96f628ad97e
+msgid "从节点特征和边属性构建最终的边特征。"
+msgstr "Builds final edge features from node features and edge attributes."
+
+#: 6b99e7b7c5724641950829a5f7e37fda
+msgid "Edge_builder"
+msgstr "Edge_builder"
+
+#: 724b59c263374947a3e3edddfda15c9a
+msgid "如果启用，构建三元组特征。"
+msgstr "If enabled, builds triplet features."
+
+#: 329141fea60c41848160ce91eb3029c8
+msgid "Triplet_builder, optional"
+msgstr "Triplet_builder, optional"
+
+#: b3a98f1ab19d4de7b21d48ddfa6a8bff
+msgid "包含原子图信息的字典。"
+msgstr "A dictionary containing atomic graph information."
+
+#: af6b0c1fd1e64ab8a8c1faf2d8c71ded
+msgid "批处理索引。默认为 None。"
+msgstr "Batch index. Defaults to None."
+
+#: dd64e8d78cc94b7f9bd0837c11c07131
+msgid "包含计算出的节点、边和（可选）三元组特征的字典。"
+msgstr ""
+"A dictionary containing the calculated node, edge, and (optional) triplet "
+"features."
+
+#: 7e5490def0024fc1a4ae3474db539d3d
+msgid "`HamGNN_pre` 的一个变体。"
+msgstr "A variant of `HamGNN_pre`."
+
+#: 8fc112ba7e61451e8fe9a6c74cdf4582
+msgid "主要区别在于： - 使用 `Embedding_block` 代替 `OneHotAtomEncoding`，允许更灵活的初始节点嵌入，"
+msgstr ""
+"The main difference is: - Uses `Embedding_block` instead of "
+"`OneHotAtomEncoding`, allowing for more flexible initial node embeddings,"
+
+#: 597ffb0dad274ef2829d50f7c70b03cb
+msgid "而不仅仅是原子类型的 one-hot 编码。"
+msgstr "rather than just one-hot encoding of atom types."
+
+#: 69bf4f043168430abe7266ffed6bbdaa
+msgid "增加了一个可选的 `Edge_builder_tp` 层，用于引入额外的、通过不同节点特征 张量积计算的边特征，以增强模型的表达能力。"
+msgstr ""
+"Adds an optional `Edge_builder_tp` layer to introduce additional edge "
+"features calculated through the tensor product of different node features, "
+"enhancing the model's expressive power."
+
+#: 192ed145222941ab8cc3e8da5d5a230e
+msgid "`HamGNN_pre` 的另一个变体，增加了对电荷掺杂的支持。"
+msgstr "Another variant of `HamGNN_pre` that adds support for charge doping."
+
+#: 8deb4ee1ae8b4bccb377f0a28ccf105a
+msgid ""
+"它使用 `Embedding_block_q`，该模块可以接收每个节点的电荷信息作为额外的 "
+"节点属性，并将其与原子类型嵌入相结合，生成考虑了电荷状态的初始节点特征。 这使得模型能够学习电荷对体系性质的影响。"
+msgstr ""
+"It uses `Embedding_block_q`, a module that can receive charge information "
+"for each node as an additional node attribute and combine it with the atom "
+"type embedding to generate initial node features that consider the charge "
+"state. This allows the model to learn the effect of charge on the system's "
+"properties."
+
+#: 8c0b6b871abc4ccb94e4ad2f29ea802e
+msgid "HamGNN 的输出模块，用于从学习到的特征构建哈密顿量和重叠矩阵。"
+msgstr ""
+"The output module of HamGNN, used to construct the Hamiltonian and overlap "
+"matrix from the learned features."
+
+#: b4287b66b3b64e808689c1f0bfe1f759
+msgid ""
+"这个模块是 HamGNN 的核心物理构建模块。它接收由表示网络（如 `HamGNN_pre`） "
+"生成的节点和边特征，然后通过几个专门的网络（onsitenet, offsitenet）将这些 "
+"特征映射到局域的哈密顿量和重SAO（Symmetrized Atomic Orbitals）基矢下的 重叠矩阵元素。"
+msgstr ""
+"This module is the core physical building block of HamGNN. It receives the "
+"node and edge features generated by the representation network (such as "
+"`HamGNN_pre`) and then maps these features to the local Hamiltonian and "
+"overlap matrix elements under the Symmetrized Atomic Orbitals (SAO) basis "
+"through several specialized networks (onsitenet, offsitenet)."
+
+#: 71959f165e3a48e688e05d098be0813f
+msgid ""
+"该模块内置了对多种 DFT 软件（OpenMX, SIESTA, ABACUS）基组定义的兼容性， "
+"能够处理自旋轨道耦合（SOC），并能计算能带结构和原子受力。"
+msgstr ""
+"The module has built-in compatibility with basis set definitions from "
+"various DFT software (OpenMX, SIESTA, ABACUS), can handle spin-orbit "
+"coupling (SOC), and can calculate band structures and atomic forces."
+
+#: ed7ab7be6a2d489faef61aeb2b878ec7
+msgid "是否计算梯度（用于力）。"
+msgstr "Whether to calculate gradients (for forces)."
+
+#: 1bc093d9abf948bd8a67aaab5e3e7e07
+msgid "是否创建计算图（用于高阶导数）。"
+msgstr "Whether to create a computation graph (for higher-order derivatives)."
+
+#: fc562cb912c64a439c105e2897ac398b
+msgid "原子轨道基组的最大数量。"
+msgstr "The maximum number of atomic orbital basis sets."
+
+#: 609cebc5ba904384bcf66819408904a0
+msgid "int"
+msgstr "int"
+
+#: e0b3615862f14c2a92d22fed8bd9b316
+msgid "使用的 DFT 软件类型 ('openmx', 'siesta', 'abacus')。"
+msgstr "The type of DFT software used ('openmx', 'siesta', 'abacus')."
+
+#: 3cebf2a827b84843b500df59eb449c3c c5237e18fde3443b837d6fd184c9a258
+msgid "str"
+msgstr "str"
+
+#: b8fa50881fc244528d9b3a408b98a4ba
+msgid "是否只预测哈密顿量（不预测重叠矩阵）。"
+msgstr "Whether to predict only the Hamiltonian (not the overlap matrix)."
+
+#: daa749e75d68428385be72de4dc0de25
+msgid "是否对生成的矩阵进行对称化处理。"
+msgstr "Whether to symmetrize the generated matrix."
+
+#: 70d030986c0442de8c730a726de42634
+msgid "是否在计算中使用三元组特征。"
+msgstr "Whether to use triplet features in the calculation."
+
+#: e689b67a24744ee8b536bac849426c8d
+msgid "是否开启自旋轨道耦合（SOC）。"
+msgstr "Whether to enable spin-orbit coupling (SOC)."
+
+#: da2c6e8297a44ab99ba48cdef37372c1
+msgid "SOC计算使用的基组 ('so3' 或 'su2')。"
+msgstr "The basis set used for SOC calculation ('so3' or 'su2')."
+
+#: 9eb4dac23e804fa693ecbc14297328c9
+msgid "用于预测在位（on-site）哈密顿量元素的网络层。"
+msgstr "Network layer for predicting on-site Hamiltonian elements."
+
+#: 828f6b589a79456984f71fdd97792311
+msgid "用于预测异位（off-site）哈密顿量元素的网络层。"
+msgstr "Network layer for predicting off-site Hamiltonian elements."
+
+#: 9f60e429c7a94f72b96582128e2fc500
+msgid "用于预测重叠矩阵元素的网络层。"
+msgstr "Network layer for predicting overlap matrix elements."
+
+#: 97db614891fc4a0892c594a2cee3529f
+msgid "用于计算 Clebsch-Gordan 系数的工具。"
+msgstr "A tool for calculating Clebsch-Gordan coefficients."
+
+#: b5b976c4f3194ecabb8d6a0d075fb831
+msgid "ClebschGordan"
+msgstr "ClebschGordan"
+
+#: a3249a2ad3c8481e94bbe850f93cc4f3
+msgid "将以不可约表示形式存在的哈密顿量元素合并成矩阵块。"
+msgstr ""
+"Merges Hamiltonian elements that exist in irreducible representations into "
+"matrix blocks."
+
+#: a942e3e60ef448c2a047a9da44b2cfed
+msgid "此函数执行逆球谐张量积操作，将网络输出的等变特征（sph_split） 通过 Clebsch-Gordan 系数重新组合成标准的矩阵形式。"
+msgstr ""
+"This function performs an inverse spherical harmonic tensor product "
+"operation, reassembling the equivariant features (sph_split) output by the "
+"network into a standard matrix form using Clebsch-Gordan coefficients."
+
+#: b4558bc5206b433b9347811973bd02e4
+msgid "包含不同不可约表示的特征张量列表。"
+msgstr "A list of feature tensors containing different irreducible representations."
+
+#: 1054c33eb6d14b2fb807c6ab5e7b38a4
+msgid "合并后的矩阵块，形状为 [N, nao_max * nao_max]。"
+msgstr "The merged matrix block, with shape [N, nao_max * nao_max]."
+
+#: dd8087fa381f4d4d92da2daa2473f32b
+msgid "根据不同 DFT 软件的原子轨道顺序，调整输出矩阵元素的顺序。"
+msgstr ""
+"Adjusts the order of the output matrix elements according to the atomic "
+"orbital order of different DFT software."
+
+#: bc908f4d873f4dcb8776d263a53831e2
+msgid "输入的哈密顿量矩阵。"
+msgstr "The input Hamiltonian matrix."
+
+#: d34087828ee84ee5b05dfe628f82b117
+msgid "调整顺序后的哈密顿量矩阵。"
+msgstr "The reordered Hamiltonian matrix."
+
+#: 4b5fee015b204c688268a060881978fc
+msgid "将局域的在位和异位哈密顿量转换为完整的分子/晶胞哈密顿量。"
+msgstr ""
+"Converts local on-site and off-site Hamiltonians into a complete "
+"molecular/unit cell Hamiltonian."
+
+#: ac168e45d43a4ec3832796fba845357e ed214969fdb340cf8d29085b40c9ad1d
+msgid "包含图结构和原子信息的字典。"
+msgstr "A dictionary containing graph structure and atomic information."
+
+#: 3608051053c048ab92396b1638226db4 f7d9a29df82c47fba03c5ed177b7b3f1
+msgid "在位（on-site）哈密顿量块。"
+msgstr "On-site Hamiltonian blocks."
+
+#: 00b41eeefb2141528127e414b864ea7a 238e83d035294def808b764462c6327f
+msgid "异位（off-site）哈密顿量块。"
+msgstr "Off-site Hamiltonian blocks."
+
+#: 749695cea41148889490342a8e28955d
+msgid "构建的完整哈密顿量矩阵。"
+msgstr "The constructed complete Hamiltonian matrix."
+
+#: 203594f360364cb5bc17f04bb5213857
+msgid "将批处理的在位和异位哈密顿量块连接成一个张量。"
+msgstr "Concatenates batched on-site and off-site Hamiltonian blocks into a single tensor."
+
+#: 0cb4987ce9b54ac5a9d29f9c32780293
+msgid "连接后的哈密顿量张量。"
+msgstr "The concatenated Hamiltonian tensor."
+
+#: 13abf0a71c7c4d279699a86618d521d8
+msgid "对称化在位哈密顿量/重叠矩阵。"
+msgstr "Symmetrizes the on-site Hamiltonian/overlap matrix."
+
+#: 4472ccbd9ab2447f8815781118640f7d e60278b11827426d97ff6f80e30e8e30
+msgid "在位矩阵块。"
+msgstr "On-site matrix blocks."
+
+#: 8cabae4aa7f74d19acc726e9cbdbc316
+msgid "对称化方式, '+' 表示 H, '-' 表示 H-H.T。默认为 '+'。"
+msgstr "Symmetrization method, '+' for H, '-' for H-H.T. Defaults to '+'."
+
+#: 6c4c9ae60e1a425bb4245f91860e5a6a f369dedad44c4349b817ba014d4acaa4
+msgid "对称化后的矩阵块。"
+msgstr "The symmetrized matrix block."
+
+#: 7547a56a865e45bf8b2bfdca1595daa0
+msgid "对称化异位哈密顿量/重叠矩阵。"
+msgstr "Symmetrizes the off-site Hamiltonian/overlap matrix."
+
+#: 5aefb55e7b8d436ea338626b44d34811
+msgid "利用 H_ij = H_ji.T 的性质。"
+msgstr "Utilizes the property H_ij = H_ji.T."
+
+#: 14150e0cdabd46638487da9811c437e6 399e17a826954b8a87442fd32d3a0d9f
+msgid "异位矩阵块。"
+msgstr "Off-site matrix blocks."
+
+#: 402ab5f4bfc045cd9fc52269b8f5d153
+msgid "反向边的索引。"
+msgstr "Index of the reverse edge."
+
+#: edc53b91281b4c6bbaf18b22d611bc74
+msgid "对称化方式。默认为 '+'。"
+msgstr "Symmetrization method. Defaults to '+'."
+
+#: 4fdb4fe51db64a45a847cd55f2897c5b
+msgid "计算能带结构（调试版本）。"
+msgstr "Calculate band structure (debug version)."
+
+#: 41e65b91f56246ab9b719061d4638040
+msgid "此函数通过在倒空间中构建哈密顿量和重叠矩阵，然后求解广义本征值问题 来计算能带。它包含了详细的步骤，用于调试和验证。"
+msgstr ""
+"This function calculates the band structure by constructing the Hamiltonian "
+"and overlap matrices in reciprocal space and then solving the generalized "
+"eigenvalue problem. It includes detailed steps for debugging and validation."
+
+#: 38782d1a93194c3a8e6be9ff5a15c58d 414438f79d014530b416ab739f453b47
+#: d0a135804a1445d782172ce225da86c1 e1ebd6a49c404e0da22ef5bd2f05a6a2
+msgid "预测的在位和异位哈密顿量。"
+msgstr "Predicted on-site and off-site Hamiltonians."
+
+#: 70e1db2d7e0041cbb00edf5484fe3a4b d3a45a67356e4b63a4f2a5d79098d710
+msgid "预测的在位和异位重叠矩阵。"
+msgstr "Predicted on-site and off-site overlap matrices."
+
+#: 0cc48f28ff29485f898db3b6a21adbac 9a9f71c46b3847fca4367f08d6f94e87
+#: a1f7c76764c748f397058d57b961cc00 a6daff068465432cb50d3e6306b73e82
+msgid "输入数据。"
+msgstr "Input data."
+
+#: 35c16d4af13b4b9895d26ae52c04f7cf 87dc9df6b3464b48848b31442fb844c4
+msgid "是否导出倒空间矩阵。"
+msgstr "Whether to export the reciprocal space matrices."
+
+#: 6914c6f680cc421c88efb43a7ac17443
+msgid "Returns:"
+msgstr "Returns:"
+
+#: 0c77472ebc49404089c465e35f7be4f8
+msgid "计算能带结构（优化版本）。"
+msgstr "Calculate band structure (optimized version)."
+
+#: 2c353ecdf0bd4e1e9df0de038a21bf21
+msgid "此函数是 `cal_band_energy_debug` 的优化版本，使用更高效的张量操作 来构建倒空间矩阵，以提高计算速度。"
+msgstr ""
+"This function is an optimized version of `cal_band_energy_debug`, using "
+"more efficient tensor operations to construct the reciprocal space matrices "
+"for improved computational speed."
+
+#: b4eb32d0cf5c4f7b9ec27e418cf19e81
+msgid "包含能带能量、波函数、带隙等信息的元组。"
+msgstr ""
+"A tuple containing information such as band energies, wave functions, and "
+"band gap."
+
+#: c079f9c692f946eba70a8dd9f7bfbfa3
+msgid "计算包含自旋轨道耦合（SOC）的能带结构。"
+msgstr "Calculate the band structure including spin-orbit coupling (SOC)."
+
+#: a51b6734bbbf451ab3f971e923ec0a77
+msgid ""
+"此函数处理包含 SOC 效应的哈密顿量，该哈密顿量通常是复数且非对角 （在自旋空间中）。它分别构建哈密顿量的四个自旋分量（up-up, up-"
+"down, down-up, down-down），然后在倒空间中组合它们，最后求解本征值问题。"
+msgstr ""
+"This function handles Hamiltonians that include SOC effects, which are "
+"typically complex and non-diagonal (in spin space). It constructs the four "
+"spin components of the Hamiltonian (up-up, up-down, down-up, down-down) "
+"separately, combines them in reciprocal space, and finally solves the "
+"eigenvalue problem."
+
+#: 69372214eca749609c463679253ba55c 88505145ad5e4b21801098999a5590b3
+msgid "在位SOC哈密顿量的实部和虚部。"
+msgstr "The real and imaginary parts of the on-site SOC Hamiltonian."
+
+#: 6fbd99ea7e7542f1a5f62bf12c1855a0 fe541845d6b847e2be5f800b686d5016
+msgid "异位SOC哈密顿量的实部和虚部。"
+msgstr "The real and imaginary parts of the off-site SOC Hamiltonian."
+
+#: 079fc8b548f743a6b319ec88c609f678
+msgid "包含能带能量和波函数的元组。"
+msgstr "A tuple containing band energies and wave functions."
+
+#: b888c4b5dd7f409488c28bc71872d57c
+msgid "根据每种元素的实际轨道基组，屏蔽哈密顿量/重叠矩阵中不存在的元素。"
+msgstr ""
+"Masks non-existent elements in the Hamiltonian/overlap matrix based on the "
+"actual orbital basis set of each element."
+
+#: 5245425f04df46798b6069e82c692d6c
+msgid "由于模型为所有原子预测一个固定大小（nao_max * nao_max）的矩阵块， 此函数用于将那些对应于该原子实际未使用的轨道的矩阵元素置零。"
+msgstr ""
+"Since the model predicts a fixed-size (nao_max * nao_max) matrix block for "
+"all atoms, this function is used to zero out the matrix elements "
+"corresponding to orbitals that are not actually used by that atom."
+
+#: 98a8d55c9bff42d09f20a176da8a2b7b
+msgid "屏蔽后的在位和异位矩阵块 (Hon_mask, Hoff_mask)。"
+msgstr "The masked on-site and off-site matrix blocks (Hon_mask, Hoff_mask)."
+
+#: a328434550134ab7aec0fadf43fa3ea6
+msgid "将 SOC 哈密顿量的实部和虚部组合成一个复数张量。"
+msgstr ""
+"Combines the real and imaginary parts of the SOC Hamiltonian into a complex "
+"tensor."
+
+#: 1026f829c9d24b72bcdb13ae28d821db
+msgid "哈密顿量的实部。"
+msgstr "The real part of the Hamiltonian."
+
+#: 605685075abb44abae2ce8603d7a9db9
+msgid "哈密顿量的虚部。"
+msgstr "The imaginary part of the Hamiltonian."
+
+#: da7feb629b454734aad18754061dbf57
+msgid "复数形式的 SOC 哈密顿量。"
+msgstr "The SOC Hamiltonian in complex form."
+
+#: 96acd0e0058c41648bb2c06077038df7
+msgid "对 SOC 耦合系数进行降维/平均化处理。"
+msgstr "Reduces/averages the SOC coupling coefficients."
+
+#: 7507ea869a904a51b10464f0e551f4c5
+msgid ""
+"在某些基组定义下，属于同一轨道壳层（如 p, d, f）的多个轨道 被假定共享同一个 SOC 耦合系数。此函数通过对这些轨道的系数 "
+"取平均值来实现这一点。"
+msgstr ""
+"Under certain basis set definitions, multiple orbitals belonging to the "
+"same orbital shell (e.g., p, d, f) are assumed to share the same SOC "
+"coupling coefficient. This function achieves this by averaging the "
+"coefficients of these orbitals."
+
+#: 11ae33c7c33d4980a5e0cb3222fb388b
+msgid "原始的 SOC 耦合系数矩阵。"
+msgstr "The original SOC coupling coefficient matrix."
+
+#: 48566d91d3a2462fa023ad3750972865
+msgid "处理后的系数矩阵。"
+msgstr "The processed coefficient matrix."
+
+#: 13ed2c2fcbfa4f94988837d57e9bf795
+msgid "模型的前向传播。"
+msgstr "The forward pass of the model."
+
+#: 4823ed25f0524241bf75e79c807111e3
+msgid "输入数据字典。"
+msgstr "Input data dictionary."
+
+#: c7648978417e44f99eaf4a33fcda988b
+msgid "由表示网络预先计算的特征字典。"
+msgstr "A dictionary of features pre-computed by the representation network."
+
+#: 0bcba4acf91a468a989eec474f686ac9
+msgid "包含预测的哈密顿量、重叠矩阵、能带能量等结果的字典。"
+msgstr ""
+"A dictionary containing results such as the predicted Hamiltonian, overlap "
+"matrix, and band energies."
+

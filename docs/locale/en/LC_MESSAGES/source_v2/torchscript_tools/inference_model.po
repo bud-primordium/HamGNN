@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: bb2aab63875e4ea7867ac70d89ee0f5e
+msgid "inference_model"
+msgstr "inference_model"
+
+#: 41272294100a46b6ab1fd89bfedd45e9
+msgid "推理模型封装模块。"
+msgstr "Inference model wrapper module."
+
+#: 6c2b5a1a6acd4ca8b4baee00b4de191b
+msgid "概述"
+msgstr "Overview"
+
+#: 4a8cdff22c234f9dbf6997729000c93d
+msgid "``inference_model.py`` 提供了 ``HamGNNInference`` 类，将训练时分离的模型组件封装为统一的推理接口。"
+msgstr "``inference_model.py`` provides the ``HamGNNInference`` class, which wraps model components that are separate during training into a unified inference interface."
+
+#: 40074721d595463cac906b86383d1405
+msgid "类参考"
+msgstr "Class Reference"
+
+#: 23999c8daa5e44ac9a6136d807e9aef6
+msgid "HamGNNInference"
+msgstr "HamGNNInference"
+
+#: 5419e111abef40c2821cf59f50967957
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: 0060f8b2edd24752932a675e2be4566f
+msgid "HamGNN 推理模型"
+msgstr "HamGNN Inference Model"
+
+#: 52d9f9f79317496b93e950fcaa9777c8
+msgid "将训练时分离的 representation 和 output_module 组合成单一模型， 用于 TorchScript 编译和部署。"
+msgstr "Combines the `representation` and `output_module`, which are separate during training, into a single model for TorchScript compilation and deployment."
+
+#: 2168034dac194022a036c19ec499fa9a 66f00a15a8ca4d2993d020c184388b06
+#: 9e77cd37d8ab457c8c09a849529c0f9b
+msgid "参数"
+msgstr "Parameters"
+
+#: e4974741454847c0a76f3e373aaa20b5
+msgid "HamGNN 表示学习模块 (如 HamGNNConvE3)"
+msgstr "The HamGNN representation learning module (e.g., HamGNNConvE3)."
+
+#: a51f9f37475f4f019ac34762bf4fc4f0
+msgid "HamGNN 输出模块 (如 HamGNNPlusPlusOut)"
+msgstr "The HamGNN output module (e.g., HamGNNPlusPlusOut)."
+
+#: fdcb84a1da6540338d23e394e5e218dc
+msgid ""
+"Initialize internal Module state, shared by both nn.Module and "
+"ScriptModule."
+msgstr ""
+"Initialize internal Module state, shared by both nn.Module and "
+"ScriptModule."
+
+#: 7c8895672a6045838176c822996fb34b b38ca867e9404691ac115aa98f226bd9
+msgid "推理前向传播"
+msgstr "Inference forward pass."
+
+#: 8ad73bb34f9f40dd85ac89eaab9adf49 bbec4b9bd29b4a3e894ece63d8c395dd
+msgid ""
+"包含图数据的字典，必须包含以下键： - pos: 原子位置 [num_atoms, 3] - cell: 晶胞参数 [batch_size, 3,"
+" 3] - node_attrs: 节点特征 - edge_index: 边索引 - edge_feats: 边特征 - batch: 批次索引"
+msgstr "A dictionary containing graph data, which must include the following keys: - pos: atomic positions [num_atoms, 3] - cell: cell parameters [batch_size, 3, 3] - node_attrs: node features - edge_index: edge indices - edge_feats: edge features - batch: batch indices"
+
+#: aa8b5cf15ed9437a81c04b98793b950a fd4c8391adbe4f53b23ee5357271abbf
+msgid "返回类型"
+msgstr "Return type"
+
+#: 4288481937034a15a575eede9088ce1f e86255de4ae4401c99b9fabd151c4b06
+msgid ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+msgstr ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+
+#: 30d2c07723eb4ec68c268e9faeae37c7 66c0927a5a80409db8300a54506636e5
+msgid "返回"
+msgstr "Returns"
+
+#: 40361140774844c3a8a0c399a22078b6 e52471a58418476cbe3a29637f9bd5e3
+msgid ""
+"包含预测结果的字典，通常包含：     - hamiltonian: 预测的哈密顿量矩阵     - 其他可能的输出（取决于 "
+"output_module）"
+msgstr "A dictionary containing the prediction results, which typically includes:     - hamiltonian: the predicted Hamiltonian matrix     - other possible outputs (depending on the output_module)"
+
+#: c650b8ad157645fda799bf9c04e9842f e55c3ede75904a849994759d87dfd3db
+msgid "包含预测结果的字典，通常包含："
+msgstr "A dictionary containing the prediction results, which typically includes:"
+
+#: 0f3da50a0180421687270d219e50fe6c 19e39c9db7b34a47b6713f6d13601254
+msgid "hamiltonian: 预测的哈密顿量矩阵"
+msgstr "hamiltonian: the predicted Hamiltonian matrix"
+
+#: 2ad8ae9eee99402f9ce13464daf85af1 6107fd3e62b94b688f59747cee838f22
+msgid "其他可能的输出（取决于 output_module）"
+msgstr "other possible outputs (depending on the output_module)"
+
+#: 12925f98b659416bb2dfb19a2d76d26b 7a8539f0eb494313be3c473b2cfc2190
+msgid "重写 to 方法以确保子模块正确迁移"
+msgstr "Overrides the `to` method to ensure correct migration of submodules."
+
+#: 8ccc43a968d84d57955618f1dd4a3829
+msgid "使用示例"
+msgstr "Usage Example"
+
+#: 5ed2fe44de7247dfbf3a3a6b5cd9b0d6
+msgid "创建推理模型："
+msgstr "Create an inference model:"
+
+#: 46c6a7be46d14c388f243eb8c74c5767
+msgid "推理使用："
+msgstr "Use for inference:"
+
+#: 16904b2c09124bafb793a58d251a6e79
+msgid "设计理念"
+msgstr "Design Philosophy"
+
+#: 6ec2def474f34024b0faa58d5cd95022
+msgid "**模块分离**: 将训练相关逻辑从推理模型中剥离"
+msgstr "**Module Separation**: Decouples training-related logic from the inference model."
+
+#: bd093c71e8d14a9f9bacc08dda0fd001
+msgid "**接口统一**: 提供标准化的字典输入输出接口"
+msgstr "**Unified Interface**: Provides a standardized dictionary-based input/output interface."
+
+#: 7f3524f4469f455daec6eff9c7d61fcb
+msgid "**TorchScript 友好**: 避免动态特性，确保编译兼容性"
+msgstr "**TorchScript-Friendly**: Avoids dynamic features to ensure compilation compatibility."
+
+#: 91f047527c994fc9accb1ec93cecea99
+msgid "**设备无关**: 支持灵活的设备迁移"
+msgstr "**Device-Agnostic**: Supports flexible device migration."
+
+#: 46c353d492d64029ac6accbeb4d81080
+msgid "技术特点"
+msgstr "Technical Features"
+
+#: 5b252ce91af241f59bd2a82835f04b82
+msgid "仅包含推理必需的 ``representation`` 和 ``output_module``"
+msgstr "Includes only the ``representation`` and ``output_module`` necessary for inference."
+
+#: c264b5b0f1ba42318c8f952395b318d6
+msgid "重写 ``to()`` 方法确保子模块正确迁移设备"
+msgstr "Overrides the ``to()`` method to ensure submodules are correctly moved to the target device."
+
+#: 4f00b14889014f2ca6b50359072a8c78
+msgid "使用字典格式输入，兼容 TorchScript 类型系统"
+msgstr "Uses a dictionary format for input, compatible with the TorchScript type system."
+
+#: b7340d5694cb4a55b9f5591b2b81c6de
+msgid "简化的前向传播逻辑，优化推理性能"
+msgstr "Simplified forward pass logic for optimized inference performance."
+

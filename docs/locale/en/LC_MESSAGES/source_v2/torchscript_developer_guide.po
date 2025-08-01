@@ -1,0 +1,729 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 4b3ae624377c4db98e1d14749a2abb10
+msgid "TorchScript 开发者指南"
+msgstr "TorchScript Developer Guide"
+
+#: c0679451c7e14acf8e707d4974a58b1e
+msgid "本文档仅适用于 HamGNN v2.0 版本。TorchScript 工具包目前不支持 v1.0 版本。"
+msgstr "This document is only applicable to HamGNN v2.0. The TorchScript toolkit does not currently support v1.0."
+
+#: a63acb2cd0ca44b18b64fbb312b3903b
+msgid "概述"
+msgstr "Overview"
+
+#: 45f3ee189bd34d55bd56350fe60ac8bf
+msgid "本文档面向 HamGNN TorchScript 工具包的开发者，详细介绍技术实现细节、代码架构、开发改造过程和未来技术路线图。"
+msgstr "This document is intended for developers of the HamGNN TorchScript toolkit, providing a detailed introduction to technical implementation details, code architecture, the development and refactoring process, and the future technical roadmap."
+
+#: b0835f9120394ac0999e7635195119cf
+msgid "技术架构"
+msgstr "Technical Architecture"
+
+#: 94cec33d92394c8ba68bf7a47bb397d0
+msgid "核心组件"
+msgstr "Core Components"
+
+#: 5e2400fed5f949db903fd7cebb82805e
+msgid "TorchScript 工具包包含以下核心组件："
+msgstr "The TorchScript toolkit includes the following core components:"
+
+#: 56c1f5de31154a488b391f2c7fd44d04
+msgid "**模型编译器** (``compile.py``)"
+msgstr "**Model Compiler** (``compile.py``)"
+
+#: 288479d0c63044b2aa8d462e1302ac9d
+msgid "加载 PyTorch Lightning checkpoint"
+msgstr "Loads PyTorch Lightning checkpoints"
+
+#: ae1683519cb248b7aecd63c830592f91
+msgid "构建 HamGNN 模型组件"
+msgstr "Builds HamGNN model components"
+
+#: 8721f52794404f6ca39cac3c264051b6
+msgid "封装为推理模型并编译为 TorchScript"
+msgstr "Wraps into an inference model and compiles to TorchScript"
+
+#: dc0160da65274802823409967cb84410
+msgid "**推理模型封装** (``inference_model.py``)"
+msgstr "**Inference Model Wrapper** (``inference_model.py``)"
+
+#: 8bc40c6ee0764e929650e0c2d3c715b1
+msgid "将训练时分离的 ``representation`` 和 ``output_module`` 组合"
+msgstr "Combines the ``representation`` and ``output_module`` that are separate during training"
+
+#: b9349b65e0e3453297edd566afefc86e
+msgid "提供 TorchScript 兼容的前向传播接口"
+msgstr "Provides a TorchScript-compatible forward pass interface"
+
+#: ca437e9f9e514ee29d26b4cbb93e188b
+msgid "处理设备迁移和模块管理"
+msgstr "Handles device migration and module management"
+
+#: 526c09428cc14fbcaf9647d1c896ebd1
+msgid "**数据转换工具** (``utils.py``)"
+msgstr "**Data Conversion Tools** (``utils.py``)"
+
+#: cb57d93e48264d7c81f32d36503f6bfe
+msgid "统一的数据格式转换函数"
+msgstr "Unified data format conversion functions"
+
+#: 3099d6dc0e0a43e19e06f81753aee74a
+msgid "模型输出比较工具"
+msgstr "Model output comparison tools"
+
+#: e56a5642d0664307b841919d9355e336
+msgid "支持复杂图数据结构的处理"
+msgstr "Support for handling complex graph data structures"
+
+#: a3214635f11d4b5eacbe3606fd07c920
+msgid "编译策略"
+msgstr "Compilation Strategy"
+
+#: b8b8c778d84946d58fda4f0eb4540bd6
+msgid "HamGNN 采用以下 TorchScript 编译策略："
+msgstr "HamGNN adopts the following TorchScript compilation strategy:"
+
+#: bc15afc62a0d4da89571e95284742c64
+msgid "**混合编译模式**"
+msgstr "**Hybrid Compilation Mode**"
+
+#: 8b37dbf2b1c34911b8015a5bbf3244ec
+msgid "使用 ``e3nn.util.jit.script()`` 而非标准 ``torch.jit.script()``："
+msgstr "Uses ``e3nn.util.jit.script()`` instead of the standard ``torch.jit.script()``:"
+
+#: 6a8c10b07dc24daa95e819a1d0391396
+msgid "**兼容性修复**"
+msgstr "**Compatibility Fixes**"
+
+#: 4ef82499f86a453ea32d6153f63e667f
+msgid "字典属性访问：``data.attribute`` → ``data['attribute']``"
+msgstr "Dictionary attribute access: ``data.attribute`` → ``data['attribute']``"
+
+#: 1ed1725237304fbfa8a332e479bd3a64
+msgid "动态类型检查：``hasattr()`` → ``try-except`` 模式"
+msgstr "Dynamic type checking: ``hasattr()`` → ``try-except`` pattern"
+
+#: 87c056a0a25a4ae08dacb221a1eb4832
+msgid "设备管理优化：避免生成器相关的设备绑定问题"
+msgstr "Device management optimization: Avoids device binding issues related to generators"
+
+#: 4d67b6137b0e42d79d800cf392ac2176
+msgid "**数据格式标准化**"
+msgstr "**Data Format Standardization**"
+
+#: 77b2b191326c4d65a3a37c7f620602f4
+msgid "所有输入数据通过 ``batch_to_input_dict()`` 转换为标准字典格式，确保 TorchScript 类型系统的兼容性。"
+msgstr "All input data is converted to a standard dictionary format via ``batch_to_input_dict()`` to ensure compatibility with the TorchScript type system."
+
+#: fd78dde814a8459880b923e009ff2c49
+msgid "开发改造过程"
+msgstr "Development and Refactoring Process"
+
+#: dc062e74be05409cbe80b7b5380a8b67
+msgid "主要历史改造"
+msgstr "Major Historical Refactors"
+
+#: 3678ff27ec4b4420ae6e37efbf35ff1c
+msgid ""
+"从 commit `164c2d2 <https://github.com/bud-"
+"primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_ "
+"开始，我们进行了系统性的 TorchScript 兼容性改造（`完整提交历史 <https://github.com/bud-"
+"primordium/HamGNN/commits/torchscript_export/>`_）："
+msgstr ""
+"Starting from commit `164c2d2 <https://github.com/bud-"
+"primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_, we "
+"carried out a systematic refactoring for TorchScript compatibility (`full "
+"commit history <https://github.com/bud-primordium/HamGNN/commits/"
+"torchscript_export/>`_):"
+
+#: c0559a6e1a864966b0ba9247df5e2dab
+msgid ""
+"**字典访问模式改造** (`164c2d2 <https://github.com/bud-"
+"primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_)"
+msgstr ""
+"**Dictionary Access Pattern Refactor** (`164c2d2 <https://github.com/bud-"
+"primordium/HamGNN/commit/164c2d2d2c40bbea37812d4fda96359f3d313abf>`_)"
+
+#: 62f7377a9b9a4ede8b641c411e4c5911
+msgid "将属性访问 (``data.attribute``) 替换为字典访问 (``data['attribute']``)"
+msgstr "Replaced attribute access (``data.attribute``) with dictionary access (``data['attribute']``)"
+
+#: b3df0cc6b64f42b38d787d750c1183be
+msgid "解决 PyTorch Geometric 数据对象与 TorchScript 的兼容性问题"
+msgstr "Resolved compatibility issues between PyTorch Geometric data objects and TorchScript"
+
+#: 8341986147dc4cef9ad8016a0105e96d
+msgid ""
+"**hasattr() 替换为 try-except** (`9b69a9d <https://github.com/bud-"
+"primordium/HamGNN/commit/9b69a9d>`_)"
+msgstr ""
+"**Replaced hasattr() with try-except** (`9b69a9d <https://github.com/bud-"
+"primordium/HamGNN/commit/9b69a9d>`_)"
+
+#: eb92abb1760543aea8f6c6f7b567aa1f
+msgid "TorchScript 不支持 ``hasattr()`` 函数"
+msgstr "TorchScript does not support the ``hasattr()`` function"
+
+#: f5315edebbab463fbf5a6599dcb0b72d
+msgid "系统性地替换为 try-except 模式"
+msgstr "Systematically replaced with the try-except pattern"
+
+#: fde32a1b005a4439860186125378b9b3
+msgid ""
+"**ClebschGordan 惰性排列策略** (`dd2a830 <https://github.com/bud-"
+"primordium/HamGNN/commit/dd2a830>`_)"
+msgstr ""
+"**ClebschGordan Lazy Permutation Strategy** (`dd2a830 <https://github.com/"
+"bud-primordium/HamGNN/commit/dd2a830>`_)"
+
+#: b088e6b8b6914548824208d8813e9c5f
+msgid "实现惰性加载机制以支持 TorchScript"
+msgstr "Implemented a lazy loading mechanism to support TorchScript"
+
+#: 0db27a68d2c646568c2df4b97599fe0a
+msgid ""
+"添加向后兼容性处理 (`829cfa5 <https://github.com/bud-"
+"primordium/HamGNN/commit/829cfa5>`_, `95dded3 <https://github.com/bud-"
+"primordium/HamGNN/commit/95dded3>`_)"
+msgstr ""
+"Added backward compatibility handling (`829cfa5 <https://github.com/bud-"
+"primordium/HamGNN/commit/829cfa5>`_, `95dded3 <https://github.com/bud-"
+"primordium/HamGNN/commit/95dded3>`_)"
+
+#: ac506cae92d749a3bb31a5b16ddccd3b
+msgid ""
+"**BaseModel 架构重设计与 DynamicGraphTransform 拆分** (`bb3ffb2 "
+"<https://github.com/bud-primordium/HamGNN/commit/bb3ffb2>`_)"
+msgstr "**BaseModel Architecture Redesign and DynamicGraphTransform Split** (`bb3ffb2 <https://github.com/bud-primordium/HamGNN/commit/bb3ffb2>`_)"
+
+#: 87d03e1694594d12ad6e4df9c1b88bde
+msgid "将动态图构建逻辑从 BaseModel 拆分为独立的 DynamicGraphTransform 类"
+msgstr "Split the dynamic graph construction logic from BaseModel into a separate DynamicGraphTransform class"
+
+#: 3631ab54ff4d40649a3d6c6540bdfb1f
+msgid "实现数据预处理与模型计算的分离"
+msgstr "Achieved separation of data preprocessing and model computation"
+
+#: 4e70074fb03c4aba959a65e5e991f11f
+msgid "完全移除 ASE 依赖，支持 TorchScript 编译"
+msgstr "Completely removed ASE dependency to support TorchScript compilation"
+
+#: 6159ae0d42384ce386a79f28f64d34af
+msgid "修复 DataLoader 兼容性问题"
+msgstr "Fixed DataLoader compatibility issues"
+
+#: 6e15a3ac3a064529bb71386c8d8a59fd
+msgid ""
+"**HamGNNPlusPlusOut 模块拆分** (`58e175a <https://github.com/bud-"
+"primordium/HamGNN/commit/58e175a>`_)"
+msgstr "**HamGNNPlusPlusOut Module Split** (`58e175a <https://github.com/bud-primordium/HamGNN/commit/58e175a>`_)"
+
+#: a38809668edb4d9794455c1291f881af
+msgid "将复杂模块拆分为 wrapper 和 core 部分"
+msgstr "Split complex modules into wrapper and core parts"
+
+#: db05e796fbbc410abe2274975f908cc0
+msgid ""
+"优化网络前向传播逻辑 (`616bbd4 <https://github.com/bud-"
+"primordium/HamGNN/commit/616bbd4>`_)"
+msgstr "Optimized network forward pass logic (`616bbd4 <https://github.com/bud-primordium/HamGNN/commit/616bbd4>`_)"
+
+#: be6cc37561fc4a55a4b977542cb989c6
+msgid "**其他重要修复**"
+msgstr "**Other Important Fixes**"
+
+#: 2591308bf4f74bf7b8cbee3e42e26a98
+msgid ""
+"添加 @compile_mode 装饰器 (`96e169c <https://github.com/bud-"
+"primordium/HamGNN/commit/96e169c>`_)"
+msgstr "Added @compile_mode decorator (`96e169c <https://github.com/bud-primordium/HamGNN/commit/96e169c>`_)"
+
+#: 1a90bf8a2a524d2788002d893e33a37b
+msgid ""
+"解决条件属性初始化问题 (`617bc13 <https://github.com/bud-"
+"primordium/HamGNN/commit/617bc13>`_)"
+msgstr "Resolved conditional attribute initialization issues (`617bc13 <https://github.com/bud-primordium/HamGNN/commit/617bc13>`_)"
+
+#: 9044888b869f4e85ac9ad89897863aef
+msgid ""
+"确保 tensor 操作的整数参数 (`2c18358 <https://github.com/bud-"
+"primordium/HamGNN/commit/2c18358>`_)"
+msgstr "Ensured integer arguments for tensor operations (`2c18358 <https://github.com/bud-primordium/HamGNN/commit/2c18358>`_)"
+
+#: 4aa8776c5783465c8291bc1d1ca9c410
+msgid ""
+"解决变量作用域兼容性问题 (`27b0aec <https://github.com/bud-"
+"primordium/HamGNN/commit/27b0aec>`_, `6eba7c8 <https://github.com/bud-"
+"primordium/HamGNN/commit/6eba7c8>`_)"
+msgstr "Resolved variable scope compatibility issues (`27b0aec <https://github.com/bud-primordium/HamGNN/commit/27b0aec>`_, `6eba7c8 <https://github.com/bud-primordium/HamGNN/commit/6eba7c8>`_)"
+
+#: 2b8ecb79ae2a4b85929a3f3062b71bf2
+msgid "技术细节"
+msgstr "Technical Details"
+
+#: 07f254858fcf464981ee8e39ba48bd05
+msgid "核心算法实现"
+msgstr "Core Algorithm Implementation"
+
+#: d7e19387256f48a3a243298feb0ca182
+msgid "**模型重构逻辑**"
+msgstr "**Model Refactoring Logic**"
+
+#: b7ca7e883bd143cd9eb324faecfbddf8
+msgid "**数据转换策略**"
+msgstr "**Data Conversion Strategy**"
+
+#: 5e18c345499648b98abf84d749d5c814
+msgid "``batch_to_input_dict()`` 函数处理以下字段类别："
+msgstr "The ``batch_to_input_dict()`` function handles the following field categories:"
+
+#: b4251535c4374298a9bee5ad3daaf3ce
+msgid "必需基础字段：``pos``, ``cell``, ``z``, ``edge_index``"
+msgstr "Required base fields: ``pos``, ``cell``, ``z``, ``edge_index``"
+
+#: db26fea9fb784c2a8d86fdd5de70179d
+msgid "图结构字段：``inv_edge_idx``, ``nbr_shift``, ``cell_shift``"
+msgstr "Graph structure fields: ``inv_edge_idx``, ``nbr_shift``, ``cell_shift``"
+
+#: c16cc07efbfb41c2a7b353fdb06b322c
+msgid "哈密顿量相关：``Hon``, ``Hoff``, ``Son``, ``Soff`` 等"
+msgstr "Hamiltonian-related: ``Hon``, ``Hoff``, ``Son``, ``Soff``, etc."
+
+#: 525d03720ed8498a8e2ebc8884334b05
+msgid "批次管理：``batch``, ``node_counts``, ``ptr``"
+msgstr "Batch management: ``batch``, ``node_counts``, ``ptr``"
+
+#: d3efd8364d6a4fbab146875c0d03e4e6
+msgid "**设备管理优化**"
+msgstr "**Device Management Optimization**"
+
+#: fa2b5d00dfc5460daf718ad718a7942f
+msgid "避免在模型定义中绑定设备信息"
+msgstr "Avoid binding device information in the model definition"
+
+#: 401f519b28614f71bb284e5715af138a
+msgid "使用模型加载时的设备设置"
+msgstr "Use the device settings from model loading time"
+
+#: 393bd71a05fa46f0863e0cbc5f17b207
+msgid "重写 ``to()`` 方法确保子模块正确迁移"
+msgstr "Override the ``to()`` method to ensure correct submodule migration"
+
+#: 9404f7393f5e498b89c0aef6a083212b
+msgid "历史问题与教训"
+msgstr "Historical Issues and Lessons Learned"
+
+#: b4d2cc89377a4f4fb958908b80ab1c57
+msgid "**配置文件依赖**"
+msgstr "**Configuration File Dependency**"
+
+#: 8dc2b34e87f34ea49f7d0befc20f7050
+msgid "**问题**: 早期 checkpoint 不包含超参数信息"
+msgstr "**Problem**: Early checkpoints do not contain hyperparameter information"
+
+#: 4efadabfb310409fb38958f1aebe345e
+msgid "**原因**: ``Model.py`` 中 ``self.save_hyperparameters()`` 被注释"
+msgstr "**Reason**: ``self.save_hyperparameters()`` was commented out in ``Model.py``"
+
+#: a580f5624bdf4e11a4e36c3813075805
+msgid "**影响**: 编译时需要额外提供配置文件"
+msgstr "**Impact**: Compilation requires providing an additional configuration file"
+
+#: c1988262f524409e83592a0fe988adfa
+msgid "**未来改进**: 启用超参数保存，实现直接从 checkpoint 编译"
+msgstr "**Future Improvement**: Enable hyperparameter saving to allow direct compilation from checkpoints"
+
+#: 5698e077f0d743e5ab6a760e395f0147 c5b4844c4a4446a296f40fee03fd3bf8
+msgid "技术路线图"
+msgstr "Technical Roadmap"
+
+#: 5498378af2b5499590a3e7d41ee646ad
+msgid "我们规划了三个阶段的技术演进路径，从当前的 TorchScript 实现逐步向更先进的编译技术迁移。"
+msgstr "We have planned a three-stage technical evolution path, gradually migrating from the current TorchScript implementation to more advanced compilation technologies."
+
+#: 7a01fcf2e214490eafbcab299770c6b5
+msgid "阶段 1：从 TorchScript Script 转向 Trace 模式"
+msgstr "Phase 1: Transition from TorchScript Script to Trace Mode"
+
+#: ee6e3945326a47bdab1709c55dec1488
+msgid "**目标**: 减少编译开销，提高兼容性"
+msgstr "**Goal**: Reduce compilation overhead and improve compatibility"
+
+#: 34425fa9205f49f78490ca65cbbe9bd0 36024ed5884442ca851f7d28887cde6a
+msgid "**技术方案**:"
+msgstr "**Technical Solution**:"
+
+#: b0d690ad6e6640beba5c3790c7478687
+msgid "**Trace 模式优势**:"
+msgstr "**Advantages of Trace Mode**:"
+
+#: 0af8a5dd71194e7f959bca81a6c035aa
+msgid "更好的动态张量形状支持"
+msgstr "Better support for dynamic tensor shapes"
+
+#: 4b75a58925374b159c25653b8eb27407
+msgid "减少 JIT 编译时的类型推断开销"
+msgstr "Reduced type inference overhead during JIT compilation"
+
+#: da886053213745068927c92050d8d5b0
+msgid "对复杂控制流的更好处理"
+msgstr "Better handling of complex control flow"
+
+#: a492443f5be7476399b52d01866feaf0
+msgid "**实现策略**:"
+msgstr "**Implementation Strategy**:"
+
+#: ac7397846b03461cb31eb3fdd2436782
+msgid "**挑战与解决**:"
+msgstr "**Challenges and Solutions**:"
+
+#: de85ef84cd194e20a1d8924f311d129f
+msgid "**动态图结构**: HamGNN 的原子数量和邻居关系在不同结构中变化"
+msgstr "**Dynamic Graph Structure**: The number of atoms and neighbor relationships in HamGNN vary across different structures"
+
+#: 411aa7d826784bddb154d732b948f11f
+msgid "**解决方案**: 设计代表性的示例输入，覆盖常见的图大小范围"
+msgstr "**Solution**: Design representative example inputs that cover a common range of graph sizes"
+
+#: 3eadc31f529d4d608fbcf5b4348e9c47
+msgid "**验证机制**: 确保 trace 模式下的输出一致性"
+msgstr "**Validation Mechanism**: Ensure output consistency in trace mode"
+
+#: 69c97e8d5df146529d22b6d8b1230357
+msgid "阶段 2：引入 torch.fx 模型重构，进而集成 PyTorch 2.0 TorchInductor"
+msgstr "Phase 2: Introduce torch.fx for model refactoring, and then integrate PyTorch 2.0 TorchInductor"
+
+#: 33a7fa190672439582f2af96203f2d5a
+msgid "**目标**: 利用图级别优化，集成新一代编译器"
+msgstr "**Goal**: Leverage graph-level optimization and integrate next-generation compilers"
+
+#: ac138ee4dd61460d8fd845e5c3ed9d5f
+msgid "**torch.fx 图变换**:"
+msgstr "**torch.fx Graph Transformation**:"
+
+#: 8a1f0e343e4543998ebfee1d4cc59ada
+msgid "在计算图级别分析模型结构"
+msgstr "Analyze model structure at the computation graph level"
+
+#: 50f7f2d75f514c1da7665df6f328118c
+msgid "识别瓶颈操作和优化机会"
+msgstr "Identify bottleneck operations and optimization opportunities"
+
+#: 089a252144e6470886ce7a66746da72f
+msgid "自动重排和融合操作"
+msgstr "Automatically reorder and fuse operations"
+
+#: af63d5f3b5dc485f81f9504972ddb55e
+msgid "**TorchInductor 集成**:"
+msgstr "**TorchInductor Integration**:"
+
+#: d3502926ca9f446f8ba0e8bae328cb6b
+msgid "**动态张量形状适应**:"
+msgstr "**Dynamic Tensor Shape Adaptation**:"
+
+#: 2bea66afab5e40b5b07476c14d98e1d1
+msgid "TorchInductor 的关键优势是对动态张量形状的原生支持，这对 HamGNN 至关重要："
+msgstr "A key advantage of TorchInductor is its native support for dynamic tensor shapes, which is crucial for HamGNN:"
+
+#: 9f92535deedd4b9c881336a47abc02c3
+msgid "**原子数量变化**: 不同分子/晶体结构的原子数量差异很大"
+msgstr "**Variable Number of Atoms**: The number of atoms varies significantly across different molecules/crystal structures"
+
+#: bce78fd519aa42f296ca51ac209f92e6
+msgid "**邻居对数量**: 根据截断半径和晶体结构，邻居原子对数量动态变化"
+msgstr "**Variable Number of Neighbor Pairs**: The number of neighbor atom pairs changes dynamically based on the cutoff radius and crystal structure"
+
+#: 0dd465fdab6b45f1832566b5456ee252
+msgid "**批次处理**: 同一批次内不同图的大小可能不同"
+msgstr "**Batch Processing**: The size of different graphs within the same batch can vary"
+
+#: b728b73ad1344ea3ab4968b65abe7886
+msgid "**编译器后端选择**:"
+msgstr "**Compiler Backend Selection**:"
+
+#: 193985dd46ac4ffc9a67b65e43b6cc26
+msgid "**GPU**: 利用 Triton 生成优化的 CUDA 内核"
+msgstr "**GPU**: Utilize Triton to generate optimized CUDA kernels"
+
+#: d86d93a0803240619547e19839deebda
+msgid "**CPU**: 生成 C++ 和 OpenMP 代码"
+msgstr "**CPU**: Generate C++ and OpenMP code"
+
+#: 1c428ea8c74f41ca949967ae04f497fc
+msgid "**硬件无关**: 自动适应不同的硬件特性"
+msgstr "**Hardware-Agnostic**: Automatically adapt to different hardware characteristics"
+
+#: bb441158bb934b52b74577ac3c660768
+msgid "阶段 3：利用 Triton 自定义内核优化 e3nn.o3.TensorProduct 的张量积操作"
+msgstr "Phase 3: Utilize Triton custom kernels to optimize the tensor product operations of e3nn.o3.TensorProduct"
+
+#: 3a2b71c0f347497497830ecc24ea8b87
+msgid "**目标**: 为最昂贵的计算操作开发专用内核"
+msgstr "**Goal**: Develop dedicated kernels for the most computationally expensive operations"
+
+#: 5fd104f755954313a8e9de15f7ebe327
+msgid "**技术背景**:"
+msgstr "**Technical Background**:"
+
+#: d7a548a2cbf14e1eadef6d26c9f1496d
+msgid "HamGNN 的计算瓶颈主要在等变张量积操作："
+msgstr "The computational bottleneck of HamGNN lies mainly in the equivariant tensor product operations:"
+
+#: 26db37b19f464d8a868c1dcba0ee2158
+msgid "``e3nn.o3.TensorProduct``: 球谐函数之间的张量积"
+msgstr "``e3nn.o3.TensorProduct``: Tensor product between spherical harmonics"
+
+#: f98ebea1c6d94afc9930fbbf0ae49e8f
+msgid "不可约表示的变换和组合"
+msgstr "Transformation and combination of irreducible representations (irreps)"
+
+#: 550cc144dd764e138c63a06cd3faf19f
+msgid "高维张量的复杂索引和求和"
+msgstr "Complex indexing and summation of high-dimensional tensors"
+
+#: 9a7588b0e4c64e29b3b424927a6ca323
+msgid "**Triton 内核开发**:"
+msgstr "**Triton Kernel Development**:"
+
+#: 9200e76b04c44d76a59a5f9b0de5f071
+msgid "**内核特性**:"
+msgstr "**Kernel Features**:"
+
+#: acada4507f824e19acdb8f428b6904d0
+msgid "**内存优化**: 针对 HamGNN 的数据访问模式设计"
+msgstr "**Memory Optimization**: Designed for HamGNN's specific data access patterns"
+
+#: 04d2b9d19d934289a8806560fdd8d346
+msgid "**向量化计算**: 利用现代 GPU 的并行特性"
+msgstr "**Vectorized Computation**: Leverage the parallel features of modern GPUs"
+
+#: 531f2390f5934786b59e7ade386f00d9
+msgid "**数学优化**: 针对球谐函数和 Clebsch-Gordan 系数的特化"
+msgstr "**Mathematical Optimization**: Specialization for spherical harmonics and Clebsch-Gordan coefficients"
+
+#: 7f9a4a61f90a46e78ba68c65332ecbe3
+msgid "**动态形状**: 支持变长的不可约表示"
+msgstr "**Dynamic Shapes**: Support for variable-length irreducible representations"
+
+#: 64c7e7fd6dc34396a574f27146a316d0
+msgid "**集成策略**:"
+msgstr "**Integration Strategy**:"
+
+#: e6786abcfabf45ae998f8ed012b1fceb
+msgid "实施计划"
+msgstr "Implementation Plan"
+
+#: a4987279f2e2464092b89320d9948411
+msgid "阶段"
+msgstr "Phase"
+
+#: c3b7f2b81fec438b8e3577a0ea47cf29
+msgid "主要任务"
+msgstr "Main Tasks"
+
+#: 92cb9d042af946cfad6afa7b1dfff315
+msgid "技术挑战"
+msgstr "Technical Challenges"
+
+#: 7a32f25fbc5d424f9f555f58540d502b
+msgid "阶段 1"
+msgstr "Phase 1"
+
+#: 74b3f350bca548ba88e95432657c40c8
+msgid "Trace 模式编译器"
+msgstr "Trace Mode Compiler"
+
+#: cfa0563db2984d438ac682a724d2b6cb
+msgid "动态图结构处理"
+msgstr "Dynamic graph structure handling"
+
+#: 5b51d0ff70354caebc13265ac157b562
+msgid "阶段 2"
+msgstr "Phase 2"
+
+#: c26984f9d6f04fcbbfe438e87fdbd841
+msgid "torch.fx + TorchInductor"
+msgstr "torch.fx + TorchInductor"
+
+#: f2e136c0894d43a39fc2b1d82e0fc951
+msgid "动态张量形状适配"
+msgstr "Dynamic tensor shape adaptation"
+
+#: 13bb3c7e90a54cc7981b99a49b2daec1
+msgid "阶段 3"
+msgstr "Phase 3"
+
+#: 34afe6ea299c4d23a93e244d37a2b51e
+msgid "Triton 自定义内核"
+msgstr "Triton Custom Kernels"
+
+#: 3cc2e41bede94b109f7fd3af421c44c5
+msgid "张量积操作优化"
+msgstr "Tensor product operation optimization"
+
+#: 29fb24b6c7794b78bd186253c3792831
+msgid "补充方案：hamgnn-package"
+msgstr "Supplementary Plan: hamgnn-package"
+
+#: abe3deab2a88498f9694ef7497988b02
+msgid "除了上述技术路线图，我们还在考虑一个补充的模型分发方案："
+msgstr "In addition to the technical roadmap above, we are also considering a supplementary model distribution plan:"
+
+#: 438137299f424eeb9bc670fb1b9fa017
+msgid "**hamgnn-package**: 模型打包与分发工具"
+msgstr "**hamgnn-package**: A model packaging and distribution tool"
+
+#: 4760f4839a12457a9c4df328a7ef7c52
+msgid "当前的 hamgnn-compile 主要解决从 checkpoint 部署到生产环境的问题，但编译后的 .hamgnn.pt 文件仍然依赖于："
+msgstr "The current hamgnn-compile mainly solves the problem of deploying from a checkpoint to a production environment, but the compiled .hamgnn.pt file still depends on:"
+
+#: b1048f177eb84395b78d98eb56ad85b5
+msgid "CUDA、e3nn、NumPy 等核心外部库的版本"
+msgstr "Versions of core external libraries like CUDA, e3nn, and NumPy"
+
+#: ff98eebb626d426e8044e69abe92c70a
+msgid "没有设计与其他软件（如 ASE 计算器）的接口"
+msgstr "No interface designed for other software (like ASE calculators)"
+
+#: d0055ae026c341cdb5a0a72935a089e7
+msgid "对 HamGNN 版本有一定依赖"
+msgstr "Has some dependency on the HamGNN version"
+
+#: 699ff3f1abfd4082bffd5d81f0924692
+msgid "未来的 hamgnn-package 将提供更完整的模型分发方案："
+msgstr "The future hamgnn-package will provide a more complete model distribution solution:"
+
+#: 9be683e80da44c2db45715d0d99cc1a0
+msgid "在训练时或从 checkpoint/.hamgnn.pt 导出完整模型包"
+msgstr "Export a complete model package during training or from a checkpoint/.hamgnn.pt file"
+
+#: 871a4ecf39974c7eb77c1948d788d56e
+msgid "封装模型权重、运行所需的 Python 源代码快照、元数据"
+msgstr "Encapsulate model weights, a snapshot of the required Python source code for execution, and metadata"
+
+#: 2076edae7d8d4ffaba7398019a1e3b90
+msgid "真正实现模型的跨平台、跨版本分发"
+msgstr "Truly achieve cross-platform, cross-version model distribution"
+
+#: 380c04c3d2f64558a8858dcd7e4a1b93
+msgid "这样形成两个互补的工具："
+msgstr "This forms two complementary tools:"
+
+#: eb9265c28fcc4948ac15711a101b1b05
+msgid "**hamgnn-compile**: 负责生产环境的高性能部署推理"
+msgstr "**hamgnn-compile**: Responsible for high-performance deployment and inference in production environments"
+
+#: 8208b15505334d3997c674e069132362
+msgid "**hamgnn-package**: 负责模型的打包分发"
+msgstr "**hamgnn-package**: Responsible for model packaging and distribution"
+
+#: 5bffc50e5a164c6fbd5825d2b4af1ace
+msgid "注意：ASE 等软件的集成接口需要额外开发，生产环境的集成仍然基于 .hamgnn.pt 文件。"
+msgstr "Note: Integration interfaces for software like ASE require separate development. Production environment integration is still based on the .hamgnn.pt file."
+
+#: a0a94a8d767d4588a572d9c45afaf03b
+msgid "代码维护"
+msgstr "Code Maintenance"
+
+#: 676bfaac3de344a3940fd3fc436ef888
+msgid "开发规范"
+msgstr "Development Standards"
+
+#: a54b04c4439e4e4ab864d544c4ed5d85
+msgid "遵循 Google Python 风格指南"
+msgstr "Follow the Google Python Style Guide"
+
+#: d23622a2fa21478cbc6260ecdf032d65
+msgid "使用完整的 docstring 文档"
+msgstr "Use complete docstring documentation"
+
+#: 19d92ab8754c4c54a4ee40ef37988af4
+msgid "类型注解覆盖所有公共接口"
+msgstr "Type annotations should cover all public interfaces"
+
+#: bf40ded01f5c424fb2f69f52fa5b78db
+msgid "调试工具"
+msgstr "Debugging Tools"
+
+#: e8be80d7be254ba5b59b510e86a0a69d
+msgid "**性能分析**"
+msgstr "**Performance Analysis**"
+
+#: 690d337ba5b14178874d8687a6d7ae18
+msgid "**模型比较工具**"
+msgstr "**Model Comparison Tool**"
+
+#: b786d494964847c3b7221ec2328d95df
+msgid "使用 ``compare_model_outputs()`` 函数进行精确的数值验证。"
+msgstr "Use the ``compare_model_outputs()`` function for precise numerical validation."
+
+#: e5e1f213aa60497f9e2ade389a45df26
+msgid "**元数据检查**"
+msgstr "**Metadata Inspection**"
+
+#: 184d9c6a753a44f3b2319140ef38daa3
+msgid "编译过程会生成详细的元数据，包含环境信息和编译配置。"
+msgstr "The compilation process generates detailed metadata, including environment information and compilation configuration."
+
+#: c3273c69f73d4b95a7f70f9e04de8eb4
+msgid "参考资源"
+msgstr "References"
+
+#: ad3ad85b370a4d8c81669cf001872bb8
+msgid "**高性能深度等变原子间势训练与推理**"
+msgstr "**High-performance training and inference for deep equivariant interatomic potentials**"
+
+#: ba3992e5d3b64664b644df9a5adab40c
+msgid ""
+"Tan, C. W., Descoteaux, M. L., Kotak, M., Nascimento, G. D. M., Kavanagh,"
+" S. R., Zichi, L., Wang, M., Saluja, A., Hu, Y. R., Smidt, T., Johansson,"
+" A., Witt, W. C., Kozinsky, B., & Musaelian, A. (2025). High-performance "
+"training and inference for deep equivariant interatomic potentials. arXiv"
+" preprint arXiv:2504.16068. `链接 <https://arxiv.org/abs/2504.16068>`_"
+msgstr ""
+"Tan, C. W., Descoteaux, M. L., Kotak, M., Nascimento, G. D. M., Kavanagh,"
+" S. R., Zichi, L., Wang, M., Saluja, A., Hu, Y. R., Smidt, T., Johansson,"
+" A., Witt, W. C., Kozinsky, B., & Musaelian, A. (2025). High-performance "
+"training and inference for deep equivariant interatomic potentials. arXiv"
+" preprint arXiv:2504.16068. `Link <https://arxiv.org/abs/2504.16068>`_"
+
+#: fac6c7115db54cd1b3b8c9a3ef4b33c6
+msgid "技术文档"
+msgstr "Technical Documentation"
+
+#: 62256c6dd8f54ee1aa6cfa56f2e6b4d8
+msgid "`PyTorch 2.0 编译器栈 <https://pytorch.org/docs/stable/torch.compiler.html>`_"
+msgstr "`PyTorch 2.0 Compiler Stack <https://pytorch.org/docs/stable/torch.compiler.html>`_"
+
+#: 3fd29b1b77754e7f99991df60f505103
+msgid "`Triton 开发指南 <https://triton-lang.org/>`_"
+msgstr "`Triton Development Guide <https://triton-lang.org/>`_"
+
+#: eee5654be1344f53bc74a0159027554e
+msgid "`torch.fx 变换文档 <https://pytorch.org/docs/stable/fx.html>`_"
+msgstr "`torch.fx Transformation Documentation <https://pytorch.org/docs/stable/fx.html>`_"
+
+#: 6469e6f5c2bc47b08de76091129d23f4
+msgid "`E3NN TorchScript 集成 <https://docs.e3nn.org/>`_"
+msgstr "`E3NN TorchScript Integration <https://docs.e3nn.org/>`_"
+

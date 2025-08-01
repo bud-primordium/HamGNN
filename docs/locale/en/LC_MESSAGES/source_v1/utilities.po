@@ -1,0 +1,251 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 0992d8c4b9ed4a37a2006f54fb9da08e
+msgid "通用工具函数"
+msgstr "General utility functions"
+
+#: b756945eba1a46748a6a26ba54b348d4
+msgid "Swish 激活函数"
+msgstr "Swish activation function"
+
+#: c92629de873a43a18bb8407a338dfb5c
+msgid "创建一个包含线性层、批归一化层和激活函数的序列模块。"
+msgstr "Creates a sequential module containing a linear layer, a batch normalization layer, and an activation function."
+
+#: 1444c11aa8584ca0bf80d2f00e8ab244 36196dcf550c42dfb496a511e2961be6
+#: 6944792485714b2999740fbb52376c11 89257af78c4c4af3a68656ca88d6f93b
+#: a8964b1728f94184aa63845c51ae7695 b5cc6f23f5924b2a96e914a473a0aac9
+#: c3e459fddfe444af98fd3d98ab80447f
+msgid "参数"
+msgstr "Parameters"
+
+#: 9962c7874b514198ac5403771486f230
+msgid "输入特征维度。"
+msgstr "Input feature dimension."
+
+#: c27d8695820f49d2864bc9415ea9d72a
+msgid "输出特征维度。"
+msgstr "Output feature dimension."
+
+#: ee565ca5bd5e425bab5ab54d6fb5e5ca
+msgid "线性层是否使用偏置。默认为 False。"
+msgstr "Whether the linear layer uses a bias. Defaults to False."
+
+#: d1c4484667484ef9aa4d8a623f0892e1
+msgid "激活函数模块。默认为 None。"
+msgstr "Activation function module. Defaults to None."
+
+#: 14e0a9c19e5f4ad89906d23a76e9bd50
+msgid "是否使用批归一化。默认为 False。"
+msgstr "Whether to use batch normalization. Defaults to False."
+
+#: 07e17804d0f6482cb007560d68a881aa 481c5d67e0b444b2b78ccd7652ac4009
+#: 5de597ca074c46c88293af0d1690695f 9c14722481c2413387df987e9755e72d
+#: bfdee2d3ec8a410788f89ca706356f2e cd518d8dcf7a43809ecd8f2807edcbc2
+msgid "返回"
+msgstr "Returns"
+
+#: 0a4e2fa99dbe44b7a58927ca282ce888
+msgid "组装好的序列模块。"
+msgstr "The assembled sequential module."
+
+#: 129d80f5126345c6a2b1eeb8f185a7b1 38dc6436b5864b14986f4aff20a36d20
+#: 3aa4a6177a6b4b90bfa02298182c9da5 5c15ab85910d400ca1eb83c9c6a462ae
+#: 8543eb10df71403aa37d99e61085bb59 fdb1b994c63e48df81825beb5c2625bf
+msgid "返回类型"
+msgstr "Return type"
+
+#: a0a4ad83eb324bb59e1f3be29f9b7f0b
+msgid "应用逐元素的 Shifted SoftPlus (SSP) 激活函数。"
+msgstr "Applies the element-wise Shifted SoftPlus (SSP) activation function."
+
+#: 01c11ede825747c6b14bd44974f003f5
+#, python-brace-format
+msgid ""
+"SSP 的计算公式为: "
+":math:`\\text{SSP}(x)=\\text{Softplus}(x)-\\text{Softplus}(0)`。 这确保了 "
+":math:`\\text{SSP}(0)=0`。"
+msgstr ""
+"The SSP formula is: "
+":math:`\\text{SSP}(x)=\\text{Softplus}(x)-\\text{Softplus}(0)`. This ensures "
+"that :math:`\\text{SSP}(0)=0`."
+
+#: 6c10b250e77043e4a2ca9e647c81694b
+msgid "Softplus 公式中的 :math:`\\beta` 值。默认为 1。"
+msgstr "The :math:`\\beta` value in the Softplus formula. Defaults to 1."
+
+#: 2cf0b1c2571d4dbba287d172ad3187a8
+msgid "当输入值高于此阈值时，Softplus 将退化为线性函数。默认为 20。"
+msgstr "When the input value is higher than this threshold, Softplus degenerates to a linear function. Defaults to 20."
+
+#: b1872e7782e04286b3fe07f6f8d632a4
+msgid "Shape:"
+msgstr "Shape:"
+
+#: a7dc3b3ee72141d18d9f253ed01349cd
+msgid "输入: :math:`(N, *)`，其中 `*` 表示任意数量的附加维度。"
+msgstr "Input: :math:`(N, *)`, where `*` means any number of additional dimensions."
+
+#: 69015969935f434ca46f5eccc23e6513
+msgid "输出: :math:`(N, *)`，形状与输入相同。"
+msgstr "Output: :math:`(N, *)`, same shape as the input."
+
+#: 95b03f09d7d747e99653fc29efdc1d6b a62efe65d4a944768409669cd7d7ea84
+#: d358e3ce0aa04b47839053aadbea831d e12024e6a8574c96b9d2f0ed18ce4925
+#: e89ffbac7a4344769dbc405c717cb38b ea18fc339424486c95ced5724d751ced
+msgid "Define the computation performed at every call."
+msgstr "Define the computation performed at every call."
+
+#: 0ece100aed2a4d2d8827d3cb18cfc66d 1d11b895bc874c4180e009ad647f9598
+#: 32a3e41a05ed4d98ac5b1e9af3717689 76fc1149d2da498bb28540289fe2a403
+#: 7cd458138aef48b8ae03c108d30c89de b08d9b26f88b4ff7be279007114b0b21
+msgid "Should be overridden by all subclasses."
+msgstr "Should be overridden by all subclasses."
+
+#: 8ccc14791466474287d8f95538de0050 b2a587e63d9c4709b0686c9a7aaefdc9
+#: cebc89c8144846b9a988d78f12bfddec d5711bf702f448ad99b9b17022d99e25
+#: e96c4f31bbd74d8389c47da8a35569f7 ec84035ce4344b27a5f50d387c4c15d2
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+
+#: 82fc864063e540c9ab3882fcc01ca025
+msgid "Set the extra representation of the module."
+msgstr "Set the extra representation of the module."
+
+#: b83d9f23c2514aa294e9eae0e637ce18
+msgid ""
+"To print customized extra information, you should re-implement this "
+"method in your own modules. Both single-line and multi-line strings are "
+"acceptable."
+msgstr ""
+"To print customized extra information, you should re-implement this "
+"method in your own modules. Both single-line and multi-line strings are "
+"acceptable."
+
+#: f892e56aa78644febe8c5d92e9fc1e0b
+msgid "SWISH 激活函数模块"
+msgstr "SWISH activation function module"
+
+#: a058b250e37948aab3582aefe354fbbc
+msgid "根据字符串名称返回对应的激活函数实例。"
+msgstr "Returns the corresponding activation function instance based on the string name."
+
+#: d4dfc6377b024dc1a605aace3455c18c
+msgid "激活函数的名称，支持带有参数，如 \"elu(1.0)\"。"
+msgstr "The name of the activation function, supports parameters, e.g., \"elu(1.0)\"."
+
+#: 2c69c7d50edd447c8b40e28c62064e6a
+msgid "激活函数模块的实例。"
+msgstr "An instance of the activation function module."
+
+#: 86ba37640f014c9ab22dc3cd0a384f5c
+msgid "抛出"
+msgstr "Raises"
+
+#: 64ca80c1f9d3416380357af21e9c1c0c
+msgid "如果输入的名称不被支持。"
+msgstr "If the input name is not supported."
+
+#: a56a0ffd1e33403ebd6cdcc4d4ed15e7
+msgid "绘制预测值与目标值的散点图。"
+msgstr "Plots a scatter plot of predicted vs. target values."
+
+#: 31619aad6ae742a697a90b0fa33b40f1
+msgid "预测值数组。"
+msgstr "Array of predicted values."
+
+#: 5a4915577ec74229949297e0df5e03b3
+msgid "目标值数组。"
+msgstr "Array of target values."
+
+#: 1b2bea47cd2b42859d88ab5bd4c8a2ef
+msgid "绘制好的图表对象。"
+msgstr "The plotted chart object."
+
+#: 6ca779c86df743a7a360c42b472a2ccf
+msgid "计算 1 - 余弦相似度的损失函数。"
+msgstr "Loss function for 1 - cosine similarity."
+
+#: f08df096aafa4703aa30838558dd3b85
+msgid "计算预测值总和的 L2 范数，用于约束总和为零。"
+msgstr "Calculates the L2 norm of the sum of predictions to constrain the sum to zero."
+
+#: c58ee2b7bf1441fab790d0dc105e4346
+msgid "计算预测值和目标值之间的平均欧几里得距离。"
+msgstr "Calculates the mean Euclidean distance between predicted and target values."
+
+#: 3248b7cc796742fcb34854d6bf0191b5
+msgid "均方根误差损失。"
+msgstr "Root Mean Squared Error loss."
+
+#: d312bf69f46c4352a2fab2787d39e5fa
+msgid "解析配置文件中的度量函数列表，将字符串名称转换为函数实例。"
+msgstr "Parses the list of metric functions in the configuration file, converting string names to function instances."
+
+#: 186c528801d948cda87a0923869aa881
+msgid "包含度量函数配置的列表。"
+msgstr "A list containing metric function configurations."
+
+#: 6fb18ae94ee34e03852d1dc13b30168f
+msgid "更新后的列表，其中 'metric' 的值被替换为函数实例。"
+msgstr "The updated list where the value of 'metric' is replaced with a function instance."
+
+#: 6f4c88c27c5b49c9a94b231827bcc096
+msgid "根据配置文件提取并组织用于日志记录的超参数字典。"
+msgstr "Extracts and organizes a dictionary of hyperparameters for logging based on the configuration file."
+
+#: 6523bbac60b54d8ca0595485a42dea09
+msgid "项目的全局配置对象。"
+msgstr "The project's global configuration object."
+
+#: 36fb944143a44872ab3a2c9179e3ad0d
+msgid "包含 GNN 名称和相关超参数的字典。"
+msgstr "A dictionary containing the GNN name and related hyperparameters."
+
+#: 76f5a98ab8c2426584645d6a9d6b0740
+msgid "计算图中的所有三元组 (i, j, k)，其中 j 是中心原子。"
+msgstr "Computes all triplets (i, j, k) in the graph, where j is the central atom."
+
+#: c1dbfca4107149d39cc14d0c331c89c0
+msgid "边索引，形状为 [2, N_edges]。"
+msgstr "Edge index, with shape [2, N_edges]."
+
+#: ef5333e3f43c4996808be4daa243363f
+msgid "边的周期性偏移向量。"
+msgstr "Periodic offset vector of the edges."
+
+#: 25d7a192822b40d9b4492bf9c347a384
+msgid "每个节点的近邻数量。"
+msgstr "Number of neighbors for each node."
+
+#: bf7ed304aa5747328c3e6ebc5a6fadce
+msgid "包含三元组信息的元组 (col_i, row_j, idx_i, idx_j, idx_k, idx_kj, idx_ji)。"
+msgstr "A tuple containing triplet information (col_i, row_j, idx_i, idx_j, idx_k, idx_kj, idx_ji)."
+

@@ -1,0 +1,165 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 92b6745e728b46b28268a3d127d8d7d2
+msgid "数据解析"
+msgstr "Data Parsing"
+
+#: 3a43699d94cb4700832e67ef75629ac1
+msgid "计算周期性边界条件下，近邻原子相对于中心原子的偏移向量。"
+msgstr "Calculate the offset vector of a neighboring atom relative to the central atom under periodic boundary conditions."
+
+#: 08de47900a9d424db75a7e54c877a741
+msgid "在晶体中，一个原子的近邻可能位于相邻的晶胞中。这个函数通过晶格矢量 和周期性偏移镜像（image）来计算这种跨晶胞的实际位移。"
+msgstr "In a crystal, the neighbors of an atom may be in adjacent unit cells. This function calculates the actual displacement across unit cells using the lattice vectors and the periodic offset (image)."
+
+#: 04068a1260d3485d83a41d898197c096 21d69f34d6424e70bebe06d5f2792f22
+#: a7e09e963b93431fafa04c02a8eeaa7c ef2e5821fdb9491bba27ce9f63b12046
+msgid "参数"
+msgstr "Parameters"
+
+#: ebf9fc90327e49cf856dfa37bc7f1dc6
+msgid "形状为 `(3,)` 的整数数组，表示近邻原子所在的晶胞相对于 中心原子所在晶胞的周期性偏移（例如 `[-1, 0, 1]`）。"
+msgstr "An integer array of shape `(3,)` representing the periodic offset of the unit cell containing the neighboring atom relative to the unit cell of the central atom (e.g., `[-1, 0, 1]`)."
+
+#: 5bbf061f7a3e4b11a70593530a5ffb23
+msgid "形状为 `(3, 3)` 的数组，表示晶胞的三个晶格矢量。"
+msgstr "An array of shape `(3, 3)` representing the three lattice vectors of the unit cell."
+
+#: 704e063167b24865a569f493f10a064d d75861a3b39b46d687069ad2ca02b137
+#: f38dcb3e68f04a629020012daef2f69f
+msgid "返回"
+msgstr "Returns"
+
+#: e8cc6f026add4fc59f8c9a8e467e2e0f
+msgid "形状为 `(3,)` 的实际偏移向量。"
+msgstr "The actual offset vector of shape `(3,)`."
+
+#: 1b291d76a8ce49488980767abb166dfe 7e02315dd9684de7af53a246552ffbd1
+#: 89a77d2a7c1f4e9887aa55ee5e9e4650
+msgid "返回类型"
+msgstr "Return type"
+
+#: cf1fc682b79a41f98e634a9b9b28cd3d
+msgid "扫描所有晶体文件，构建原子类型的 one-hot 编码配置。"
+msgstr "Scan all crystal files to build a one-hot encoding configuration for atom types."
+
+#: 5ed7032ee2ff4eec9a00debc266bc36d
+msgid ""
+"该函数会遍历指定路径下的所有晶体结构文件，统计出数据集中出现的所有 原子类型（以原子序数 Z 表示），然后为每种原子创建一个 one-hot "
+"编码向量。 最终的配置信息将保存为一个 JSON 文件。"
+msgstr "This function iterates through all crystal structure files in the specified path, collects all atom types (represented by atomic number Z) present in the dataset, and then creates a one-hot encoding vector for each atom type. The final configuration is saved as a JSON file."
+
+#: 21ec5dfa6b984fc795dfae006763996a
+msgid ""
+"项目的主配置对象，需要包含以下路径信息：  - `dataset_params.csv_params.crystal_path`: "
+"晶体文件所在目录。 - `dataset_params.csv_params.file_type`: 晶体文件类型 ('poscar' 或 "
+"'cif')。 - `dataset_params.graph_data_path`: one-hot 配置文件 "
+"`config_onehot.json` 的保存路径。"
+msgstr "The main configuration object for the project, which must contain the following path information: - `dataset_params.csv_params.crystal_path`: Directory containing crystal files. - `dataset_params.csv_params.file_type`: Type of crystal file ('poscar' or 'cif'). - `dataset_params.graph_data_path`: Path to save the one-hot configuration file `config_onehot.json`."
+
+#: 5a7b5b959cc8436e93f3a2fc475801f5
+msgid "项目的主配置对象，需要包含以下路径信息："
+msgstr "The main configuration object for the project, which must contain the following path information:"
+
+#: 539dc856bf37401385f51af4b8d00948
+msgid "`dataset_params.csv_params.crystal_path`: 晶体文件所在目录。"
+msgstr "`dataset_params.csv_params.crystal_path`: Directory containing crystal files."
+
+#: 49a17f918ae347cd88e4ed7a93e3f4c5
+msgid "`dataset_params.csv_params.file_type`: 晶体文件类型 ('poscar' 或 'cif')。"
+msgstr "`dataset_params.csv_params.file_type`: Type of crystal file ('poscar' or 'cif')."
+
+#: 60a2a05cd1cd41bea5821c6b393f3608
+msgid "`dataset_params.graph_data_path`: one-hot 配置文件 `config_onehot.json` 的保存路径。"
+msgstr "`dataset_params.graph_data_path`: Path to save the one-hot configuration file `config_onehot.json`."
+
+#: 9f9061b51a8345738e8900dcbc382b70
+#, python-brace-format
+msgid ""
+"一个包含原子序数列表和对应 one-hot 编码矩阵的字典。 例如： `{'atomic_numbers': [1, 6, 8], "
+"'node_vectors': [[1,0,0], [0,1,0], [0,0,1]]}`"
+msgstr "A dictionary containing a list of atomic numbers and the corresponding one-hot encoding matrix. For example: `{'atomic_numbers': [1, 6, 8], 'node_vectors': [[1,0,0], [0,1,0], [0,0,1]]}`"
+
+#: bbb3cb0c34a04f7caaa985b7b188c17d
+msgid "根据 one-hot 配置文件为晶体中的每个原子生成初始特征向量。"
+msgstr "Generate initial feature vectors for each atom in the crystal based on the one-hot configuration file."
+
+#: 33bbbbda34ad4b078db05eb733adf270
+msgid "由 `build_config` 生成的 one-hot 配置字典，包含 'atomic_numbers' 和 'node_vectors'。"
+msgstr "The one-hot configuration dictionary generated by `build_config`, containing 'atomic_numbers' and 'node_vectors'."
+
+#: fce1be87ea1b4ceda70ffa09edbef1d8
+msgid "一个 `pymatgen.core.structure.Structure` 对象，代表单个晶体结构。"
+msgstr "A `pymatgen.core.structure.Structure` object representing a single crystal structure."
+
+#: e0e647a7e6bd4acda58b77a657afcff9
+msgid "形状为 `(N, D)` 的数组，其中 N 是晶体中的原子数，D 是 one-hot 向量的维度。 每一行是对应原子的 one-hot 特征。"
+msgstr "An array of shape `(N, D)`, where N is the number of atoms in the crystal and D is the dimension of the one-hot vector. Each row is the one-hot feature for the corresponding atom."
+
+#: c1c1a58c7a504e5c9f911cc2e1863794
+msgid "解析所有晶体文件和属性文件，生成并保存图数据。"
+msgstr "Parse all crystal and property files to generate and save graph data."
+
+#: 0202f0e44843404185d822dbc469b99d
+msgid "这是数据预处理的核心函数。它执行以下步骤："
+msgstr "This is the core function for data preprocessing. It performs the following steps:"
+
+#: 9cf654adb16a4be4acb39b738f13a938
+msgid "确定晶体文件的类型和路径。"
+msgstr "Determine the type and path of crystal files."
+
+#: 2d450ff90ab94f1b858d9dc49ae81110
+msgid "加载或创建原子 one-hot 编码配置。"
+msgstr "Load or create the atomic one-hot encoding configuration."
+
+#: 34dd2068a7114c93a2c81274f1ebd630
+msgid "从 `id_prop.csv` 文件中读取每个晶体ID及其对应的目标属性。"
+msgstr "Read each crystal ID and its corresponding target properties from the `id_prop.csv` file."
+
+#: a1206d76b5e04daea4367cfca47d8dc5
+msgid "遍历每个晶体ID，执行以下操作："
+msgstr "Iterate over each crystal ID and perform the following operations:"
+
+#: 15d6b108ceec4e12a9b841665aa273ba
+msgid "读取晶体结构。"
+msgstr "Read the crystal structure."
+
+#: 52ebf9512e9c48a3ad694c60bf5cb353
+msgid "生成原子特征（node_attr）。"
+msgstr "Generate atom features (node_attr)."
+
+#: 0352dd56cacb4cb38b47e01d23f17f01
+msgid "寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。"
+msgstr "Find neighbors to construct the edge list (edge_index) and periodic shifts (nbr_shift)."
+
+#: 9b846d150e9d4a319fc68f049f2c2da6
+msgid "将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。"
+msgstr "Assemble all information (nodes, edges, properties, etc.) into a `torch_geometric.data.Data` object."
+
+#: a7b916d5d58840bdbada48e10a911f3b
+msgid "将所有图数据存储在一个字典中，并使用 `np.savez` 保存为压缩的 `.npz` 文件。"
+msgstr "Store all graph data in a dictionary and save it as a compressed `.npz` file using `np.savez`."
+
+#: bf8d5b7ebed642ef82f0d29805e1abc2
+msgid "项目的主配置对象，提供了所有必需的参数，例如文件路径、截断半径、 最大近邻数以及目标属性的格式等。"
+msgstr "The main configuration object for the project, providing all necessary parameters such as file paths, cutoff radius, maximum number of neighbors, and the format of target properties."
+

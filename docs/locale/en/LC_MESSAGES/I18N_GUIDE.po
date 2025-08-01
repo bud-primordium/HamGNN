@@ -1,0 +1,169 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 2f158fb01740454e9c137d551caf6aa7
+msgid "HamGNN 多语言文档系统使用指南"
+msgstr "HamGNN Multilingual Documentation System Usage Guide"
+
+#: 15b9ec879bc24d66934f8146f76cb1bf
+msgid "架构概述"
+msgstr "Architecture Overview"
+
+#: 98e9c4d1002246c0a82a7b95388beb48
+msgid "HamGNN 文档系统现在支持三维切换："
+msgstr "The HamGNN documentation system now supports three-dimensional switching:"
+
+#: 3c581d1320d84f31809fe3b6247c2941
+msgid "**分支 (Branch)**: chinese_annotated, torchscript_export"
+msgstr "**Branch**: chinese_annotated, torchscript_export"
+
+#: 1ed816539c6047419d8227850f089790
+msgid "**版本 (Version)**: v1.0, v2.0"
+msgstr "**Version**: v1.0, v2.0"
+
+#: 8dd9743d144841538aa98caa371ed1dc
+msgid "**语言 (Language)**: zh (中文), en (英文)"
+msgstr "**Language**: zh (Chinese), en (English)"
+
+#: 1b71ef22527149b3a2a9e9475516eed1
+msgid "多语言支持工作流"
+msgstr "Multilingual Support Workflow"
+
+#: 927bfce9cefb4722b5d0acb006e3ed47
+msgid "1. 生成翻译文件"
+msgstr "1. Generate Translation Files"
+
+#: 2bda8684530545c2be166fc6df2c0b62
+msgid "这会创建："
+msgstr "This will create:"
+
+#: 666c3295aac44917a9b3b0a6062a5d93
+msgid "`_build/gettext/*.pot` - 翻译模板文件"
+msgstr "`_build/gettext/*.pot` - Translation template files"
+
+#: 43abd1b350b94a08bafdcb66ed0a36ca
+msgid "`locale/en/LC_MESSAGES/*.po` - 待翻译的英文文件"
+msgstr "`locale/en/LC_MESSAGES/*.po` - English files to be translated"
+
+#: b237155a1705488b89ed864c33716f3d
+msgid "2. 翻译 .po 文件"
+msgstr "2. Translate .po Files"
+
+#: 18a2d610ad344e33849ddc11e1c9c6b5
+msgid "编辑 `locale/en/LC_MESSAGES/*.po` 文件，填写翻译："
+msgstr "Edit the `locale/en/LC_MESSAGES/*.po` files and fill in the translations:"
+
+#: 6b23d084f5254bb2836b0e4aec9c7790
+msgid "**提示**: 可以使用翻译助手或其他工具批量翻译。"
+msgstr "**Tip**: You can use translation assistants or other tools for batch translation."
+
+#: dba8c013b20e4e6fb2ba9471b74c9bb6
+msgid "3. 构建多语言文档"
+msgstr "3. Build Multilingual Documentation"
+
+#: 12f7bb8a2c0b4fc2ad5ce602bbe05b47
+msgid "文件结构"
+msgstr "File Structure"
+
+#: 44f402dcc0ae49eca6f7794e9a4e8026
+msgid "配置说明"
+msgstr "Configuration Description"
+
+#: caee761575b4412f9e3168ee7bf891ca
+msgid "versions.yaml"
+msgstr "versions.yaml"
+
+#: 3e3d7a4509bc4e85bb36d81b3a1fc078
+msgid "定义了三维文档结构，每个版本都支持多语言："
+msgstr "Defines the three-dimensional documentation structure, with each version supporting multiple languages:"
+
+#: 88e56647deb644cd9ac1497e48eec82e
+msgid "conf.py"
+msgstr "conf.py"
+
+#: c90ebf2678dd4a25868ad45e3b236463
+msgid "包含 i18n 配置："
+msgstr "Contains i18n configuration:"
+
+#: 1d4665649b864ba88dfe6563b4dbaf94
+msgid "build_docs.py"
+msgstr "build_docs.py"
+
+#: 6064f2410ff042b29b44850fc2cf48ff
+msgid "支持根据语言参数构建："
+msgstr "Supports building based on the language parameter:"
+
+#: 5aac12b722e74eeaa6709407b555597d
+msgid "维护指南"
+msgstr "Maintenance Guide"
+
+#: f5d91fa1757a437d88d5bff89ce3ca8b
+msgid "**添加新内容后**：重新运行 `generate_translations.py` 更新翻译文件"
+msgstr "**After adding new content**: Rerun `generate_translations.py` to update the translation files"
+
+#: fe50b6a9de224f879a053f0b2290d059
+msgid "**修改翻译**：直接编辑 .po 文件"
+msgstr "**To modify translations**: Edit the .po files directly"
+
+#: b0c92038511949d1804b41e26493de28
+msgid "**测试翻译效果**：使用测试构建命令验证"
+msgstr "**To test translation effects**: Use the test build command for verification"
+
+#: 9ede212ccb9b41fd8565ba78d947c94c
+msgid "自动化建议"
+msgstr "Automation Suggestions"
+
+#: be0eabccc4364d69b9902655a235ede5
+msgid "未来可以："
+msgstr "In the future, we can:"
+
+#: 3c9aa703650c459da3f75077e44bfe3e
+msgid "使用 GitHub Actions 自动检测未翻译内容"
+msgstr "Use GitHub Actions to automatically detect untranslated content"
+
+#: 2584af30f0e140d484c6b0f3af79faad
+msgid "集成翻译 API 自动翻译新内容"
+msgstr "Integrate translation APIs to automatically translate new content"
+
+#: 9be03773f7a2453aaacd47f83e585bc1
+msgid "添加翻译进度跟踪"
+msgstr "Add translation progress tracking"
+
+#: 3ef250b230954326ac6567fe1192d475
+msgid "当前状态"
+msgstr "Current Status"
+
+#: 5e02ef9c74b24bac936b6c91b34161a5
+msgid "i18n 框架已搭建完成"
+msgstr "The i18n framework has been set up"
+
+#: b07c4e2275964352930f23d6beb70e20
+msgid "支持中英双语切换"
+msgstr "Supports switching between Chinese and English"
+
+#: 4a043fa6adfb4754b7b9122d8f911be8
+msgid "生成了所有翻译模板"
+msgstr "All translation templates have been generated"
+
+#: 3dce9ba367d6423f8d3b3cd8e0ee1bd8
+msgid "完整翻译待完成（可使用翻译工具协助）"
+msgstr "Full translation is pending (can be assisted by translation tools)"
+

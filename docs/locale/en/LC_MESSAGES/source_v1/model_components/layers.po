@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ce98d75828284b24bcd748de8128107a
+msgid "层定义"
+msgstr "Layer Definitions"
+
+#: 10c58504771d4e989e5ce7fa35a1b541
+msgid "一个包含线性层、批量归一化和激活函数的残差连接稠密层。"
+msgstr "A residual-connected dense layer that includes a linear layer, batch normalization, and an activation function."
+
+#: df2fe4fa98434b0e8c6fbafbdcd0fff6
+msgid "结构为: `out = Linear(Act(BN(Linear(x))))`"
+msgstr "The structure is: `out = Linear(Act(BN(Linear(x))))`"
+
+#: 14dee48915124980ad5e8c1c592b744a 6dd32a7a96bb4a1a8b00614f44b57dd8
+#: 6e6a0529e5c9461da80d6b276f56c326 7f3347a4b4464ca9a6081bd98d00d0af
+#: df0173e538ad46839653f4cbee71692e fde3c9a3da394df3af431afe89eafd7d
+msgid "前向传播。"
+msgstr "Forward propagation."
+
+#: 6b490ff9340d4806a1991909b00eeacf
+msgid "一个用于回归任务的多层稠密网络。"
+msgstr "A multi-layer dense network for regression tasks."
+
+#: 555986282c7140d2a2fce7e7a98cf205
+msgid "包含多个隐藏层和一个最终的线性输出层。"
+msgstr "Consists of multiple hidden layers and a final linear output layer."
+
+#: 5deccc1d2f6f4bfea69d0fa16e8a075d
+msgid "多项式形式的截断包络函数。"
+msgstr "A cutoff envelope function in polynomial form."
+
+#: 0bd7326979264ae98ff5666022cf8258
+msgid "当距离 `x` 接近 `cutoff` 时，该函数平滑地衰减到零。"
+msgstr "This function smoothly decays to zero as the distance `x` approaches `cutoff`."
+
+#: b776ce11f2ff4f35886b5377d016771e
+msgid "Behler-Parrinello 余弦截断函数。源自 SchNetPack。"
+msgstr "Behler-Parrinello cosine cutoff function. Sourced from SchNetPack."
+
+#: be2c6a370d85444bb1f68ce624efc2a8
+msgid ""
+"f(r) = \\begin{cases}\n"
+" 0.5 \\times \\left[1 + \\cos\\left(\\frac{\\pi "
+"r}{r_\\text{cutoff}}\\right)\\right]\n"
+"   & r < r_\\text{cutoff} \\\\\n"
+" 0 & r \\geqslant r_\\text{cutoff} \\\\\n"
+" \\end{cases}\n"
+"\n"
+msgstr ""
+"f(r) = \\begin{cases}\n"
+" 0.5 \\times \\left[1 + \\cos\\left(\\frac{\\pi "
+"r}{r_\\text{cutoff}}\\right)\\right]\n"
+"   & r < r_\\text{cutoff} \\\\\n"
+" 0 & r \\geqslant r_\\text{cutoff} \\\\\n"
+" \\end{cases}\n"
+"\n"
+
+#: 07196e9035da41d291737d334dc278e3 17487031e6bf4a4a994a13d055919511
+#: 1f630e40cd3e4e2591c6fa082c55a32b 43866aa0dd3746498ea7ac40b0f22353
+#: 8b400c2916624d21851b93e7d3d8a604 fbd1027babe149dcb18f5c46e44fd788
+msgid "参数"
+msgstr "Parameters"
+
+#: 9b75c18b34b246c1a4c2ea6652938e73
+msgid "截断半径。"
+msgstr "Cutoff radius."
+
+#: d90dde68b06d43d08f33b4a0377fcafb
+msgid "计算截断值。"
+msgstr "Calculate the cutoff value."
+
+#: fa5bcbf208674edf86fd59db1e80b53c
+msgid "原子间距离张量。"
+msgstr "Tensor of interatomic distances."
+
+#: 14f5c72a7ea24f1c9b3c5dcdf2a7fe49 9cdbcb604fad41e7b2fe3a0456379462
+#: b30aa3ac27b2489c92a1b3f58ea4a1bd fbf5b238175845e8893d595e3f2299a5
+msgid "返回"
+msgstr "Returns"
+
+#: 08c1c7fc9b314bde81561e83bc9aca73
+msgid "截断函数的值。"
+msgstr "The value of the cutoff function."
+
+#: 3982b409662e4d11b7c2f70524073f3f 52cfbc3165e34b00b207ea7aa934e271
+#: 677b45b087cc4a8ca6287ed135d84f19 e34b37bef2a644999a1bed6bae95ecd7
+msgid "返回类型"
+msgstr "Return type"
+
+#: a9a44ef0906a4beeb4fdec318fcbfabe
+msgid "一个多层感知机（MLP）回归网络，特征维度在层间减半。"
+msgstr "A Multi-Layer Perceptron (MLP) regression network where the feature dimension is halved between layers."
+
+#: 8f0d752329054bcc9ec2641fbce59626
+msgid "计算实数球谐函数的层。"
+msgstr "A layer for calculating real spherical harmonics."
+
+#: 3d3bc53dc1d345188de97e60f9688bc7
+msgid "极角 theta。"
+msgstr "Polar angle theta."
+
+#: 7f9879b06941486ab297de23620c60ed
+msgid "拼接后的球谐函数值。"
+msgstr "Concatenated spherical harmonics values."
+
+#: 758ec4729d184521a353e27b3c1b4d02
+msgid "零阶贝塞尔函数作为径向基函数（来自 DimeNet）。"
+msgstr "Zeroth-order Bessel functions as radial basis functions (from DimeNet)."
+
+#: 2cd70c83bfb543d9bb4c7a60ef2e22af
+msgid "计算原子间距离的零阶贝塞尔展开。"
+msgstr "Calculate the zeroth-order Bessel expansion of interatomic distances."
+
+#: 5a1f5836ffbe43f1a9f8495c5bceba7c
+msgid "形状为 (N_edge,) 的原子间距离。"
+msgstr "Interatomic distances with shape (N_edge,)."
+
+#: 623dc643b5284355894162702bac6a73
+msgid "形状为 (N_edge, n_rbf) 的零阶贝塞尔展开。"
+msgstr "Zeroth-order Bessel expansion with shape (N_edge, n_rbf)."
+
+#: 98218b0797d248bdb287f2ce7f9e038d
+msgid "高斯函数作为径向基函数。"
+msgstr "Gaussian functions as radial basis functions."
+
+#: ef0436e4675742e985a1b00f155c1d77
+msgid "源自 SchNetPack 的全连接线性层，带有激活函数。"
+msgstr "A fully connected linear layer with an activation function, sourced from SchNetPack."
+
+#: 6feaf3df8a894a1493bafe9a46e91e5b
+msgid ""
+"y = activation(xW^T + b)\n"
+"\n"
+msgstr ""
+"y = activation(xW^T + b)\n"
+"\n"
+
+#: d8038fc6bfb24c75af2d382ac96f5e94
+msgid "输入特征数 :math:`x`。"
+msgstr "Number of input features :math:`x`."
+
+#: 28fa899700a94aad90692cb21c4b264e
+msgid "输出特征数 :math:`y`。"
+msgstr "Number of output features :math:`y`."
+
+#: fc9587aad293486683f2560c6621b106
+msgid "如果为 False, 层将不学习偏置 :math:`b`。"
+msgstr "If False, the layer will not learn the bias :math:`b`."
+
+#: 30926ce4ed1d4b3da33a622f5860eec0
+msgid "如果为 None, 则不使用激活函数。"
+msgstr "If None, no activation function is used."
+
+#: a8e22adb57d64b0ba6474e440c07d6d4
+msgid "权重的初始化函数。"
+msgstr "Initialization function for the weights."
+
+#: c258791e6eff4a09b843f181d840a59e
+msgid "偏置的初始化函数。"
+msgstr "Initialization function for the bias."
+
+#: e853ac32270741b9b489d8a6c521d68e
+msgid "重新初始化模型的权重和偏置值。"
+msgstr "Re-initializes the model's weights and biases."
+
+#: 639ede137c5c40db9af164489119976a
+msgid "计算层的输出。"
+msgstr "Computes the output of the layer."
+
+#: 2056319b41644e2fbcebe4f340ac11b6
+msgid "输入值的批次。"
+msgstr "Batch of input values."
+
+#: c5ad3c66cc7c4652add564653fcc85da
+msgid "层的输出。"
+msgstr "Output of the layer."
+

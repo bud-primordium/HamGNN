@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 6582dd81d60f48fb8ebbaa11d3adb94b
+msgid "物理函数"
+msgstr "Physics Functions"
+
+#: 8c75cbc7e8c0420798a522300d4017db
+msgid "计算修正版的 Softplus 激活函数。"
+msgstr "Computes a modified Softplus activation function."
+
+#: ab4ed9a1fe174e35b3c316ca082162ff
+msgid ""
+"标准的 Softplus(x) = log(1 + exp(x))。此版本将其向下平移 log(2)， 即 Softplus(x) - "
+"log(2)，这使得函数图像恰好经过原点 (0, 0)。"
+msgstr "The standard Softplus(x) = log(1 + exp(x)). This version shifts it down by log(2), i.e., Softplus(x) - log(2), which makes the function graph pass through the origin (0, 0)."
+
+#: 2bee909ac9da41089377e1409a9b657e 793d5d04f0ad43529befd40db983f400
+#: 9ed92352a91a4b99bd4b0069eec94550 ba0150302f844540908a91888f6531c9
+msgid "参数"
+msgstr "Parameters"
+
+#: 3945bdcad7814f808baf55b71df2a348 e0c0f1a09cfa420cadfc1664da9d6949
+msgid "输入张量。"
+msgstr "Input tensor."
+
+#: 415b47536d8e4b0496592addaae61cb0 6c9433a72a5644da84d1210235803e56
+#: 885dc53defc545f38bae83f61e827c08 b7f9c7e4969448289ecbb515c856e3d6
+msgid "返回"
+msgstr "Returns"
+
+#: e20e7542c5ca4457af54d75e168ee5c6
+msgid "经过修正版 Softplus 计算后的输出张量。"
+msgstr "The output tensor after applying the modified Softplus."
+
+#: 0d94de62569d44fb8c90d3e78cbd5c92 5456b97ebd2b47d39b13a22cfae981d5
+#: 655a4523d40342ba99c172d8f61fcfe3 7dd8a1be4f744d84b513777b4cf32c45
+msgid "返回类型"
+msgstr "Return type"
+
+#: 7b0376f269ae41618cc0c39694bd145f
+msgid "一个在 [0, cutoff] 区间内从 1 平滑过渡到 0 的截断函数。"
+msgstr "A cutoff function that smoothly transitions from 1 to 0 in the interval [0, cutoff]."
+
+#: 43bf70fe57404fea8b3ac1ee926dabe9
+msgid "该函数具有无限阶平滑导数，这对于基于梯度的优化至关重要。 当 x >= cutoff 时，函数值为 0。"
+msgstr "This function has infinitely smooth derivatives, which is crucial for gradient-based optimization. When x >= cutoff, the function value is 0."
+
+#: fd9b8c4b7d914eab920210c1b3bc037f
+msgid ""
+"为了避免在 x=cutoff 处出现 0/0 导致梯度为 NaN 的问题， 函数内部使用 `torch.where` 对输入 `x` "
+"进行了掩码处理。"
+msgstr "To avoid the 0/0 issue at x=cutoff which would lead to NaN gradients, the function uses `torch.where` internally to mask the input `x`."
+
+#: 5fe4ec1cd5d74cef99f6031f635f1ab9
+msgid "函数表达式为: f(x) = exp(-x^2 / (cutoff^2 - x^2)) for x < cutoff"
+msgstr "The function expression is: f(x) = exp(-x^2 / (cutoff^2 - x^2)) for x < cutoff"
+
+#: bff7b31a3e4b47dcb25c22ae66858315
+msgid "输入张量，通常是距离。"
+msgstr "Input tensor, usually distances."
+
+#: ab8e39f2ed434edd874a310af704a401
+msgid "截断半径。"
+msgstr "Cutoff radius."
+
+#: 6f041825ae02455cab61f8de819ff060
+msgid "施加截断效果后的输出张量。"
+msgstr "The output tensor after applying the cutoff effect."
+
+#: 44c6432ce7de42c994476171e9924229
+msgid "一个在 [cuton, cutoff] 区间内平滑对称地从 1 过渡到 0 的开关函数。"
+msgstr "A switch function that smoothly and symmetrically transitions from 1 to 0 in the interval [cuton, cutoff]."
+
+#: bdb62261e16c49ada562afb0a5047ff5
+msgid ""
+"该函数同样具有无限阶平滑导数。 - 当 x <= cuton 时，函数值为 1。 - 当 x >= cutoff 时，函数值为 0。 - 如果 "
+"cuton > cutoff，过渡方向会反转，从 0 过渡到 1。"
+msgstr "This function also has infinitely smooth derivatives. - When x <= cuton, the function value is 1. - When x >= cutoff, the function value is 0. - If cuton > cutoff, the transition direction is reversed, from 0 to 1."
+
+#: 118c756278e3425a8894dc3faa094e1d
+msgid "开始过渡的边界。"
+msgstr "The boundary where the transition begins."
+
+#: 420d92d0e91940bf9ff0964497e0c454
+msgid "结束过渡的边界。"
+msgstr "The boundary where the transition ends."
+
+#: 0aa0c17b7a3d45e29f1464d421826e3d
+msgid "施加开关效果后的输出张量。"
+msgstr "The output tensor after applying the switch effect."
+
+#: 39aca294fa414cb3b0ccc25e83805009
+msgid "Softplus 函数的反函数。"
+msgstr "The inverse of the Softplus function."
+
+#: fbbcfd33fe3748ddbd9334b5e94bc732
+msgid ""
+"这在初始化需要保证为正值的参数时非常有用。例如，如果希望一个参数 `alpha` 在通过 `F.softplus(alpha)` "
+"后得到期望的初始值 `alpha_init`，那么 可以将 `alpha` 初始化为 "
+"`softplus_inverse(alpha_init)`。"
+msgstr "This is very useful for initializing parameters that need to be guaranteed positive. For example, if you want a parameter `alpha` to have a desired initial value `alpha_init` after passing through `F.softplus(alpha)`, you can initialize `alpha` as `softplus_inverse(alpha_init)`."
+
+#: 88888e4e471a46bcae0a4c07b34c470c
+msgid "反函数表达式为: f^-1(x) = x + log(-expm1(-x))"
+msgstr "The inverse function expression is: f^-1(x) = x + log(-expm1(-x))"
+
+#: e43a0913fcca45c3a51c1f778fd09930
+msgid "输入值，即 softplus 函数的输出。"
+msgstr "The input value, i.e., the output of the softplus function."
+
+#: 99b650485421480693db45fede938a03
+msgid "对应的 softplus 函数的输入值。"
+msgstr "The corresponding input value for the softplus function."
+

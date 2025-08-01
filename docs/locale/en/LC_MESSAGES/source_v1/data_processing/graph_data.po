@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: e0b787bc82354e5085f06cd46d7e90d4
+msgid "图数据模块"
+msgstr "Graph Data Module"
+
+#: e736c5bf60a248e392db7d1b2fc15252
+msgid "继承自 pl.LightningDataModule，用于管理图数据集。"
+msgstr "Inherits from pl.LightningDataModule to manage graph datasets."
+
+#: 3e6d343111154bf0a3477c99e7da5103
+msgid "该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的 训练流程无缝集成。"
+msgstr "This class automates the process of loading, splitting, and batching datasets, allowing for seamless integration with the PyTorch Lightning training workflow."
+
+#: 794100bd60c84830b4d3c602e167affc
+msgid "划分数据集为训练、验证和测试三部分。"
+msgstr "Splits the dataset into training, validation, and test sets."
+
+#: a544d93bc8ef4d30b4e26aad71934c66
+msgid "此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。 其行为逻辑如下："
+msgstr "This method is part of the PyTorch Lightning workflow and is called at the beginning of training or testing. Its behavior is as follows:"
+
+#: f94dc113ded442baa00ea3f4c2e7118c
+msgid "如果 `self.split_file` 存在，则从该文件加载预定义的索引来划分数据集。 这确保了实验的可复现性。"
+msgstr "If `self.split_file` exists, it loads predefined indices from this file to split the dataset. This ensures the reproducibility of experiments."
+
+#: 70aa3e660e6d48bca4bc7932b3ff44cd
+msgid ""
+"如果没有提供划分文件，则根据 `train_ratio`, `val_ratio`, `test_ratio` "
+"对数据集进行随机划分。划分是基于固定的随机种子（42），以保证每次运行的划分结果一致。"
+msgstr "If no split file is provided, the dataset is randomly split according to `train_ratio`, `val_ratio`, and `test_ratio`. The split is based on a fixed random seed (42) to ensure consistent results across runs."
+
+#: 8cc23ad140694024982d188ff5c50f7a
+msgid "根据 `stage` 参数（'fit' 或 'test'）来决定执行哪部分逻辑。"
+msgstr "The logic executed depends on the `stage` parameter ('fit' or 'test')."
+
+#: 226d53d87639469a96e9712fe51d7c7a
+msgid "参数"
+msgstr "Parameters"
+
+#: 052b8b596ad14cf689d3b4148d0c6cd1
+msgid "当前所处的阶段，由 Lightning 自动传入。可以是 'fit'、'test' 等。默认为 None。"
+msgstr "The current stage, automatically passed by Lightning. Can be 'fit', 'test', etc. Defaults to None."
+
+#: d4a47b33b4574127bd29c468e8d734a9
+msgid "创建并返回训练数据加载器。"
+msgstr "Creates and returns the training data loader."
+
+#: 3544f5d59bf84731825bcad2abc704f2
+msgid "创建并返回验证数据加载器。"
+msgstr "Creates and returns the validation data loader."
+
+#: 7da9dec84f2d4bcc9908cbd18cb3b16f
+msgid "创建并返回测试数据加载器。"
+msgstr "Creates and returns the test data loader."
+

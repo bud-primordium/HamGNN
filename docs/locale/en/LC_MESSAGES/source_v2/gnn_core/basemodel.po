@@ -1,0 +1,185 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 9a7660118c484dde9a6398807e900131
+msgid "基础模型 (BaseModel.py)"
+msgstr "Base Model (BaseModel.py)"
+
+#: bfd5477a5e39499294c63c5d73e7fadd
+msgid "根据原子序数列表检索缩放后的原子半径。"
+msgstr "Retrieves scaled atomic radii based on a list of atomic numbers."
+
+#: ae04bc3b1a474e51beef575e332b34f7 b39b983ea353423999108f0921389481
+#: fa5d45bb0a0e48d19fc156b3de7fccfb
+msgid "参数"
+msgstr "Parameters"
+
+#: 5a4ca63212c34709aa9b9709f8eefb8c
+msgid "包含原子序数的列表或张量。"
+msgstr "A list or tensor containing atomic numbers."
+
+#: 52b4ff926e25494999dd8fb0c60c2ae4
+msgid "原子半径的缩放因子，默认为 1.5。"
+msgstr "The scaling factor for atomic radii, defaults to 1.5."
+
+#: a087e6df9f0247af9dd3425f80cd0f6a
+msgid "所用原子半径的来源软件，默认为 'openmx'。"
+msgstr "The source software for the atomic radii used, defaults to 'openmx'."
+
+#: 577101f63ee3422189b4885668c8a0b9 8bbe39339146429eb88e03bb73880bee
+#: eacaa13d3eb94f699070d01d67592f2c
+msgid "返回"
+msgstr "Returns"
+
+#: 5ac558eb9d114034b2c328597b2df40b
+msgid "与输入原子序数对应的缩放后的原子半径列表。"
+msgstr ""
+"A list of scaled atomic radii corresponding to the input atomic numbers."
+
+#: 05f55fe101a04f6e8c1ae78f7a5b0b15 19ef7ab8a663461eb9608fef3ddc42d6
+#: 1f84fb080f97469bb0254af03aa53bfb 9812758f68e94a14961a393e5470f984
+msgid "返回类型"
+msgstr "Return type"
+
+#: 94a359319ebf46cb8377eadb72ce6e0b
+msgid "基于径向截断距离创建邻居列表和相对向量。"
+msgstr ""
+"Creates a neighbor list and relative vectors based on a radial cutoff "
+"distance."
+
+#: e576b3e5298247cc9a03764363b6723c
+msgid "边的约定如下: - `edge_index[0]` 是 *源* (卷积中心)。 - `edge_index[1]` 是 *目标* (邻居)。"
+msgstr ""
+"The edge convention is as follows: - `edge_index[0]` is the *source* "
+"(convolution center). - `edge_index[1]` is the *target* (neighbor)."
+
+#: 4540a84a64af4400b0989e4a74c8a7c1
+msgid "原子位置坐标，形状为 :math:`(N, 3)`。"
+msgstr "Atomic position coordinates, with shape :math:`(N, 3)`."
+
+#: f9d02ceb628e44ca874b02934373969f
+msgid "用于寻找邻居的径向截断距离。"
+msgstr "The radial cutoff distance for finding neighbors."
+
+#: 51b9cd2c76ae483c91f6e5ad2eee6218
+msgid "周期性边界条件的晶胞矩阵，形状为 :math:`(3, 3)`。"
+msgstr ""
+"The unit cell matrix for periodic boundary conditions, with shape :math:`(3, "
+"3)`."
+
+#: f6760afd9b6549beb7d0326233bb8952
+msgid "三个维度上的周期性。"
+msgstr "Periodicity in the three dimensions."
+
+#: b9de96976f564013b8615b4dbb0e315b
+msgid "是否包括相同周期性镜像的自相互作用边。"
+msgstr "Whether to include self-interaction edges for the same periodic image."
+
+#: 86be85f4c8de457f881bb8f91e55acda
+msgid "是否包括任何自相互作用边。"
+msgstr "Whether to include any self-interaction edges."
+
+#: aae87c263be74553a34c6fd2d7c55248
+#, python-brace-format
+msgid ""
+"一个元组，包含： - ``edge_index`` (torch.Tensor): 边的列表，形状为 :math:`(2, "
+"N_{edges})`。 - ``shifts`` (torch.Tensor): 相对晶胞平移向量，形状为 :math:`(N_{edges},"
+" 3)`。 - ``cell_tensor`` (torch.Tensor): 晶胞张量，形状为 :math:`(3, 3)`。"
+msgstr ""
+"A tuple containing: - ``edge_index`` (torch.Tensor): The list of edges, "
+"with shape :math:`(2, N_{edges})`. - ``shifts`` (torch.Tensor): Relative "
+"unit cell translation vectors, with shape :math:`(N_{edges}, 3)`. - "
+"``cell_tensor`` (torch.Tensor): The unit cell tensor, with shape :math:`(3, "
+"3)`."
+
+#: e68ca8f283b44fb2bc90e469602e5e23
+msgid "在矩阵 B 中查找与矩阵 A 匹配的列。"
+msgstr "Finds columns in matrix B that match matrix A."
+
+#: 2562b7d8967949e8af4b35fa83e3f10e
+msgid "第一个矩阵。"
+msgstr "The first matrix."
+
+#: e91e74aa2d6c434d8d931e24d3d71953
+msgid "第二个矩阵。"
+msgstr "The second matrix."
+
+#: 5ec38298cd6d499585f29fb10fb4d370
+msgid "在 B 中匹配列的索引。"
+msgstr "Indices of matching columns in B."
+
+#: 77b2c2eb3f514a159264cee1ecaba16e
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: cdcd556c95a14096815a35aa4a9fd375
+msgid "所有 HamGNN 图学习模型的基类。"
+msgstr "The base class for all HamGNN graph learning models."
+
+#: bd78ffde33064d61a738fcf9d5e612aa
+msgid "重构后的版本专注于纯计算逻辑，动态图构建已移至数据预处理阶段。 这使得模型能够与 torch.jit.script 兼容。"
+msgstr ""
+"The refactored version focuses on pure computational logic; dynamic graph "
+"construction has been moved to the data preprocessing stage. This allows "
+"the model to be compatible with torch.jit.script."
+
+#: dbac56d5ceff43e1aa20073d5c0966fd
+msgid ""
+"注意：为了向后兼容，仍保留 radius_type 和 radius_scale 参数， 但它们不再在 BaseModel "
+"中使用。子类可以用这些参数创建相应的 transform。"
+msgstr ""
+"Note: For backward compatibility, the radius_type and radius_scale "
+"parameters are retained, but they are no longer used in BaseModel. "
+"Subclasses can use these parameters to create a corresponding transform."
+
+#: 7eb36d73199145498b4eea054a8eb540
+msgid "前向传播的占位符，应在子类中实现。"
+msgstr ""
+"A placeholder for the forward pass, which should be implemented in "
+"subclasses."
+
+#: 11d2a8c9213e43d781685cd2702ae03f
+msgid "计算模型的总参数数量。"
+msgstr "Calculates the total number of parameters in the model."
+
+#: d7e94a49776f4d9090b5a0638cc72b67
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`int\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`int\\``"
+
+#: 800acc4cc3914486a4ffba4fff57ac89
+msgid "基类：:py:class:`object`"
+msgstr "Bases: :py:class:`object`"
+
+#: d0d75bd4845240efab663ab812fc204c
+msgid "动态图构建转换器"
+msgstr "Dynamic Graph Construction Transform"
+
+#: fc0e942ba3cd4f7795894c070bd815b4
+msgid ""
+"将BaseModel中的动态图构建逻辑分离为独立的数据转换步骤， 使模型核心逻辑专注于计算，符合关注点分离原则。 "
+"这样设计的目的是使模型能够被torch.jit.script成功编译。"
+msgstr ""
+"Separates the dynamic graph construction logic from BaseModel into an "
+"independent data transformation step. This allows the core model logic to "
+"focus on computation, adhering to the principle of separation of concerns. "
+"This design is intended to enable the model to be successfully compiled by "
+"torch.jit.script."
+

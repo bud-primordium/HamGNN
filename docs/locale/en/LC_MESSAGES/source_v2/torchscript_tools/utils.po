@@ -1,0 +1,279 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 2aa2f0a0e9804632b5fcb403591f4ce7
+msgid "utils"
+msgstr "utils"
+
+#: c0b4130a5052491eaaa4d541df9e6e52
+msgid "工具函数模块。"
+msgstr "Utility functions module."
+
+#: 40d60a8cbf294d458526b0f82ef41d85
+msgid "概述"
+msgstr "Overview"
+
+#: b3acc1079da64316baa4cc26095306a2
+msgid "``utils.py`` 提供了数据格式转换、模型输出比较等通用工具函数。"
+msgstr "``utils.py`` provides common utility functions such as data format conversion and model output comparison."
+
+#: 4a83ecf2c3ed41ca83199b5b8ddd2663
+msgid "函数参考"
+msgstr "Function Reference"
+
+#: fd9e012a58974f8ba51a5dfea0c5812e
+msgid "batch_to_input_dict"
+msgstr "batch_to_input_dict"
+
+#: 0ce47c925b304f5e9ad9ff449fe157f3
+msgid "将 PyTorch Geometric 的 Data 或 Batch 对象转换为模型输入字典"
+msgstr "Converts a PyTorch Geometric Data or Batch object into a model input dictionary."
+
+#: d5021de42175499faab1f8cc27cf0b99
+msgid "这是所有 HamGNN TorchScript 工具的核心数据转换函数，确保数据格式的一致性。 根据实际HamGNN模型的需求，包含所有必需的属性。"
+msgstr "This is the core data conversion function for all HamGNN TorchScript tools, ensuring data format consistency. It includes all necessary attributes based on the requirements of the actual HamGNN model."
+
+#: 273b6708a4344e31b488cb0dc4144a3e f6a59295e5dc439cb65902fa3109505c
+msgid "参数"
+msgstr "Parameters"
+
+#: 2ea0617e351a47cfae5fb4c35ab335f7
+msgid "PyTorch Geometric 的 Data 或 Batch 对象"
+msgstr "A PyTorch Geometric Data or Batch object."
+
+#: 0aa236ab78bb44c1b7e3afae1e1831d0 c3376b25b4d64fa49d116fa3c0454c85
+msgid "返回类型"
+msgstr "Return type"
+
+#: c8e327af3eb94dbd987e934fe9ea8db3
+msgid ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+msgstr ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~torch.Tensor\\`\\]`"
+
+#: 1e61f493b8d643bfbf7189f5904a4281 314a438c393f4af4ac73907bd264bbdb
+msgid "返回"
+msgstr "Returns"
+
+#: 4885ad5c9c39460a8a1b25d7e8a7e9dc
+msgid "包含模型所需所有字段的字典"
+msgstr "A dictionary containing all fields required by the model."
+
+#: 636af35252794e6a88479617668874b7
+msgid "这个函数基于HamGNN v2.0的实际需求，确保包含所有在模型forward中访问的属性"
+msgstr "This function is based on the actual requirements of HamGNN v2.0, ensuring that all attributes accessed in the model's forward pass are included."
+
+#: 28e96aab1b384cf9870653db060a828e
+msgid "将 PyTorch Geometric 批次数据转换为 TorchScript 兼容的字典格式。"
+msgstr "Converts PyTorch Geometric batch data into a TorchScript-compatible dictionary format."
+
+#: 9ccc33aedabf45dbbd88e7d43267efb7 fadefdf5790346639f023576029470dd
+msgid "**参数:**"
+msgstr "**Parameters:**"
+
+#: e0a5311023784abca0f3873b7cf0f7db
+msgid "``batch``: PyTorch Geometric Data 对象或批次"
+msgstr "``batch``: A PyTorch Geometric Data object or batch."
+
+#: dac6bf7ca1224b95bc70c455858db988
+msgid "``device`` (可选): 目标设备，默认为 'cuda'"
+msgstr "``device`` (optional): The target device, defaults to 'cuda'."
+
+#: 219444ce58704d618c35b67eca21789b 2c9184bf0ed24345859c85df5dcd029c
+msgid "**返回:**"
+msgstr "**Returns:**"
+
+#: ff42d05b258a415a8fc33a25f054655b
+msgid "包含所有必需字段的字典，可直接用于 TorchScript 模型输入。"
+msgstr "A dictionary containing all necessary fields, ready for direct use as input to a TorchScript model."
+
+#: 3cbf0a95406a4502b2e8201eebdb416b
+msgid "**示例:**"
+msgstr "**Example:**"
+
+#: d7b8397f21f44a1497df8955508acb29
+msgid "compare_model_outputs"
+msgstr "compare_model_outputs"
+
+#: 4858e98e0eed4f9298cda293e8942871
+msgid "比较两个模型输出的数值差异"
+msgstr "Compares the numerical differences between two model outputs."
+
+#: c2d3e7edaaf441b5ae29ec58e96e6e61
+msgid "用于验证编译前后模型的一致性"
+msgstr "Used to verify the consistency of the model before and after compilation."
+
+#: 62b7a09814b344eba7a3d15c1ddba745
+msgid "第一个模型的输出"
+msgstr "The output of the first model."
+
+#: 2d4824ee90af47ccb240a9f5e0486922
+msgid "第二个模型的输出"
+msgstr "The output of the second model."
+
+#: d8a9e9b396d64e7d99d288e94e543610
+msgid "相对容差"
+msgstr "Relative tolerance."
+
+#: 169ab24f6e5948888f44daf788406e6d
+msgid "绝对容差"
+msgstr "Absolute tolerance."
+
+#: 4f22ead4d21b4f1f8842e62b58ec0e72
+msgid ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, \\:py\\:class\\:\\`float\\`\\]\\]`"
+msgstr ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, \\:py\\:class\\:\\`float\\`\\]\\]`"
+
+#: f1656e8670084625b2ea77b5934aa697
+msgid "包含每个输出键的差异统计信息"
+msgstr "A dictionary containing difference statistics for each output key."
+
+#: c794301055d44cd28a6795746382cb32
+msgid "比较两个模型输出的数值差异，用于验证编译正确性。"
+msgstr "Compares the numerical differences between two model outputs to verify compilation correctness."
+
+#: efa8c299fbb145d78c14b9f9eff22df6
+msgid "``output1``: 第一个模型的输出字典"
+msgstr "``output1``: The output dictionary of the first model."
+
+#: 456f194d66f44c8ba5c943899bdf8f5d
+msgid "``output2``: 第二个模型的输出字典"
+msgstr "``output2``: The output dictionary of the second model."
+
+#: 1b423059fb284912808d52b3ab1c613b
+msgid "``rtol`` (可选): 相对误差容限，默认 1e-5"
+msgstr "``rtol`` (optional): Relative tolerance, defaults to 1e-5."
+
+#: 6a26ef2ccbf640b88a69aa8c1691473d
+msgid "``atol`` (可选): 绝对误差容限，默认 1e-8"
+msgstr "``atol`` (optional): Absolute tolerance, defaults to 1e-8."
+
+#: c78abd21dd904af2a37654ddd55ca06f
+msgid "包含比较结果的字典，包括最大差异、平均差异等统计信息。"
+msgstr "A dictionary containing the comparison results, including statistics like maximum difference and mean difference."
+
+#: aa2883be061442648294ab7926295b65
+msgid "支持的数据字段"
+msgstr "Supported Data Fields"
+
+#: c6dc0bfeac6942e3a1d23f72db785be7
+msgid "``batch_to_input_dict`` 函数处理以下字段类别："
+msgstr "The ``batch_to_input_dict`` function handles the following field categories:"
+
+#: 159d10f85a7c4886b21e85df3cb1ed8e
+msgid "**必需基础字段:**"
+msgstr "**Required Base Fields:**"
+
+#: d95614e80f9a458994d8abe936ed1da3
+msgid "``pos``: 原子位置"
+msgstr "``pos``: Atomic positions."
+
+#: fee69a5f3cb54a6ca04868e99916a172
+msgid "``cell``: 晶胞参数"
+msgstr "``cell``: Cell parameters."
+
+#: 7afd85b4cd744630bafc0e11a5f7b644
+msgid "``z``: 原子序数"
+msgstr "``z``: Atomic numbers."
+
+#: 64abd1d04b994a13bea70535e7114d5d
+msgid "``edge_index``: 边索引"
+msgstr "``edge_index``: Edge indices."
+
+#: 95b17a63af4b4bdd80450b8e09922d2f
+msgid "**图结构字段:**"
+msgstr "**Graph Structure Fields:**"
+
+#: 3bf444ce1e4f4a02932c0c7bd9fa6223
+msgid "``inv_edge_idx``: 逆边索引"
+msgstr "``inv_edge_idx``: Inverse edge indices."
+
+#: 0cccaaa2993143fd8c6e31e1f3dac9a4
+msgid "``nbr_shift``: 邻居位移"
+msgstr "``nbr_shift``: Neighbor shifts."
+
+#: a57a34e2fb3144c2a8ed3c27181bbd65
+msgid "``cell_shift``: 晶胞位移"
+msgstr "``cell_shift``: Cell shifts."
+
+#: 5011b8483c814d1ba84ddad1bd458550
+msgid "**哈密顿量相关:**"
+msgstr "**Hamiltonian-related:**"
+
+#: e2ddaa4dffc947dc94058a278a620c96
+msgid "``Hon``, ``Hoff``: 哈密顿量矩阵元素"
+msgstr "``Hon``, ``Hoff``: Hamiltonian matrix elements."
+
+#: 73df732fbfe240fba7a5499ae5a49126
+msgid "``Son``, ``Soff``: 重叠矩阵元素"
+msgstr "``Son``, ``Soff``: Overlap matrix elements."
+
+#: 738af0980a234deea49a524a8bc4912d
+msgid "``eigenvalue``, ``eigenvector``: 本征值和本征向量"
+msgstr "``eigenvalue``, ``eigenvector``: Eigenvalues and eigenvectors."
+
+#: aa455fe7676e4654a62822c8147269bb
+msgid "**批次管理:**"
+msgstr "**Batch Management:**"
+
+#: 2d2ca3befed740d39d3d14b305288505
+msgid "``batch``: 批次索引"
+msgstr "``batch``: Batch indices."
+
+#: 6395c3f956874583afa63be9cb89c1f3
+msgid "``node_counts``: 每个图的节点数"
+msgstr "``node_counts``: Number of nodes per graph."
+
+#: 30ea08fee8074206beb334a3c1a7883a
+msgid "``ptr``: 批次指针"
+msgstr "``ptr``: Batch pointer."
+
+#: 218ae7e7b5e143edb819a3932c7fc307
+msgid "技术说明"
+msgstr "Technical Notes"
+
+#: c4b0af90c5f64943817b8ad7042c7116
+msgid "自动处理可选字段，仅转换存在的属性"
+msgstr "Automatically handles optional fields, converting only existing attributes."
+
+#: c9041b8481bc492698b8c643b4f13e72
+msgid "支持标量、向量和矩阵类型的自动转换"
+msgstr "Supports automatic conversion of scalar, vector, and matrix types."
+
+#: 0df48b1ceffc447bb61227fc51295529
+msgid "处理批次相关的索引和指针"
+msgstr "Handles batch-related indices and pointers."
+
+#: d93f252015aa484fa55a19eb7f3487d8
+msgid "确保所有张量在正确的设备上"
+msgstr "Ensures all tensors are on the correct device."
+

@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 806038265d3f43059a74a2039bd74468
+msgid "层定义"
+msgstr "Layer Definitions"
+
+#: 2bff129000a746488724ffce684d3f85
+msgid "一个包含线性层、批量归一化和激活函数的残差连接稠密层。"
+msgstr "A residual-connected dense layer containing a linear layer, batch normalization, and an activation function."
+
+#: 2d617cb017a641138792d710a8bea6ea
+msgid "结构为: `out = Linear(Act(BN(Linear(x))))`"
+msgstr "Structure: `out = Linear(Act(BN(Linear(x))))`"
+
+#: 2ae6ee4d01c34ddca8ebb91096ca43ad 315b0b9cf18e487aa8e4a3d4e9226969
+#: 61fc6f5088d74f5baaa0b812d9d692be 8b8baacbd85546ea853e27376d18780c
+#: c21f3e345b87429784d2eb65f06a5e14 d01199b5250e44bcb675e529463fbf7e
+msgid "前向传播。"
+msgstr "Forward propagation."
+
+#: 502ea5cc866c4454bcddf2122cd7f6aa
+msgid "一个用于回归任务的多层稠密网络。"
+msgstr "A multi-layer dense network for regression tasks."
+
+#: 1965912f8956450280daf37e21092487
+msgid "包含多个隐藏层和一个最终的线性输出层。"
+msgstr "Contains multiple hidden layers and a final linear output layer."
+
+#: 73d2693cb0154d61a753d45c131d34e1
+msgid "多项式形式的截断包络函数。"
+msgstr "A cutoff envelope function in polynomial form."
+
+#: 4ac9f8bb14b0446aafab13abd62d1204
+msgid "当距离 `x` 接近 `cutoff` 时，该函数平滑地衰减到零。"
+msgstr "This function smoothly decays to zero as the distance `x` approaches the `cutoff`."
+
+#: f64da99be028474c9b9c4051f2b4705b
+msgid "Behler-Parrinello 余弦截断函数。源自 SchNetPack。"
+msgstr "Behler-Parrinello cosine cutoff function. Sourced from SchNetPack."
+
+#: 19b8f40a1a4b4f5b9db0f771cc45ba6b
+msgid ""
+"f(r) = \\begin{cases}\n"
+" 0.5 \\times \\left[1 + \\cos\\left(\\frac{\\pi "
+"r}{r_\\text{cutoff}}\\right)\\right]\n"
+"   & r < r_\\text{cutoff} \\\\\n"
+" 0 & r \\geqslant r_\\text{cutoff} \\\\\n"
+" \\end{cases}\n"
+"\n"
+msgstr ""
+"f(r) = \\begin{cases}\n"
+" 0.5 \\times \\left[1 + \\cos\\left(\\frac{\\pi "
+"r}{r_\\text{cutoff}}\\right)\\right]\n"
+"   & r < r_\\text{cutoff} \\\\\n"
+" 0 & r \\geqslant r_\\text{cutoff} \\\\\n"
+" \\end{cases}\n"
+"\n"
+
+#: 0aa1aa8591384ba599b61fed0104ab80 231fc7dea52147489b1a6bd65acc666e
+#: 46c60467701a40f7a24155ab2976e72e 4a9933013a2743f7aa21b43fc2c6977b
+#: 838a99bfd55e495d8b03c920b3f1e342 84212c804e0c42aabf7d3205721984f4
+msgid "参数"
+msgstr "Parameters"
+
+#: 2b6473c209ed472aabc5a1d181c2dd7d
+msgid "截断半径。"
+msgstr "Cutoff radius."
+
+#: 608e2cd04a924cb790806e0225ce55c1
+msgid "计算截断值。"
+msgstr "Calculate cutoff values."
+
+#: a545e34ff5f64e13acd2e9a7a4dae31d
+msgid "原子间距离张量。"
+msgstr "Tensor of interatomic distances."
+
+#: 1f39e5001b6a4e59a97ae90ca74f4357 7cdba4a39c8f4208a5b4a2bebbe9180b
+#: d954b4f4b357429cada916856f74f3a3 e875bb5c09664e4aaf36e5c9a9bf2e6a
+msgid "返回"
+msgstr "Returns"
+
+#: 6440f404de01482dbd13670740bfcafe
+msgid "截断函数的值。"
+msgstr "Value of the cutoff function."
+
+#: 43d88881c4c64ab59beb06d0641166c4 665d672e7c814a29a371dc5d960a7e6c
+#: 90f9f072499d4141a8f5d40c7f18ebba e12784e56bc54c6299fcd6604c9fec62
+msgid "返回类型"
+msgstr "Return type"
+
+#: e112bf8999f3492282547fcef836ffc1
+msgid "一个多层感知机（MLP）回归网络，特征维度在层间减半。"
+msgstr "A Multi-Layer Perceptron (MLP) regression network where the feature dimension is halved between layers."
+
+#: 88b1358621e44215b854e39905de4774
+msgid "计算实数球谐函数的层。"
+msgstr "A layer for computing real spherical harmonics."
+
+#: 6d962a381826429b8216db3e7286aba2
+msgid "极角 theta。"
+msgstr "Polar angle theta."
+
+#: c97c3e4d45a345bbaf75b0ea1e097efa
+msgid "拼接后的球谐函数值。"
+msgstr "Concatenated spherical harmonic values."
+
+#: 7dd7500d9de846a4928d2962cc5742c5
+msgid "零阶贝塞尔函数作为径向基函数（来自 DimeNet）。"
+msgstr "Zeroth-order Bessel function as a radial basis function (from DimeNet)."
+
+#: aad4b4427af14d39b37ff4742b053f2e
+msgid "计算原子间距离的零阶贝塞尔展开。"
+msgstr "Computes the zeroth-order Bessel expansion of interatomic distances."
+
+#: 3f87dbe5d1ac47178bdbdbfacf4d2477
+msgid "形状为 (N_edge,) 的原子间距离。"
+msgstr "Interatomic distances with shape (N_edge,)."
+
+#: 13821a3ff7c94b63a8672090353917fd
+msgid "形状为 (N_edge, n_rbf) 的零阶贝塞尔展开。"
+msgstr "Zeroth-order Bessel expansion with shape (N_edge, n_rbf)."
+
+#: a1fa2157bdcf4c9bb3764cac0283df64
+msgid "高斯函数作为径向基函数。"
+msgstr "Gaussian function as a radial basis function."
+
+#: 6a988016034742b1acc9b1f0dc16473f
+msgid "源自 SchNetPack 的全连接线性层，带有激活函数。"
+msgstr "Fully connected linear layer with activation function, sourced from SchNetPack."
+
+#: fa13801c5d064bbea933c3136115dee8
+msgid ""
+"y = activation(xW^T + b)\n"
+"\n"
+msgstr ""
+"y = activation(xW^T + b)\n"
+"\n"
+
+#: 83dda0dd6a404958b072d2ceafa35e35
+msgid "输入特征数 :math:`x`。"
+msgstr "Number of input features :math:`x`."
+
+#: aa82414386314c72a9a248ea5bd19cda
+msgid "输出特征数 :math:`y`。"
+msgstr "Number of output features :math:`y`."
+
+#: 4ce3da072c454c489261a981296b9e21
+msgid "如果为 False, 层将不学习偏置 :math:`b`。"
+msgstr "If False, the layer will not learn a bias :math:`b`."
+
+#: 180d108f997b44a79cc53fba7e2c734f
+msgid "如果为 None, 则不使用激活函数。"
+msgstr "If None, no activation function is used."
+
+#: d7265e96d3434c209d1c5090a44304d2
+msgid "权重的初始化函数。"
+msgstr "Initialization function for the weights."
+
+#: 6b3bf9ced1d543aba9d3150314835ec7
+msgid "偏置的初始化函数。"
+msgstr "Initialization function for the biases."
+
+#: f796d6ca01a642cf9ea5c9bb6f33a842
+msgid "重新初始化模型的权重和偏置值。"
+msgstr "Re-initializes the weights and biases of the model."
+
+#: 19b6620dd9b644c0990d07c97a34aaf1
+msgid "计算层的输出。"
+msgstr "Computes the output of the layer."
+
+#: b312fc2246e947fd8f6879fe99a6b5e9
+msgid "输入值的批次。"
+msgstr "Batch of input values."
+
+#: 9a50dad624db4af39fbee39845f0a60b
+msgid "层的输出。"
+msgstr "Output of the layer."
+

@@ -1,0 +1,261 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 9588522fd62e47a08b0356f75bfa90bd
+msgid "物理工具 (wigner.py, clebsch_gordan.py)"
+msgstr "Physics Tools (wigner.py, clebsch_gordan.py)"
+
+#: 1c1ba341af1d40869c5935af7ac8eaeb
+msgid "Wigner 系数"
+msgstr "Wigner Coefficients"
+
+#: 735f8048aeac4971ae764833a8bde69a
+msgid "此模块提供了计算维格纳D矩阵 (Wigner D-matrix) 的函数。"
+msgstr "This module provides functions for calculating the Wigner D-matrix."
+
+#: ca3a106ea2d94f59bf180fd8783853ec
+#, python-brace-format
+msgid ""
+"维格纳D矩阵是三维空间中旋转算符 :math:`\\mathcal{R}(\\alpha, \\beta, \\gamma)` 在角动量 "
+"本征态基矢 :math:`|l, m \\rangle` 下的矩阵表示："
+msgstr ""
+"The Wigner D-matrix is the matrix representation of the rotation operator "
+":math:`\\mathcal{R}(\\alpha, \\beta, \\gamma)` in 3D space under the basis of "
+"angular momentum eigenstates :math:`|l, m \\rangle`:"
+
+#: a9cf3bdb1ba04e4a935e414547a9dc7b
+#, python-brace-format
+msgid "D^l_{m',m}(\\mathcal{R}) = \\langle l, m' | \\mathcal{R} | l, m \\rangle"
+msgstr "D^l_{m',m}(\\mathcal{R}) = \\langle l, m' | \\mathcal{R} | l, m \\rangle"
+
+#: b7173dfa633c4e1f89466b7984e81e68
+msgid "它在处理具有旋转对称性的物理问题（如分子轨道、张量场等）中至关重要。 此实现目前支持 :math:`l=0, 1, 2` 的情况。"
+msgstr ""
+"It is crucial for handling physical problems with rotational symmetry, such "
+"as molecular orbitals and tensor fields. This implementation currently "
+"supports cases where :math:`l=0, 1, 2`."
+
+#: b96846195ad649ce90972de46a62de04
+msgid "根据旋转轴和旋转角计算维格纳D矩阵。"
+msgstr "Calculate the Wigner D-matrix based on the rotation axis and angle."
+
+#: a4dd9b720d5d451899d3722603d050a1
+msgid "该函数为给定的角动量 `l` 计算一个旋转操作的不可约表示 (Irrep)。 目前仅实现了 l=0, 1, 2 的情况。"
+msgstr ""
+"This function computes the irreducible representation (Irrep) of a rotation "
+"operation for a given angular momentum `l`. Currently, only l=0, 1, and 2 "
+"are implemented."
+
+#: c0592e0e20ad4b9e807568959728035c
+msgid "l=0: 返回一个标量 1。"
+msgstr "l=0: Returns a scalar 1."
+
+#: 091c2606465e47cca433da76ab2e6338
+msgid "l=1: 使用 e3nn 库计算标准的 3x3 旋转矩阵。"
+msgstr "l=1: Uses the e3nn library to compute the standard 3x3 rotation matrix."
+
+#: 252c40633fe94c8795b8ebe3018973ac
+msgid "l=2: 首先计算 l=1 的旋转矩阵 R, 然后基于 R 的元素显式构造 5x5 的D矩阵。"
+msgstr ""
+"l=2: First, it computes the l=1 rotation matrix R, and then explicitly "
+"constructs the 5x5 D-matrix based on the elements of R."
+
+#: b6c24f1397f14b59aa75744611c3b58a d03bdf803de44f9dbc39019b7c3991f8
+msgid "参数"
+msgstr "Parameters"
+
+#: 15e62826475544b19fb6bf65cde1d372
+msgid "角动量量子数，决定了表示的维度 (2l+1)。"
+msgstr ""
+"The angular momentum quantum number, which determines the dimension of the "
+"representation (2l+1)."
+
+#: 82a9ddae80334f27970218c5a953d399
+msgid "一个三维向量，表示旋转轴。"
+msgstr "A 3D vector representing the axis of rotation."
+
+#: 176357d83b504579942965793f27b031
+msgid "一个标量张量，表示绕轴旋转的角度（单位：弧度）。"
+msgstr ""
+"A scalar tensor representing the angle of rotation about the axis (in "
+"radians)."
+
+#: 6008e565a40a4360a47049d100b58463 fa9ae3a80b47412bac80279e46319e4f
+msgid "返回"
+msgstr "Returns"
+
+#: 4a1e60d4353b4bb48c3df5f80fa4bd8f
+msgid "计算出的维格纳D矩阵，形状为 :math:`(2l+1, 2l+1)`。"
+msgstr "The computed Wigner D-matrix, with a shape of :math:`(2l+1, 2l+1)`."
+
+#: 1c6282006a574ff2a588d48903e7d589 a599d086f3f44993ac2f6d756f48056a
+msgid "返回类型"
+msgstr "Return type"
+
+#: 7bf2566947e6412fbc1c8b1c9cc2cc08
+msgid "抛出"
+msgstr "Raises"
+
+#: 89927dc818fe40618c059b8defadba58
+msgid "如果 `l` 不是 0, 1, 或 2，则抛出此异常。"
+msgstr "This exception is raised if `l` is not 0, 1, or 2."
+
+#: ca6c2dd277c542a693eafda97177de2e
+msgid "Clebsch-Gordan 系数"
+msgstr "Clebsch-Gordan Coefficients"
+
+#: 7c648f8470f84e0fba7fdd236965247d
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: a5f21aa4db4546d7afc71df95fa92ce9
+msgid "一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。"
+msgstr ""
+"A helper class for loading, storing, and providing Clebsch-Gordan (CG) "
+"coefficients."
+
+#: 15bc6c52f77f4bc4bdd7e4bd692baadc
+msgid ""
+"此版本经过重构，实现了三个关键目标： 1. "
+"**TorchScript兼容**：使用ModuleDict和\"实时排列\"策略，移除了不兼容的getattr调用。 2. "
+"**向后兼容**：可以无缝加载用旧版代码保存的checkpoint。 3. "
+"**向前兼容**：用此版本代码保存的checkpoint，也可以被旧版代码无缝加载。"
+msgstr ""
+"This version has been refactored to achieve three key goals: 1. "
+"**TorchScript Compatibility**: Uses ``ModuleDict`` and an \"on-the-fly "
+"permutation\" strategy, removing incompatible ``getattr`` calls. 2. "
+"**Backward Compatibility**: Can seamlessly load checkpoints saved with "
+"older versions of the code. 3. **Forward Compatibility**: Checkpoints "
+"saved with this version can also be seamlessly loaded by older versions."
+
+#: dfb49a416e824aa1a061229acd0d7333
+msgid "所有兼容性逻辑都被封装在此类内部，对外部代码完全透明。"
+msgstr ""
+"All compatibility logic is encapsulated within this class, making it "
+"completely transparent to external code."
+
+#: c3ea7c24b2754de297a9ee9da0acb130
+msgid ""
+"CG系数在耦合角动量理论中至关重要，用于将两个角动量的状态分解为总角动量的状态。 这个类从一个预先计算好的 `.npz` 文件中加载 CG "
+"系数张量。"
+msgstr ""
+"CG coefficients are essential in coupled angular momentum theory for "
+"decomposing the states of two angular momenta into states of the total "
+"angular momentum. This class loads CG coefficient tensors from a pre-"
+"computed `.npz` file."
+
+#: 5da55114376943cd9394d081a2780c1c
+msgid ""
+"采用\"实时排列\"策略： - 只存储规范形式的CG系数（l1 <= l2 <= l3） - 在forward时动态计算所需的排列 - "
+"完全兼容TorchScript，支持设备自动移动"
+msgstr ""
+"Adopts an \"on-the-fly permutation\" strategy: - Stores only the canonical "
+"form of CG coefficients (l1 <= l2 <= l3). - Dynamically computes the "
+"required permutations during the forward pass. - Fully compatible with "
+"TorchScript and supports automatic device placement."
+
+#: 9c33febf2ef849c98957a38a744d4da4
+msgid "CG 系数 :math:`\\langle l_1 m_1, l_2 m_2 | l_3 m_3 \\rangle` 定义了角动量耦合的规则："
+msgstr ""
+"The CG coefficients :math:`\\langle l_1 m_1, l_2 m_2 | l_3 m_3 \\rangle` "
+"define the rules for angular momentum coupling:"
+
+#: f5733907535b406b92d8782538992f8c
+#, python-brace-format
+msgid ""
+"|l_3, m_3 \\rangle = \\sum_{m_1, m_2} \\langle l_1 m_1, l_2 m_2 | l_3 m_3"
+" \\rangle |l_1, m_1 \\rangle |l_2, m_2 \\rangle"
+msgstr ""
+"|l_3, m_3 \\rangle = \\sum_{m_1, m_2} \\langle l_1 m_1, l_2 m_2 | l_3 m_3 "
+"\\rangle |l_1, m_1 \\rangle |l_2, m_2 \\rangle"
+
+#: f274a4520be6494ab35c8da54dbf2afe
+msgid ""
+"该类继承自 `torch.nn.Module`，这使得它可以被无缝集成到任何 PyTorch 模型中，并且通过 `register_buffer`"
+" 注册的张量会自动 随模型移动到正确的设备 (如 CPU 或 GPU)。"
+msgstr ""
+"This class inherits from `torch.nn.Module`, allowing it to be seamlessly "
+"integrated into any PyTorch model. Tensors registered via `register_buffer` "
+"are automatically moved to the correct device (e.g., CPU or GPU) with the "
+"model."
+
+#: 39b0a2b0543b4213b60190a934c7842f
+msgid "存储规范形式CG系数的字典"
+msgstr "A dictionary for storing CG coefficients in canonical form."
+
+#: 24549948ea884e789e83a6be16099469 e1f78c31a91e406da48e4726f58bb307
+msgid "type"
+msgstr "type"
+
+#: 63bc6f8dad594ffba4a93f63acf3844e
+msgid "nn.ModuleDict"
+msgstr "nn.ModuleDict"
+
+#: be21e6d6227540f4ae05daa592c456bd
+msgid "最大的角动量量子数"
+msgstr "The maximum angular momentum quantum number."
+
+#: 2e647f7fd65d4c15a5cdf208817fa183
+msgid "int"
+msgstr "int"
+
+#: b8c84afbb5ab4b059579f5a3eabd49ac
+msgid "获取指定角动量组合的 Clebsch-Gordan 系数张量。"
+msgstr ""
+"Retrieves the Clebsch-Gordan coefficient tensor for a specified combination "
+"of angular momenta."
+
+#: 92a04fb45245406eae6fd34e70199e36
+msgid "动态计算从规范形式到请求形式的排列。"
+msgstr ""
+"Dynamically computes the permutation from the canonical form to the "
+"requested form."
+
+#: b20aac05f1e3414690b82a2723849741
+msgid "第一个角动量的量子数 :math:`l_1`。"
+msgstr "The quantum number of the first angular momentum, :math:`l_1`."
+
+#: f9f46f18ab24466ea2b09cc250a5a897
+msgid "第二个角动量的量子数 :math:`l_2`。"
+msgstr "The quantum number of the second angular momentum, :math:`l_2`."
+
+#: a5814c1cbe5648b1beb79de502192ca6
+msgid "耦合后的总角动量的量子数 :math:`l_3`。"
+msgstr ""
+"The quantum number of the total angular momentum after coupling, :math:`l_3`."
+
+#: 2993bb49d89444fdbb6e09332353ce2c
+msgid ""
+"对应于 :math:`(l_1, l_2, l_3)` 组合的 CG 系数张量， 其形状为 :math:`(2l_1+1, 2l_2+1, "
+"2l_3+1)`。"
+msgstr ""
+"The CG coefficient tensor for the combination :math:`(l_1, l_2, l_3)`, with "
+"a shape of :math:`(2l_1+1, 2l_2+1, 2l_3+1)`."
+
+#: 073df219de9e46f5a1576e34ac5c5eb3
+msgid ""
+"在保存时，将内部的嵌套键名 (e.g., \"cg_storage.0_1_1.data\") 伪装成旧版的平铺键名 (e.g., "
+"\"cg_0_1_1\")，以确保向前兼容。"
+msgstr ""
+"When saving, it disguises the internal nested key names (e.g., "
+"\"cg_storage.0_1_1.data\") as the old flat key names (e.g., \"cg_0_1_1\") to "
+"ensure forward compatibility."
+

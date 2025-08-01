@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: a440caecf6e74c4f86e369175a1cd25d
+msgid "hamgnn-compile"
+msgstr "hamgnn-compile"
+
+#: 52c21d2754e44e9fbb03114f31550742
+msgid "HamGNN TorchScript 编译工具。"
+msgstr "HamGNN TorchScript compilation tool."
+
+#: 788743411acd4b60b7937fa9d58d927d
+msgid "概述"
+msgstr "Overview"
+
+#: dd7d27ba79bb419f926714774d3effe2
+msgid ""
+"``compile.py`` 是将 HamGNN PyTorch Lightning checkpoint 转换为 TorchScript "
+"格式的命令行工具。"
+msgstr "``compile.py`` is a command-line tool for converting HamGNN PyTorch Lightning checkpoints to TorchScript format."
+
+#: c49508620f754462b4a308aef85291ed
+msgid "使用方法"
+msgstr "Usage"
+
+#: 6d209886d6984245ab4f1b1fe904372f
+msgid "命令行参数"
+msgstr "Command-Line Arguments"
+
+#: 525198923c72462bbb62697ce6c62ece
+msgid "参数"
+msgstr "Argument"
+
+#: 6262b1b11c27467b896a22d490935f49
+msgid "类型"
+msgstr "Type"
+
+#: 982deb259a2d47a6af3e4ba03a380687
+msgid "必需"
+msgstr "Required"
+
+#: c244e8fcc0da4d77a268e6cdf54140f4
+msgid "说明"
+msgstr "Description"
+
+#: 44a2a5494fbc487499e7336b29207e45
+msgid "``--config``"
+msgstr "``--config``"
+
+#: 073250315a9e439d9c9084f9ebd1fdd0 1fff6d2684ad42b49ef3022f9314e9c0
+#: 20911f594d0c4e1785b0c1c6865979af 3afdddb08eed4268ac4e1e7f70e55f09
+msgid "str"
+msgstr "str"
+
+#: 3736d797a0cb422980a75ebc215c2fa9 e9a720efeb4248529cd2728285af972f
+#: f33e5bfde6ac4baea84f83e6432c52a1
+msgid "是"
+msgstr "Yes"
+
+#: c189083e3cb6418db4cc2918d08057b1
+msgid "HamGNN 配置文件路径"
+msgstr "Path to the HamGNN configuration file."
+
+#: 71328c3c20194e6899567179a41fddd7
+msgid "``--checkpoint``"
+msgstr "``--checkpoint``"
+
+#: c805145f440e41fab55dce087969cd73
+msgid "PyTorch Lightning checkpoint 文件路径"
+msgstr "Path to the PyTorch Lightning checkpoint file."
+
+#: 455ead732cc948ad82b4fec6a929a553
+msgid "``--output``"
+msgstr "``--output``"
+
+#: 3405a3d2b5e049fa97ee8d211d3fc477
+msgid "输出的 TorchScript 模型路径（建议使用 .hamgnn.pt 后缀）"
+msgstr "Output path for the TorchScript model (``.hamgnn.pt`` suffix is recommended)."
+
+#: c175af927ff54ffe85e098de2cb2cad7
+msgid "``--device``"
+msgstr "``--device``"
+
+#: 5ebc706caf284e3488d20387a306c9d6
+msgid "否"
+msgstr "No"
+
+#: 87dd7d8aff44413088af1cb8fbd8b714
+msgid "目标设备 (cuda/cpu)，默认: cuda"
+msgstr "Target device (cuda/cpu), default: cuda."
+
+#: 5c044e22dc7f49d488f912fe0bbe260f
+msgid "示例"
+msgstr "Example"
+
+#: 3466a7cae8884741aa6dada4ea56a5ff
+msgid "基本用法::"
+msgstr "Basic usage::"
+
+#: 8cc3f6f05c0445849ae6b147e8ba639d
+msgid "CPU 编译::"
+msgstr "CPU compilation::"
+
+#: 032ac8fe52804104b4aff1717336c333
+msgid "输出文件"
+msgstr "Output Files"
+
+#: 0eb7ec83ff504932ab1d4c72f60483ff
+msgid "编译过程会生成两个文件："
+msgstr "The compilation process generates two files:"
+
+#: bb5d942200b6492fa277f1329bd2fe95
+msgid "**模型文件** (``.hamgnn.pt``): TorchScript 编译后的模型"
+msgstr "**Model File** (``.hamgnn.pt``): The TorchScript compiled model."
+
+#: 19c5a701fd1e4bbe9fc8a549d55236f4
+msgid "**元数据文件** (``.metadata.json``): 包含配置信息、编译环境等元数据"
+msgstr "**Metadata File** (``.metadata.json``): Contains metadata such as configuration information and compilation environment."
+
+#: b28e6bb6d14c46b7a9d1273b586316f2
+msgid "函数参考"
+msgstr "Function Reference"
+
+#: 76b2774f2abf45fe8f38a24435673dd9
+msgid "加载并解析配置文件"
+msgstr "Loads and parses the configuration file."
+
+#: 9784bcb20f8d4cda89f312c7e1c469b0 c05b4553225346a0ae7924163fee6f3e
+msgid "返回类型"
+msgstr "Return type"
+
+#: fc7f92fe97314479984491c33b0ccf03
+msgid ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:data\\:\\`\\~typing.Any\\`\\]`"
+msgstr ""
+":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~typing.Dict\\`\\\\ "
+"\\\\\\[\\:py\\:class\\:\\`str\\`\\, "
+"\\:py\\:data\\:\\`\\~typing.Any\\`\\]`"
+
+#: a0b202842b7242b2baf26cb3d404db97
+msgid "加载 checkpoint 并构建模型"
+msgstr "Loads the checkpoint and builds the model."
+
+#: 1d2596ba89114ee2ae623d5f13b3d96c
+msgid "返回"
+msgstr "Returns"
+
+#: f606925ef6d64856a60e6732cbcd2478
+msgid "模型的两个主要组件"
+msgstr "The two main components of the model."
+
+#: 3797667fe5264519b1dc5a3f6677ed26
+msgid ""
+"HamGNN 当前的 checkpoint 不包含配置信息，因为 Model.py 中的 "
+"``self.save_hyperparameters()`` 被注释掉了。未来应该启用该功能， 这样就可以像 nequip 一样直接从 "
+"checkpoint 编译，而不需要额外的配置文件。 参见: `HamGNN_v_2_0/models/Model.py:100 "
+"<https://github.com/bud-"
+"primordium/HamGNN/blob/313af4fe09d36b55ec17d9fa7eea143c565465b1/HamGNN_v_2_0/models/Model.py#L100>`_"
+msgstr ""
+"Currently, HamGNN checkpoints do not include configuration information because ``self.save_hyperparameters()`` in Model.py is commented out. This feature should be enabled in the future to allow direct compilation from checkpoints, similar to nequip, without needing an extra configuration file. See: `HamGNN_v_2_0/models/Model.py:100 "
+"<https://github.com/bud-"
+"primordium/HamGNN/blob/313af4fe09d36b55ec17d9fa7eea143c565465b1/HamGNN_v_2_0/models/Model.py#L100>`_"
+
+#: 75a7944d9a464fc08e8faa50134c10dd
+msgid "编译模型为 TorchScript"
+msgstr "Compiles the model to TorchScript."
+
+#: 9cb2e806e90e45228fbb002ff53186d0
+msgid "使用 e3nn.util.jit.script 进行混合编译"
+msgstr "Uses e3nn.util.jit.script for hybrid compilation."
+
+#: cb0a8e61b45049389a81195ce0798660
+msgid "保存编译后的模型和元数据"
+msgstr "Saves the compiled model and metadata."
+
+#: 392b04ebf59641c9a0f1fd1aed557649
+msgid "技术细节"
+msgstr "Technical Details"
+
+#: 5c6216d210304734a6e8603a0192d4d8
+msgid "使用 ``e3nn.util.jit.script()`` 进行混合编译，优化等变操作"
+msgstr "Uses ``e3nn.util.jit.script()`` for hybrid compilation to optimize equivariant operations."
+
+#: 140d92587d1b4cb486545cfca237d0f6
+msgid "自动处理设备迁移和 CUDA 可用性检查"
+msgstr "Automatically handles device migration and CUDA availability checks."
+
+#: 8ce3c549131144bcb57cbbc33a6932c0
+msgid "保存详细的编译元数据用于部署验证"
+msgstr "Saves detailed compilation metadata for deployment verification."
+
+#: 6ee7d723212647ca973a14e2b7c8c611
+msgid "注意事项"
+msgstr "Notes"
+
+#: 5f0a3136200a4e7eac07d7c3f44423b1
+msgid "编译环境与部署环境的 CUDA、e3nn、NumPy 版本需要保持一致"
+msgstr "The CUDA, e3nn, and NumPy versions must be consistent between the compilation and deployment environments."
+
+#: e72f47c9c0824c55bfa2abf6542a5afe
+msgid "当前需要配置文件辅助编译，未来版本将支持直接从 checkpoint 读取配置"
+msgstr "Currently, a configuration file is required for compilation. Future versions will support reading the configuration directly from the checkpoint."
+
+#: ea8a38b72c814d2aa7d60d49f058d1e0
+msgid "首次编译可能需要较长时间，请耐心等待"
+msgstr "The first compilation may take a long time, please be patient."
+

@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+msgid "API 文档"
+msgstr "API Documentation"
+
+msgid "TorchScript 工具包"
+msgstr "TorchScript Toolkit"
+
+#: bc84bb3945d64fe194e9173852fcd5d8
+msgid "HamGNN v2.0 中文注释版文档"
+msgstr "HamGNN v2.0 Documentation with Chinese Annotations"
+
+#: 9b107d7f823c43ac8a455d781b0753bb
+msgid "欢迎来到 HamGNN v2.0 中文注释版的 API 文档！"
+msgstr "Welcome to the API documentation for HamGNN v2.0 with Chinese annotations!"
+
+#: 3d50a8f0dc2e4e62b6138136fa731474
+msgid ""
+"本文档基于 `QuantumLab-ZY/HamGNN <https://github.com/QuantumLab-ZY/HamGNN>`_ "
+"项目生成， 由社区贡献者添加了中文注释，旨在帮助中文开发者更好地理解和使用 HamGNN。"
+msgstr ""
+"This document is generated based on the `QuantumLab-ZY/HamGNN "
+"<https://github.com/QuantumLab-ZY/HamGNN>`_ project. Chinese annotations "
+"have been added by community contributors to help Chinese developers better "
+"understand and use HamGNN."
+
+#: 10202d1bc7d8439896a21c5be08f25af
+msgid "使用左下角的文档版本菜单可以在不同分支、版本和语言之间切换"
+msgstr ""
+"Use the documentation version menu in the bottom-left corner to switch "
+"between different branches, versions, and languages"
+
+#: 35bc68a9e7754ee78adea06916349a2d
+msgid ""
+"Use the documentation version menu in the bottom-left corner to switch "
+"between different branches, versions, and languages"
+msgstr "使用左下角的文档版本菜单可以在不同分支、版本和语言之间切换"
+

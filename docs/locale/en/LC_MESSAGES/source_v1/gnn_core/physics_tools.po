@@ -1,0 +1,115 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: d34d2e9bb24a4db5bc8f2e0569462f7c
+msgid "物理工具 (wigner.py, clebsch_gordan.py)"
+msgstr "Physics Tools (wigner.py, clebsch_gordan.py)"
+
+#: 8fc191ac14bb4e9b9380f94f30e99d1b
+msgid "Wigner 系数"
+msgstr "Wigner Coefficients"
+
+#: 523d59248b0b4aa79a630e2a33bec765
+msgid "该模块提供了计算 Wigner-D 矩阵的函数。"
+msgstr "This module provides functions for calculating the Wigner-D matrix."
+
+#: 9098f735d76b4754bfdfad5c9425264f
+msgid "注意：此版本的实现与 `e3nn` 库紧密耦合，并为 l=0, 1, 2 的情况 提供了具体的矩阵表达式。"
+msgstr """Note: This version of the implementation is tightly coupled with the `e3nn` library and provides specific matrix expressions for the cases l=0, 1, and 2."""
+
+#: 37e9f13d5f284fedb5f27d83ff25ab5f
+msgid "计算指定 l 值的 Wigner-D 矩阵。"
+msgstr "Computes the Wigner-D matrix for a specified l value."
+
+#: 803d896a907d4bd3a4cca5729aad7e4e
+msgid "该函数使用 e3nn 库来获取 l=1 的旋转矩阵，并为 l=2 的情况提供了 一个硬编码的、基于 l=1 旋转矩阵元素的表达式。"
+msgstr """This function uses the e3nn library to obtain the rotation matrix for l=1 and provides a hard-coded expression for l=2 based on the elements of the l=1 rotation matrix."""
+
+#: 1486365de0584ae79a945ea042f7c44c
+msgid "参数"
+msgstr "Parameters"
+
+#: f1a29f5d12f34d24a9e56ae328b073ff
+msgid "轨道角动量量子数 (支持 0, 1, 2)。"
+msgstr "Orbital angular momentum quantum number (supports 0, 1, 2)."
+
+#: f4b03b41aeea49c584bef8708bd52f48
+msgid "旋转轴向量，形状为 (3,)。"
+msgstr "Rotation axis vector, with shape (3,)."
+
+#: a74aab180bea490ba36d0f2feb92335b
+msgid "旋转角度 (弧度)，是一个标量。"
+msgstr "Rotation angle (in radians), which is a scalar."
+
+#: 07468c27bb974b4a8395c67280a0e941
+msgid "返回"
+msgstr "Returns"
+
+#: fc118cc853d64ddaac7dc40c7ad8797c
+msgid "对应于 l 值的 Wigner-D 矩阵。"
+msgstr "The Wigner-D matrix corresponding to the l value."
+
+#: 023de003fc944419bfa36aadab127a8e
+msgid "返回类型"
+msgstr "Return type"
+
+#: 632d3cb7c9d04cf180862e35ee9b749a
+msgid "抛出"
+msgstr "Raises"
+
+#: 1c90cc33c5ba44bda9184cec2f8de993
+msgid "如果 l 的值不是 0, 1, 或 2。"
+msgstr "If the value of l is not 0, 1, or 2."
+
+#: d7d9623fd54f4114b633fed172476feb
+msgid "Clebsch-Gordan 系数"
+msgstr "Clebsch-Gordan Coefficients"
+
+#: 703a0f2b3caf499c8479f958be2edfef
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: 3aae66f179a94e49927cf1b6d668942e
+msgid "一个用于加载、存储和提供 Clebsch-Gordan (CG) 系数的辅助类。"
+msgstr """A helper class for loading, storing, and providing Clebsch-Gordan (CG) coefficients."""
+
+#: f80944903e6443838b2b5fcb637687dd
+msgid ""
+"此版本经过重构，实现了三个关键目标： 1. "
+"**TorchScript兼容**：使用ModuleDict和\"实时排列\"策略，移除了不兼容的getattr调用。 2. "
+"**向后兼容**：可以无缝加载用旧版代码保存的checkpoint。 3. "
+"**向前兼容**：用此版本代码保存的checkpoint，也可以被旧版代码无缝加载。"
+msgstr """This version has been refactored to achieve three key goals: 1. **TorchScript Compatibility**: Uses ``ModuleDict`` and an "on-the-fly permutation" strategy, removing incompatible ``getattr`` calls. 2. **Backward Compatibility**: Can seamlessly load checkpoints saved with older versions of the code. 3. **Forward Compatibility**: Checkpoints saved with this version can also be seamlessly loaded by older versions."""
+
+#: 7f504fa23a434c4298bdf38de22bf566
+msgid "所有兼容性逻辑都被封装在此类内部，对外部代码完全透明。"
+msgstr """All compatibility logic is encapsulated within this class, making it completely transparent to external code."""
+
+#: f8efff5fb5cd494eb437ecd33fd606a8
+msgid "动态计算并返回所需的CG系数张量。"
+msgstr "Dynamically computes and returns the required CG coefficient tensor."
+
+#: a88670d2d8a24b31a983c3eccd82db6a
+msgid ""
+"在保存时，将内部的嵌套键名 (e.g., \"cg_storage.0_1_1.data\") 伪装成旧版的平铺键名 (e.g., "
+"\"cg_0_1_1\")，以确保向前兼容。"
+msgstr """When saving, it disguises the internal nested key names (e.g., "cg_storage.0_1_1.data") as the old flat key names (e.g., "cg_0_1_1") to ensure forward compatibility."""
+

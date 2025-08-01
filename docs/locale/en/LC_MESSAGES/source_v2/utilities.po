@@ -1,0 +1,540 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 18:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 650575fc6f7743b3b29018d17420f9c3
+msgid "通用工具函数"
+msgstr "General utility functions"
+
+#: d82d40858de749fb961094b602b4b416
+msgid "Swish 激活函数。"
+msgstr "Swish activation function."
+
+#: 1f4d31476d194fc1a952755e88d3edb9
+msgid "计算公式为 `x * sigmoid(x)`。"
+msgstr "The formula is `x * sigmoid(x)`."
+
+#: 048d85e249964841ba02b4cc88131cec 1abdee6d883e408bbcc0b2d3242f54fe
+#: 259f9edc50d842b78ab3eda8a72f21a8 262bd472810c4a9da6e8ed34a0f52134
+#: 301b998f6f7a445f96c55f5dc7f0d5ba 4d81049af94a45be8f9b9dbfc14a162b
+#: 6993ceed541c493c98347b480ca3827f 7def3baf87d9445daed0f4afdf029efe
+#: 9d1c94b2a57d4021aec6989defb2fc38 c559a41e18cc4707b60f97d303679809
+#: cbbe2bdda999410eb9723c6ed6e07d0a cec52667841f4494aacccebf0bf4accb
+#: dc69f075f5dc46edb6414d2446d73a51
+msgid "参数"
+msgstr "Parameters"
+
+#: dd750f4208904e35a9ef9c31814c66b0
+msgid "输入张量。"
+msgstr "Input tensor."
+
+#: 08ec8ff31f7c43a0bb61491f8d89a186 1002b476318c4262b897c681a0393ff0
+#: 4a63cf07ba524392a58cb5ccbc8ed167 6ae8064e78d6444981249dc8665f0d04
+#: 7cc53b5526be4e519c89a5278774e86d 96b0c63cc1b848029c648a5ed0cb09c8
+#: bd9362412ffc43f9a9bccfb3c3f46869 c8bf15296a6f46b088600df1258c1c82
+#: ccc76a98ba974b82a5883524ba60f376 cf6334cdc67a4dceaeb7b416deccf1bc
+#: e633ed99338748b6bb71e6c20361cd0a f975d6d506cc4780866ad0b0261a3d7d
+msgid "返回"
+msgstr "Returns"
+
+#: 24d237c68a5547e4bbd1b15d328d7e6b
+msgid "经过 Swish 激活后的张量。"
+msgstr "The tensor after Swish activation."
+
+#: 0490c4b129184dfeba2640c1c1ad6fff 09c4ba6f7b3c4eaa9e9cbc16a7fc2dd1
+#: 0c64b1e7ddf54853a49f369710a9eefa 10892726d09341bfa67527295c637f6f
+#: 293d8723f36b41688f98bc269abeaa19 340319b0a5f946e9be9c5b0f6f4a1a51
+#: 3f333f04183b4516b96b97fa88e349e9 41e0b80370c4446086612e6555ef13ff
+#: 5b1867d35b1c4ec8a0a5c67a2cf2cf39 694cb5579b5341e4ac45c8d36c851862
+#: 9e5c5e84381e46c1a3cd36bc563e8f29 a5b29669747546d2a630790f2c235e85
+#: a7425235c824494abfa2fb63d59b2b02 a79014f192964b2d8de38b46116db644
+#: aac883d183de4ee288bd3d71de4fd5d4 b05444f90751433c86d5ccb4d8f2b8a7
+#: ba38b921cc3141c38db1ebf7c4402b09 bc124733dc194e979414a8bd50354303
+#: c377944c0d9b4404aa655058719f3582 e2c7ce350033461f9e22a5085b0eb43c
+msgid "返回类型"
+msgstr "Return type"
+
+#: 8baf0ec8d1bd434f9e77de1400fbdc48
+msgid "根据输入参数灵活构建一个线性层、批量归一化和激活函数的组合模块。"
+msgstr "Flexibly constructs a combined module of a linear layer, batch normalization, and an activation function based on input parameters."
+
+#: 0ebbb48f8a4d4c339d94a52e014b363a
+msgid "该函数根据 `use_batch_norm` 和 `activation` 是否提供，来构造不同组合的模块。"
+msgstr "This function constructs different combinations of modules depending on whether `use_batch_norm` and `activation` are provided."
+
+#: 033ee1a7dc094b72b4d38dfb8ee397a2
+msgid ""
+"该函数的返回值类型不是固定的。当 `use_batch_norm` 为 `False` 且 `activation` 为 `None` "
+"时，它返回一个独立的 `nn.Linear` 模块；在其他所有情况下， 它返回一个 `nn.Sequential` "
+"容器。调用者需要注意处理这个差异。"
+msgstr ""
+"The return type of this function is not fixed. When `use_batch_norm` is `False` and `activation` is `None`, "
+"it returns a standalone `nn.Linear` module; in all other cases, it returns an `nn.Sequential` "
+"container. The caller needs to be aware of and handle this difference."
+
+#: a390d241d764446e9d52bb9d02ff9663
+msgid "线性层的输入特征维度。"
+msgstr "Input feature dimension of the linear layer."
+
+#: 928095b278c64f0ca5ddf6b08a23c325
+msgid "线性层的输出特征维度。"
+msgstr "Output feature dimension of the linear layer."
+
+#: d37c1f05cb6c47b5af24187c6173faa1
+msgid "线性层是否使用偏置。默认为 `False`。"
+msgstr "Whether the linear layer uses a bias. Defaults to `False`."
+
+#: b75a984484c64f7aafeaa6b24baaaf6a
+msgid "要应用的激活函数实例。如果为 `None`，则不添加激活函数。默认为 `None`。"
+msgstr "The activation function instance to apply. If `None`, no activation function is added. Defaults to `None`."
+
+#: de9d0a81162342febe62ef52d9d93db5
+msgid "是否在激活之前应用批量归一化。默认为 `False`。"
+msgstr "Whether to apply batch normalization before activation. Defaults to `False`."
+
+#: cef0daec59f34dd885974cb95de78cd3
+msgid "组建好的 Pytorch 模块。"
+msgstr "The assembled PyTorch module."
+
+#: fb557503e8904acdaec9c6db4bffeb61
+msgid "应用逐元素的 Shifted SoftPlus (SSP) 激活函数。"
+msgstr "Applies the element-wise Shifted SoftPlus (SSP) activation function."
+
+#: 1d5d1b58e6884a5692296178f14e9bb2
+#, python-brace-format
+msgid ""
+"SSP 的计算公式为: "
+":math:`\\text{SSP}(x)=\\text{Softplus}(x)-\\text{Softplus}(0)`。 这确保了 "
+":math:`\\text{SSP}(0)=0`。"
+msgstr ""
+"The SSP formula is: "
+":math:`\\text{SSP}(x)=\\text{Softplus}(x)-\\text{Softplus}(0)`. This ensures "
+"that :math:`\\text{SSP}(0)=0`."
+
+#: 6d07d9dc113a44f8bee0ddd2bff3074d
+msgid "Softplus 公式中的 :math:`\\beta` 值。默认为 1。"
+msgstr "The :math:`\\beta` value in the Softplus formula. Defaults to 1."
+
+#: ff6ee4d8ac1c4343b19c188b89068d63
+msgid "当输入值高于此阈值时，Softplus 将退化为线性函数。默认为 20。"
+msgstr "When the input value is higher than this threshold, Softplus degenerates to a linear function. Defaults to 20."
+
+#: cddf9d45cdb34033a954b14a18fe69de
+msgid "Shape:"
+msgstr "Shape:"
+
+#: d2b5f6b1271848e2b7c968e5770c9e42
+msgid "输入: :math:`(N, *)`，其中 `*` 表示任意数量的附加维度。"
+msgstr "Input: :math:`(N, *)`, where `*` means any number of additional dimensions."
+
+#: 278ef82acd34447d9a4b0302425de138
+msgid "输出: :math:`(N, *)`，形状与输入相同。"
+msgstr "Output: :math:`(N, *)`, same shape as the input."
+
+#: 1abb28d7101341818ca681039bf48e72 43d0c8e671e74be88302e1166536d9c2
+#: 4d1c83657a904874a8af6fca3b5d0377 76aa17d4087148ed98c8fe009a906a95
+#: aa655cbdf98b49f2ad33b0471b511c45 f7e03bf71c8e428997e69a5ee91c362a
+msgid "定义前向传播逻辑。"
+msgstr "Defines the forward pass logic."
+
+#: 0e9228cb9fb84af695d220404cc6ac5d 3ab4d64ced994148b18f94df1c51f05c
+#: 4898cfe8639c42f98683930e851746ee 5396ce910009484bb10965651a6872f3
+#: c2217a2b2a174042a716560b1c5419ed fa46ff3eff844f0090a4c9e971d1fd1c
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~torch.Tensor\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~torch.Tensor\\``"
+
+#: a00f1355127a404f8c19fa3778a4a662
+msgid "返回模块的额外表示信息，用于打印。"
+msgstr "Returns the extra representation of the module for printing."
+
+#: 2756b83a69ca4208bb2128696bef6510
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`str\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`str\\``"
+
+#: 00d2020f523d4c5d9794f47e619c5b0c
+msgid "Swish 激活函数的模块封装。"
+msgstr "Module wrapper for the Swish activation function."
+
+#: c3e9989e628247eaa002093e09a05f6a
+msgid "根据名称字符串获取并实例化一个激活函数模块。"
+msgstr "Gets and instantiates an activation function module by its name string."
+
+#: fc3587b6d94346f1b89e62183e303e4a
+msgid ""
+"支持的激活函数包括 'softplus', 'ssp', 'elu', 'relu', 'selu', 'swish', 'tanh', "
+"'silu', 'celu'。对于 'elu' 和 'celu'，可以指定 alpha 参数， 例如 \"elu(0.5)\"。"
+msgstr ""
+"Supported activation functions include 'softplus', 'ssp', 'elu', 'relu', 'selu', 'swish', 'tanh', "
+"'silu', 'celu'. For 'elu' and 'celu', the alpha parameter can be specified, e.g., \"elu(0.5)\"."
+
+#: c4418b59ba684d8e9b415ba1f4cb1181
+msgid "激活函数的名称。"
+msgstr "Name of the activation function."
+
+#: 1441917402d3440bb75110dbf37eb7bc
+msgid "对应的激活函数实例。"
+msgstr "The corresponding activation function instance."
+
+#: 116b4ed506cc4e25bb1c49ebb0120610 26d0b87ab4834bf3922ed8705b81c7ae
+#: 794978fcebeb4b34b0a1176b7fe3b180
+msgid "抛出"
+msgstr "Raises"
+
+#: b8bbeb40630f4fe586f377ea3a0fda40
+msgid "如果请求的激活函数不受支持。"
+msgstr "If the requested activation function is not supported."
+
+#: ba5c81bf13f442418000dfa9c0483dd7
+msgid "生成一个预测值 vs. 目标值的散点图。"
+msgstr "Generates a scatter plot of predicted vs. target values."
+
+#: ff9ef5bb0500404da710eba92bbecab7
+msgid "图中会画出 y=x 的虚线作为参考。可选地，可以使用核密度估计 为散点着色，但当前版本为简化实现，使用了固定的绿色。"
+msgstr "A dashed line y=x is drawn in the plot for reference. Optionally, kernel density estimation can be used to color the scatter points, but the current version uses a fixed green color for simplicity."
+
+#: 6b172f894e784e1788a36bfa27e0fa74
+msgid "预测值的一维数组。"
+msgstr "A 1D array of predicted values."
+
+#: 4519a1b596d24743b9d59de585374d98
+msgid "目标值的一维数组。"
+msgstr "A 1D array of target values."
+
+#: bc7bcde56e384ea9b788acf29c61448e
+msgid "生成的 matplotlib Figure 对象。"
+msgstr "The generated matplotlib Figure object."
+
+#: aef826d246a047af91dad9fd6c515ae9
+msgid "计算两个向量之间的余弦相似度损失。"
+msgstr "Computes the cosine similarity loss between two vectors."
+
+#: 89a8caa9804d43419c9026586f3c4734
+msgid "损失定义为 `1 - cos(theta)`，其中 `theta` 是两个向量的夹角。 该损失鼓励两个向量指向相同的方向。"
+msgstr "The loss is defined as `1 - cos(theta)`, where `theta` is the angle between the two vectors. This loss encourages the two vectors to point in the same direction."
+
+#: 928a739c2dcc4f70b486d0ef4c6723b0
+msgid "一个约束预测向量总和为零的损失。"
+msgstr "A loss that constrains the sum of predicted vectors to zero."
+
+#: e3d6eff561334c05afb52dd83c448803
+msgid "该损失计算预测向量在批次维度上求和后的 L2 范数。 这在需要满足某些物理守恒定律（如总力为零）时非常有用。"
+msgstr "This loss calculates the L2 norm of the sum of predicted vectors over the batch dimension. This is useful when certain physical conservation laws (e.g., total force is zero) need to be satisfied."
+
+#: 2d9ba0cdc73c4305a4eb56f19b7ee5b0
+msgid "定义前向传播逻辑。 target 在此损失中未使用。"
+msgstr "Defines the forward pass logic. target is not used in this loss."
+
+#: b9ea30babdfd402c97a4a8365cb5767a
+msgid "计算预测值和目标值之间的平均欧几里得距离。"
+msgstr "Computes the mean Euclidean distance between predicted and target values."
+
+#: cf1728ea83f14f499fb8b934969ae2f8
+msgid "计算均方根误差 (RMSE) 损失。"
+msgstr "Computes the Root Mean Squared Error (RMSE) loss."
+
+#: ae532fef01f040eea2eec382c2ca96f7
+msgid "解析一个包含损失函数信息的列表，并将字符串名称替换为实际的损失函数实例。"
+msgstr "Parses a list containing loss function information and replaces string names with actual loss function instances."
+
+#: 34f26c4158934826a722b21849c5ea73
+msgid "一个字典列表，每个字典包含 'metric' (str) 和其他参数。"
+msgstr "A list of dictionaries, where each dictionary contains 'metric' (str) and other parameters."
+
+#: 593d9e81d8924b5c90b45e2954c751ad
+msgid "更新后的列表，其中 'metric' 的值被替换为 nn.Module 实例。"
+msgstr "The updated list where the value of 'metric' is replaced with an nn.Module instance."
+
+#: c688af52db494fef8161abf7a86af51f
+msgid "从配置对象中提取并格式化用于日志记录的超参数字典。"
+msgstr "Extracts and formats a dictionary of hyperparameters for logging from the configuration object."
+
+#: b58972db3649494e9f9eed0a4f60fb3a
+msgid ""
+"它根据 `config.setup.GNN_Net` 的值从 `config.representation_nets` "
+"中选择对应的参数字典，并进行一些格式化处理。"
+msgstr ""
+"It selects the corresponding parameter dictionary from `config.representation_nets` based on the value of `config.setup.GNN_Net` and performs some formatting."
+
+#: 1079ca27ef70474c864ada479e60064c
+msgid "全局配置对象。"
+msgstr "Global configuration object."
+
+#: 2c1c6c75b1814372b81d575aae5d0811
+msgid "格式化后的超参数字典，适用于 TensorBoard 等日志工具。"
+msgstr "Formatted hyperparameter dictionary suitable for logging tools like TensorBoard."
+
+#: 4fef303ae3694d79b99b4ac2980e9350
+msgid "从边列表计算原子三元组 (k -> j -> i)。"
+msgstr "Computes atomic triplets (k -> j -> i) from an edge list."
+
+#: 4ca8265fe7544b4ca440795a8d221992
+msgid ""
+"这个函数对于构建需要三体相互作用（如键角）的图模型至关重要。 它首先将边列表转换为稀疏邻接矩阵，然后通过邻接矩阵的乘积思想 "
+"有效地找到所有通过一个中间节点 `j` 连接的原子对 `(k, i)`。"
+msgstr ""
+"This function is crucial for building graph models that require three-body interactions (like bond angles). "
+"It first converts the edge list into a sparse adjacency matrix, and then, using the concept of adjacency matrix multiplication, "
+"efficiently finds all pairs of atoms `(k, i)` connected through an intermediate node `j`."
+
+#: 6d642cff32c749a297806727c4bb7e4a
+msgid "形状为 `(2, N_edges)` 的边索引张量，表示 `j -> i` 的边。"
+msgstr "Edge index tensor of shape `(2, N_edges)`, representing edges `j -> i`."
+
+#: d0d16e9830cf41a4b276e055da5ab0a2
+msgid "图中的节点总数。"
+msgstr "Total number of nodes in the graph."
+
+#: 02866a0310f64ae4af73f04fc0b58c51
+msgid "形状为 `(N_edges, 3)` 的张量，表示每条边跨越的晶胞偏移。"
+msgstr "Tensor of shape `(N_edges, 3)` representing the cell offset for each edge."
+
+#: 1fb96eba1dd14ea2ae9309b66a26280e
+msgid ""
+"包含三元组信息的元组:     - col, row (torch.Tensor): 原始的边索引。     - idx_i, idx_j, "
+"idx_k (torch.Tensor): 三元组中 `i`, `j`, `k` 的原子索引。     - idx_kj, idx_ji "
+"(torch.Tensor): 构成三元组的两条边 `k->j` 和 `j->i` 的原始边索引。"
+msgstr ""
+"A tuple containing triplet information:     - col, row (torch.Tensor): The original edge indices.     - idx_i, idx_j, "
+"idx_k (torch.Tensor): The atomic indices of `i`, `j`, `k` in the triplet.     - idx_kj, idx_ji "
+"(torch.Tensor): The original edge indices of the two edges `k->j` and `j->i` that form the triplet."
+
+#: efe14428f17b43cf8a8d3217ab67120a
+msgid "包含三元组信息的元组:"
+msgstr "A tuple containing triplet information:"
+
+#: ef7e931a17f84c44b8b09eec11f22c5b
+msgid "col, row (torch.Tensor): 原始的边索引。"
+msgstr "col, row (torch.Tensor): The original edge indices."
+
+#: 8dc1abcaea144357b3c9ef05b47e105e
+msgid "idx_i, idx_j, idx_k (torch.Tensor): 三元组中 `i`, `j`, `k` 的原子索引。"
+msgstr "idx_i, idx_j, idx_k (torch.Tensor): The atomic indices of `i`, `j`, `k` in the triplet."
+
+#: d34ba8708f1445afaa0943fbef664c62
+msgid "idx_kj, idx_ji (torch.Tensor): 构成三元组的两条边 `k->j` 和 `j->i` 的原始边索引。"
+msgstr "idx_kj, idx_ji (torch.Tensor): The original edge indices of the two edges `k->j` and `j->i` that form the triplet."
+
+#: a5007db75ba04bff8a7dcc257efeab74
+msgid "计算序列中所有元素的乘积。"
+msgstr "Calculates the product of all elements in a sequence."
+
+#: 85651900ed3a4d939022e00605efd54f
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`float\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`float\\``"
+
+#: 1eb2a141764a4acdbc90d411cc3db13d
+msgid "一个使用 e3nn 库实现的等变特征扩展模块。"
+msgstr "An equivariant feature expansion module implemented using the e3nn library."
+
+#: 53aa4658ce7a4c218a1f0de837021b75
+msgid ""
+"该模块的核心功能是将一个输入特征（表示为一个 `e3nn` 的不可约表示 `irrep_in`）， 通过张量积分解，映射到一个由两个其他不可约表示"
+" (`irrep_out_1` 和 `irrep_out_2`) 构成的二维特征空间中。这在构建等变神经网络的交互块时非常关键，因为它允许 "
+"信息在不同阶数的张量特征之间进行混合和传递。"
+msgstr ""
+"The core functionality of this module is to map an input feature (represented as an `e3nn` irreducible representation, `irrep_in`), "
+"through tensor product decomposition, to a 2D feature space formed by two other irreducible representations "
+"(`irrep_out_1` and `irrep_out_2`). This is crucial when building interaction blocks in equivariant neural networks, as it allows "
+"information to be mixed and passed between tensor features of different orders."
+
+#: 525965030bbb4e69b04ed5d0482be9cf
+msgid ""
+"例如，一个向量特征 (`1o`) 与另一个向量特征 (`1o`) 交互，可以产生标量 (`0e`)、 反对称矩阵/伪向量 (`1o`) "
+"和对称无迹矩阵 (`2e`) 特征。这个模块就是实现这种 分解和映射的计算单元。"
+msgstr ""
+"For example, the interaction of a vector feature (`1o`) with another vector feature (`1o`) can produce scalar (`0e`), "
+"antisymmetric matrix/pseudovector (`1o`), and symmetric traceless matrix (`2e`) features. This module is the computational unit "
+"that implements this decomposition and mapping."
+
+#: f3fd78ca0c154411a4f24b3796d7f865
+msgid "计算的核心是利用 Wigner 3-j 符号 (`o3.wigner_3j`)，它描述了三个角动量 如何耦合。"
+msgstr "The core of the calculation utilizes the Wigner 3-j symbols (`o3.wigner_3j`), which describe how three angular momenta couple."
+
+#: 03155c182429453db2b379897c1567a0
+msgid "输入特征的不可约表示。"
+msgstr "Irreducible representation of the input features."
+
+#: 7a14f11a95b748d4bd2a2e998aad7252 9e4da2d167d24eb19221010fcfe7aab6
+#: c107f33425374e7faeaa61c4799a8648 e1cf51b43617469ab46134effe2a0edf
+msgid "type"
+msgstr "type"
+
+#: 31288d4e4a244031a568f5f24bc97b72 acf23e0e7760492cbfd6b5b79142ce58
+#: b73e002c400d4cf79cd239a3877c050f
+msgid "o3.Irreps"
+msgstr "o3.Irreps"
+
+#: af8abbf9e1454cb896732a6cc492519f
+msgid "输出特征的第一个维度（行）的不可约表示。"
+msgstr "Irreducible representation of the first dimension (rows) of the output features."
+
+#: 45c74c7ccb7f41f49c8294fa01fe04d5
+msgid "输出特征的第二个维度（列）的不可约表示。"
+msgstr "Irreducible representation of the second dimension (columns) of the output features."
+
+#: 5485b0ae94734d2b889ba90df621d120
+msgid ""
+"控制权重生成方式。如果为 `True`，权重是模块内部 固定的 `nn.Parameter`；如果为 `False`，权重由一个 "
+"`o3.Linear` 层从 输入特征动态生成。"
+msgstr ""
+"Controls how weights are generated. If `True`, the weights are fixed `nn.Parameter`s within the module; "
+"if `False`, the weights are dynamically generated from the input features by an `o3.Linear` layer."
+
+#: ef1fe9936b0743168520fb29a70d9428
+msgid "bool"
+msgstr "bool"
+
+#: 1c7e76d7759d4098a7b21778b350483c
+msgid "输入特征张量，其维度应与 `irrep_in` 匹配。"
+msgstr "Input feature tensor, whose dimensions should match `irrep_in`."
+
+#: a9494d011db34300b165509b8bfd46b2
+msgid "输出的二维特征张量，其形状为 `(N_batch, irrep_out_1.dim, irrep_out_2.dim)`。"
+msgstr "Output 2D feature tensor, with shape `(N_batch, irrep_out_1.dim, irrep_out_2.dim)`."
+
+#: 4a21e0600d354c0ba96a9c78daecd8cb
+msgid "计算所有可能的从输入 irrep 到输出 irrep 对的分解路径。"
+msgstr "Computes all possible decomposition paths from the input irrep to pairs of output irreps."
+
+#: 6455dac752e7411c98efb579d6bcfdbd
+msgid "路径存在的条件是，根据群论的耦合规则，`ir_in` 必须包含在 `ir_out1` 和 `ir_out2` 的张量积中。"
+msgstr "The condition for a path to exist is that `ir_in` must be contained in the tensor product of `ir_out1` and `ir_out2`, according to group theory coupling rules."
+
+#: 9c5a1c88d06347b28936ba395567513a
+msgid "输入的不可约表示。"
+msgstr "Input irreducible representation."
+
+#: 17973030316642a7b79403e52e6fe867
+msgid "输出的第一个不可约表示。"
+msgstr "First output irreducible representation."
+
+#: a950ba794653461193102c49c1eb2b30
+msgid "输出的第二个不可约表示。"
+msgstr "Second output irreducible representation."
+
+#: c43c29dc3bd84151a84a9598a8ad4827
+msgid ""
+"一个包含指令的列表。每个指令是一个列表，格式为       `[输入irrep索引, 输出1 irrep索引, 输出2 irrep索引, "
+"是否需要权重, 1.0, [multiplicities]]`。"
+msgstr ""
+"A list of instructions. Each instruction is a list with the format "
+"`[input irrep index, output 1 irrep index, output 2 irrep index, "
+"whether weights are needed, 1.0, [multiplicities]]`."
+
+#: d024923230144fac91fd0164e535bd48
+msgid "一个包含指令的列表。每个指令是一个列表，格式为"
+msgstr "A list of instructions. Each instruction is a list with the format"
+
+#: 4904561e32f448f1b74f21809f77e81d
+msgid "`[输入irrep索引, 输出1 irrep索引, 输出2 irrep索引, 是否需要权重, 1.0, [multiplicities]]`。"
+msgstr "`[input irrep index, output 1 irrep index, output 2 irrep index, whether weights are needed, 1.0, [multiplicities]]`."
+
+#: 1ad46c065ee240f0926faa2c7ef4d72c
+msgid "将四个张量以 2x2 的块状模式拼接成一个双倍大小的张量。"
+msgstr "Concatenates four tensors in a 2x2 block pattern into a tensor of double size."
+
+#: c72ac8b5296a408c85bc000ccb9fee1d
+msgid ""
+"拼接模式如下: [top_left | top_right] ---------------------- [bottom_left | "
+"bottom_right]"
+msgstr ""
+"The concatenation pattern is as follows: [top_left | top_right] ---------------------- [bottom_left | "
+"bottom_right]"
+
+#: c1854874190642eca8b4b9321a0fab99
+msgid "形状为 `[N, H, W]` 的张量。"
+msgstr "Tensor of shape `[N, H, W]`."
+
+#: 77f48f3c8cfb4de5a3ec7e16b4911ce7 797e164e487e49a1a117d2a275fd6ce1
+#: f99ed2f096164c46bce3bea7aaca2ba0
+msgid "与 `top_left` 形状相同的张量。"
+msgstr "Tensor with the same shape as `top_left`."
+
+#: 9c5b7e766f2d4bb1a8b300b3421c77f2
+msgid "拼接后的张量，形状为 `[N, 2*H, 2*W]`。"
+msgstr "The concatenated tensor, with shape `[N, 2*H, 2*W]`."
+
+#: 0f1539386d1647249c705a00a3cb643e
+msgid "如果输入的张量形状不匹配。"
+msgstr "If the shapes of the input tensors do not match."
+
+#: 0707694c0e7142e182a2f98e0d7f0340 6d77bfc858a54da5952432c86b2af77a
+#: f1dd988e81a94a2d88fdd4acb062a378
+msgid "示例"
+msgstr "Example"
+
+#: 2d866d1d7e884c2e8afb74bd365db95c
+msgid "根据条件张量中的值是否超过阈值，从源张量中提取元素。"
+msgstr "Extracts elements from a source tensor based on whether values in a condition tensor exceed a threshold."
+
+#: 1aa77ad6cf4b4cf58121ed9a2da2f550
+msgid "用于与阈值比较的张量，形状为 `[N_batch, N, N]`。"
+msgstr "The tensor used for comparison with the threshold, shape `[N_batch, N, N]`."
+
+#: b14f54ccb51e4ee1807bdee5c16cbb09
+msgid "从中提取值的源张量，形状为 `[N_batch, N, N]`。"
+msgstr "The source tensor from which values are extracted, shape `[N_batch, N, N]`."
+
+#: e827205bb93042cebdda46c7010568c9
+msgid "`condition_tensor` 中元素的最小阈值，超过该值则触发提取。"
+msgstr "The minimum threshold for elements in `condition_tensor` to trigger extraction."
+
+#: 71b4ee448f644382a3f7a3a17f3e3974
+msgid "从 `source_tensor` 中提取的一维值张量。"
+msgstr "A 1D tensor of values extracted from `source_tensor`."
+
+#: 48cc7f7b3c194df991dc958379797b24
+msgid "如果输入张量的形状不匹配。"
+msgstr "If the shapes of the input tensors do not match."
+
+#: 38e5cb51d00c4c98ad2a9faefdb7ee1e
+msgid "升级给定字典中特定类型张量的精度。"
+msgstr "Upgrades the precision of specific types of tensors in a given dictionary."
+
+#: 3726e80118764c3bb1bb736ef1c02111
+msgid ""
+"该函数遍历字典，将 `torch.float32` 张量转换为 `torch.float64` (double)， 并将 "
+"`torch.complex64` 张量转换为 `torch.complex128`。 "
+"所有其他类型的张量保持不变。转换过程中会保留张量的原始设备。"
+msgstr ""
+"This function iterates through a dictionary, converting `torch.float32` tensors to `torch.float64` (double), and "
+"`torch.complex64` tensors to `torch.complex128`. "
+"All other types of tensors remain unchanged. The original device of the tensor is preserved during conversion."
+
+#: 59aea88a85564045bdcfeae6d06cc467
+msgid "包含 PyTorch 张量的字典。"
+msgstr "A dictionary containing PyTorch tensors."
+
+#: b338296acad94b8488dec92d5f02bfab
+msgid "该函数直接在原地修改字典。"
+msgstr "This function modifies the dictionary in-place."
+
+#: 481094590f6c4462960a014086ad3871
+msgid "备注"
+msgstr "Note"
+
+#: b1fa9a7419934866be8ae789d0eb2c7a
+msgid ""
+"对于 `float32` 类型的张量，可以使用 `.to(dtype=torch.float64)` 或 `.double()` "
+"两种方法来将其转换为 `float64` 类型。为了与复数张量的转换方式保持一致，此函数中使用了 `.to()` 方法。"
+msgstr ""
+"For `float32` tensors, both `.to(dtype=torch.float64)` and `.double()` methods can be used to convert them to the `float64` type. "
+"To maintain consistency with the conversion method for complex tensors, this function uses the `.to()` method."
+
