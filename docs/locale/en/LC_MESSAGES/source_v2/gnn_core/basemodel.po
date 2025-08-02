@@ -1,0 +1,195 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 4ec4d6c0b0c94cd8bc57d4e66553e484
+msgid "基础模型 (BaseModel.py)"
+msgstr "Base Model (BaseModel.py)"
+
+#: 70d2a4e366f341f38c30a38ed24bbb7a
+msgid "根据原子序数列表检索缩放后的原子半径。"
+msgstr "Retrieve scaled atomic radii based on a list of atomic numbers."
+
+#: 186060160daa44efbe13e50c4e64c1fd 827075473d4647ec83e06ff7abc91a29
+#: 84cc1e610d044367adf0975326aa14f2 f2f9580799fc4550889c6da2b083fa58
+msgid "参数"
+msgstr "Parameters"
+
+#: fb3dbc1c63924d7e959ba950dae33519
+msgid "包含原子序数的列表或张量。"
+msgstr "A list or tensor containing atomic numbers."
+
+#: a4227926253b4efe88390da06d6fa82a
+msgid "原子半径的缩放因子，默认为 1.5。"
+msgstr "The scaling factor for atomic radii, defaults to 1.5."
+
+#: 5eb792e156b74fccbe76b541c7a155c6
+msgid "所用原子半径的来源软件，默认为 'openmx'。"
+msgstr "The source software for the atomic radii used, defaults to 'openmx'."
+
+#: 859c85fe5cf9420aa6ddbc1be49ace97 bd1e107bc5294b55ab25bdcb80cff201
+#: e8253d53a23c4dc298c0cee676e9a9e4 ed8effd744444d96bf82c4ea988fb19e
+msgid "返回"
+msgstr "Returns"
+
+#: 19c27fdbd20e4044b8067b329bbcaecd
+msgid "与输入原子序数对应的缩放后的原子半径列表。"
+msgstr "A list of scaled atomic radii corresponding to the input atomic numbers."
+
+#: 4736401fe656486fa6cd6d258c00ce22 697e046ce7bd402fa23f1e715197dfce
+#: 784af6d8f1cf4c0cb89e4c65b1ae937f 7d12581e2eff408ab28186212365522d
+msgid "返回类型"
+msgstr "Return type"
+
+#: 994f528688834fc8ae98254ec1977001
+msgid "基于径向截断距离创建邻居列表和相对向量。"
+msgstr "Create a neighbor list and relative vectors based on a radial cutoff distance."
+
+#: 978e87481c8a41379ae679fa4429bcaa
+msgid "边的约定如下: - `edge_index[0]` 是 *源* (卷积中心)。 - `edge_index[1]` 是 *目标* (邻居)。"
+msgstr """The edge convention is as follows: - `edge_index[0]` is the *source* "
+"(convolution center). - `edge_index[1]` is the *target* (neighbor)."""
+
+#: edbee8aee8134729bad1536fe52d1eed
+msgid "原子位置坐标，形状为 :math:`(N, 3)`。"
+msgstr "Atomic position coordinates, with shape :math:`(N, 3)`."
+
+#: c8193a3d3d75442a9ac25859faaf0725
+msgid "用于寻找邻居的径向截断距离。"
+msgstr "The radial cutoff distance for finding neighbors."
+
+#: fd5403698cd14a9b9c182e8236a6562d
+msgid "周期性边界条件的晶胞矩阵，形状为 :math:`(3, 3)`。"
+msgstr """The unit cell matrix for periodic boundary conditions, with shape "
+":math:`(3, 3)`."""
+
+#: 9ad087dff2304770b98d9fef941bf4a3
+msgid "三个维度上的周期性。"
+msgstr "Periodicity in the three dimensions."
+
+#: e8fea901dde248a187461b1f3e387dfc
+msgid "是否包括相同周期性镜像的自相互作用边。"
+msgstr "Whether to include self-interaction edges for the same periodic image."
+
+#: 58f38fd8c5f84f1ba5510dfa3ec21f41
+msgid "是否包括任何自相互作用边。"
+msgstr "Whether to include any self-interaction edges."
+
+#: 3574d521c051474fb6c2cbe555eec862
+#, python-brace-format
+msgid ""
+"一个元组，包含： - ``edge_index`` (torch.Tensor): 边的列表，形状为 :math:`(2, "
+"N_{edges})`。 - ``shifts`` (torch.Tensor): 相对晶胞平移向量，形状为 :math:`(N_{edges},"
+" 3)`。 - ``cell_tensor`` (torch.Tensor): 晶胞张量，形状为 :math:`(3, 3)`。"
+msgstr ""
+"A tuple containing: - ``edge_index`` (torch.Tensor): The list of edges, "
+"with shape :math:`(2, N_{edges})`. - ``shifts`` (torch.Tensor): Relative "
+"cell shift vectors, with shape :math:`(N_{edges}, 3)`. - ``cell_tensor`` "
+"(torch.Tensor): The cell tensor, with shape :math:`(3, 3)`."
+
+#: 9a643223fe9747d2bab364b5620ffc82
+msgid "在矩阵 B 中查找与矩阵 A 匹配的列。"
+msgstr "Find columns in matrix B that match matrix A."
+
+#: e6266f2e203644339108cc1c21d86081
+msgid "第一个矩阵。"
+msgstr "The first matrix."
+
+#: 48b17914ba9e4d668da6f0bf90e9ed03
+msgid "第二个矩阵。"
+msgstr "The second matrix."
+
+#: f40d0cef1a0748e2ac03dcc48cf5b5a4
+msgid "在 B 中匹配列的索引。"
+msgstr "Indices of matching columns in B."
+
+#: c6232d873f394b308e71798ad14d1ed7
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: 2399f1842cc5465b93b39e1135898389
+msgid "所有 HamGNN 图学习模型的基类。"
+msgstr "The base class for all HamGNN graph learning models."
+
+#: 6299c0b635bc44e18de045633ebcce25
+msgid "它封装了动态图构建的核心逻辑。"
+msgstr "It encapsulates the core logic for dynamic graph construction."
+
+#: a4433c61a14e4c7aa0f0e421e9eb91f4
+msgid "用于确定原子半径的来源类型 (e.g., 'openmx')。"
+msgstr "The source type for determining atomic radii (e.g., 'openmx')."
+
+#: 0ea94cd359124af784989dc4af483601 b766e4be6fdb42e09785113d9fc0483e
+msgid "type"
+msgstr "type"
+
+#: e611ace7c81a4e2bb7e6659dadf604c3
+msgid "str"
+msgstr "str"
+
+#: 98f9cb08bdfe4b57a8c91453aa84a419
+msgid "原子半径的缩放因子。"
+msgstr "The scaling factor for atomic radii."
+
+#: 22926f773a8641798393cb5241f07591
+msgid "float"
+msgstr "float"
+
+#: fb85eaa9af5f46ceb42217f94dd36f53
+msgid "前向传播的占位符，应在子类中实现。"
+msgstr "A placeholder for the forward pass, which should be implemented in subclasses."
+
+#: 427232e68a1d46daa0a3d0131486be6d
+msgid "根据原子位置和种类动态生成计算图（邻居列表）。"
+msgstr """Dynamically generate the computation graph (neighbor list) based on atomic "
+"positions and species."""
+
+#: a6cf7715d46b4334b79d05e8e02f57aa
+msgid ""
+"此方法会忽略 `data` 中预先计算的 `edge_index`，并根据每种原子的 化学性质（半径）和 `radius_scale` "
+"重新计算邻居关系。 它还会找到新生成的图的边与原始图的边的对应关系。"
+msgstr ""
+"This method ignores the pre-computed `edge_index` in `data` and "
+"recalculates neighbor relationships based on the chemical properties "
+"(radii) of each atom and `radius_scale`. It also finds the correspondence "
+"between the edges of the newly generated graph and the edges of the "
+"original graph."
+
+#: 820dfde3631d4d04ba5eb0edd2f6d29c
+msgid "输入的图数据对象，必须包含 `pos`, `z`, `cell`, `batch` 等信息。"
+msgstr """The input graph data object, which must contain information such as `pos`, "
+"`z`, `cell`, and `batch`."""
+
+#: 5d2fcf15ac8c4362939ee58ff8a150ae
+msgid ""
+"一个包含新生成的图信息的字典。 - 'z': 原子序数。 - 'pos': 原子位置。 - 'edge_index': 新的边索引。 - "
+"'cell_shift': 边的晶胞平移向量。 - 'nbr_shift': 邻居的相对位置向量。 - 'batch': 批处理索引。 - "
+"'matching_edges': 新图的边在原始图中的匹配索引。"
+msgstr ""
+"A dictionary containing information about the newly generated graph. - 'z': "
+"Atomic numbers. - 'pos': Atomic positions. - 'edge_index': New edge "
+"indices. - 'cell_shift': Cell shift vectors for the edges. - 'nbr_shift': "
+"Relative position vectors of neighbors. - 'batch': Batch indices. - "
+"'matching_edges': Matching indices of the new graph's edges in the "
+"original graph."
+
+#: be1b985de8ad4bd8a08261605db8b9c1
+msgid "计算模型的总参数数量。"
+msgstr "Calculate the total number of parameters in the model."

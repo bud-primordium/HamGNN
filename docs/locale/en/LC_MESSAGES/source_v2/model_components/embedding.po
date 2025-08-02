@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 6a86ad29e4dd4388849916d615ee1078
+msgid "嵌入模块"
+msgstr "Embedding Modules"
+
+#: d9843aa1abd74cb594b1c871ef6a300d
+msgid "嵌入层，将标量的原子序数 Z 转换为指定维度的特征向量。"
+msgstr "An embedding layer that converts scalar atomic numbers (Z) into feature vectors of a specified dimension."
+
+#: 0d53aef5437e4c6ca4ff779153d88723
+msgid ""
+"该模块结合了两种信息来生成每个元素的嵌入表示： 1. 一个可学习的嵌入矩阵，针对每个原子序数进行优化。 2. "
+"基于元素电子结构的线性变换，提供物理上有意义的先验信息。 这两种表示相加，形成最终的元素特征向量。"
+msgstr "This module combines two types of information to generate the embedding representation for each element: 1. A learnable embedding matrix, optimized for each atomic number. 2. A linear transformation based on the element's electronic structure, providing physically meaningful prior information. These two representations are added together to form the final element feature vector."
+
+#: 10e5bcc76cc04bac83f3ea50f1d1d011
+msgid "输出特征向量的维度。"
+msgstr "The dimension of the output feature vector."
+
+#: 899469a18b9241139b8a6b33673e2a05 a1b6d9c0aaa14ddba6d41233e0613f8e
+#: cda6af49aad540cc95f4bb8e98ce1562 e0eb8a2d56694e6a93fed587ab998998
+#: fa68f7a1af9e4f3189a08998aecd69d8
+msgid "type"
+msgstr "type"
+
+#: aeb99b65265544efbedee3fe6fa51c29 bf813243de094755b46888502d05e1b0
+msgid "int"
+msgstr "int"
+
+#: 3c2850d7b38a40e58f091696851dc29b
+msgid "支持的最大原子序数。"
+msgstr "The maximum supported atomic number."
+
+#: ea97230c47f64f0fb23e3c2f6f48f1e5
+msgid "存储元素电子结构信息的张量，作为 buffer 注册。"
+msgstr "A tensor storing the electronic structure information of elements, registered as a buffer."
+
+#: de847d4e8bc045f38234d32da5030736
+msgid "torch.Tensor"
+msgstr "torch.Tensor"
+
+#: 5de38b72612b479190c56f5c7430d9de
+msgid "可学习的元素嵌入矩阵，形状为 `(Zmax, num_features)`。"
+msgstr "A learnable element embedding matrix with shape `(Zmax, num_features)`."
+
+#: e99157ddfaba46ab82251489f8bbebbe
+msgid "nn.Parameter"
+msgstr "nn.Parameter"
+
+#: 600980abb2354c309ccdf0b7f3a45373
+msgid "将电子结构向量线性变换到特征空间的层。"
+msgstr "A layer that linearly transforms the electronic structure vector into the feature space."
+
+#: fbc38b663f1048f89eca452f5e35674a
+msgid "nn.Linear"
+msgstr "nn.Linear"
+
+#: 39e0ed4c6f664970ba0817f0eae1c49d
+msgid "初始化或重置模型的参数。"
+msgstr "Initializes or resets the model's parameters."
+
+#: 9049580ec65149a19f800c37c0c3161b
+msgid "对元素嵌入矩阵使用均匀分布进行初始化，对线性层的权重使用正交初始化。"
+msgstr "Initializes the element embedding matrix using a uniform distribution and the weights of the linear layer using orthogonal initialization."
+
+#: 24e84199ffa0439baf0be05601daefe1
+msgid "定义模型的前向传播逻辑。"
+msgstr "Defines the forward propagation logic of the model."
+
+#: 2331d0d5364e460695694e7d45000c21
+msgid "参数"
+msgstr "Args"
+
+#: afa70b848c18444bb45c1bd595a9e31d
+msgid "输入的原子序数张量，形状为 `(N,)`，其中 N 是原子数。"
+msgstr "Input tensor of atomic numbers, with shape `(N,)`, where N is the number of atoms."
+
+#: dea789da4017404396f761969252aa7a
+msgid "返回"
+msgstr "Returns"
+
+#: f4c78c13ed9d4cc589a84f70a2a48e4a
+msgid "返回每个原子对应的嵌入向量，形状为 `(N, num_features)`。"
+msgstr "Returns the embedding vector for each atom, with shape `(N, num_features)`."
+
+#: 988b9baca2b945e8b63d591c0c68c5a3
+msgid "返回类型"
+msgstr "Return type"

@@ -1,0 +1,217 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 4c37523cf77a4948a1f013d047ae717a
+msgid "主程序入口"
+msgstr "Main Program Entry"
+
+#: 6b519c7205354c378ba67b908f1f3e16
+msgid "准备并封装图数据。"
+msgstr "Prepares and wraps graph data."
+
+#: d3fd078397c046ccb2655aa78fceda4b
+msgid ""
+"该函数根据配置文件中的参数，加载预处理好的图数据，并将其封装到 一个 PyTorch Lightning 的 DataModule "
+"中，以便于后续的训练、验证和测试。"
+msgstr ""
+"This function loads preprocessed graph data based on parameters in the "
+"configuration file and wraps it into a PyTorch Lightning DataModule for "
+"subsequent training, validation, and testing."
+
+#: 1dac446d65654f19b5a0083313e66f86 7214beb28fe14297b521d07086d3fcd3
+#: a2d7fb2c9a9e43779127242ff048ac94
+msgid "参数"
+msgstr "Parameters"
+
+#: aebb7e581c7e413e88a5d458a8a68863
+msgid ""
+"从 YAML 文件中读取并解析后的配置对象。该对象应包含 `dataset_params` 属性， 其中包含以下键：  - train_ratio"
+" (float): 训练集在总数据集中的比例。 - val_ratio (float): 验证集在总数据集中的比例。 - test_ratio "
+"(float): 测试集在总数据集中的比例。 - batch_size (int): 每个批次的样本数量。 - split_file (str, "
+"optional): 用于加载/保存数据集划分索引的文件路径。 - graph_data_path (str): 包含图数据的 `.npz` "
+"文件路径或其所在目录。"
+msgstr ""
+"The configuration object read and parsed from the YAML file. This object "
+"should contain the `dataset_params` attribute, which includes the following "
+"keys:  - train_ratio (float): The proportion of the training set in the total "
+"dataset. - val_ratio (float): The proportion of the validation set in the "
+"total dataset. - test_ratio (float): The proportion of the test set in the "
+"total dataset. - batch_size (int): The number of samples per batch. - "
+"split_file (str, optional): The file path for loading/saving dataset split "
+"indices. - graph_data_path (str): The path to the `.npz` file containing "
+"graph data or the directory where it is located."
+
+#: 5161c6394a4d41fb96798e8ce08cd48b
+msgid "从 YAML 文件中读取并解析后的配置对象。该对象应包含 `dataset_params` 属性， 其中包含以下键："
+msgstr ""
+"The configuration object read and parsed from the YAML file. This object "
+"should contain the `dataset_params` attribute, which includes the following "
+"keys:"
+
+#: 5adac8a223034846b360b67b68b2af07
+msgid "train_ratio (float): 训练集在总数据集中的比例。"
+msgstr "train_ratio (float): The proportion of the training set in the total dataset."
+
+#: 72a6de548fac45b3a29e603e527b680d
+msgid "val_ratio (float): 验证集在总数据集中的比例。"
+msgstr "val_ratio (float): The proportion of the validation set in the total dataset."
+
+#: 9dd900777be4496fa58e6c577142f716
+msgid "test_ratio (float): 测试集在总数据集中的比例。"
+msgstr "test_ratio (float): The proportion of the test set in the total dataset."
+
+#: be2c6f7663514936911e62139bf33a4f
+msgid "batch_size (int): 每个批次的样本数量。"
+msgstr "batch_size (int): The number of samples per batch."
+
+#: 0fc324b5c81c462ca3c1292acc981cda
+msgid "split_file (str, optional): 用于加载/保存数据集划分索引的文件路径。"
+msgstr "split_file (str, optional): The file path for loading/saving dataset split indices."
+
+#: 4ee1262bf89943f189b4bacd581f76c3
+msgid "graph_data_path (str): 包含图数据的 `.npz` 文件路径或其所在目录。"
+msgstr ""
+"graph_data_path (str): The path to the `.npz` file containing graph data or "
+"the directory where it is located."
+
+#: 1aed36a862d54a0ab09bea2960dafacb a3a57805dd314248978d77288560aa15
+msgid "返回"
+msgstr "Returns"
+
+#: f2389fa607ae442b9bf4c727c4d8e424
+msgid "封装了训练、验证和测试数据集的 DataModule 实例。"
+msgstr ""
+"A DataModule instance that encapsulates the training, validation, and test "
+"datasets."
+
+#: 29663d74da664245a53df5b3d5d14a3f 5dbfad1641c64dbda00384adf2d42847
+msgid "返回类型"
+msgstr "Return type"
+
+#: c5fa72831926438f89658311589a24ff
+msgid "根据配置构建 GNN 模型。"
+msgstr "Builds the GNN model based on the configuration."
+
+#: 9a23934b41184e669e77072fd1be6b70
+msgid ""
+"此函数动态地构建图表示网络 (GNN) 和特定于任务的输出模块。 它首先根据配置选择 GNN "
+"架构，然后根据要预测的物理属性（如力、介电张量、哈密顿量等） 选择并初始化相应的输出层。"
+msgstr ""
+"This function dynamically builds the graph representation network (GNN) and "
+"task-specific output modules. It first selects the GNN architecture based on "
+"the configuration, and then selects and initializes the corresponding output "
+"layers based on the physical properties to be predicted (e.g., forces, "
+"dielectric tensor, Hamiltonian, etc.)."
+
+#: 0c40eae0097a4b38a0b742a71364f473
+msgid ""
+"从 YAML 文件中读取并解析后的配置对象。该对象应包含以下关键属性：  - setup.GNN_Net (str): 要使用的 GNN 网络名称"
+" (例如, 'hamgnnconv')。 - setup.property (str): 要预测的目标物理属性 (例如, "
+"'hamiltonian')。 - representation_nets (dict): GNN 表示网络的超参数配置。 - "
+"output_nets (dict): 输出网络的超参数配置。"
+msgstr ""
+"The configuration object read and parsed from the YAML file. This object "
+"should contain the following key attributes:  - setup.GNN_Net (str): The name "
+"of the GNN network to use (e.g., 'hamgnnconv'). - setup.property (str): The "
+"target physical property to predict (e.g., 'hamiltonian'). - "
+"representation_nets (dict): Hyperparameter configuration for the GNN "
+"representation network. - output_nets (dict): Hyperparameter configuration "
+"for the output network."
+
+#: cda29592c04a45138cda559dcbe1bc27
+msgid "从 YAML 文件中读取并解析后的配置对象。该对象应包含以下关键属性："
+msgstr ""
+"The configuration object read and parsed from the YAML file. This object "
+"should contain the following key attributes:"
+
+#: 16c4e6776c814bd79d83eed467205374
+msgid "setup.GNN_Net (str): 要使用的 GNN 网络名称 (例如, 'hamgnnconv')。"
+msgstr "setup.GNN_Net (str): The name of the GNN network to use (e.g., 'hamgnnconv')."
+
+#: 86a9fddcdf1b4c38842f124c948ad34f
+msgid "setup.property (str): 要预测的目标物理属性 (例如, 'hamiltonian')。"
+msgstr "setup.property (str): The target physical property to predict (e.g., 'hamiltonian')."
+
+#: fa5a66612590419cb17630e95c938c08
+msgid "representation_nets (dict): GNN 表示网络的超参数配置。"
+msgstr ""
+"representation_nets (dict): Hyperparameter configuration for the GNN "
+"representation network."
+
+#: 5cfd80a0ed2d4fda99bf8192e4d4f486
+msgid "output_nets (dict): 输出网络的超参数配置。"
+msgstr "output_nets (dict): Hyperparameter configuration for the output network."
+
+#: 508793344279472a8ccd326e3e216751
+msgid ""
+"包含三个元素的元组:  - Gnn_net (torch.nn.Module): 图表示网络实例。 - output_module "
+"(torch.nn.Module): 任务输出网络实例。 - post_utility (None): 占位符，当前版本中未使用。"
+msgstr ""
+"A tuple containing three elements:  - Gnn_net (torch.nn.Module): The graph "
+"representation network instance. - output_module (torch.nn.Module): The task "
+"output network instance. - post_utility (None): A placeholder, not used in "
+"the current version."
+
+#: bcadb09a18744e27b2253dcb360c4ec2
+msgid "包含三个元素的元组:"
+msgstr "A tuple containing three elements:"
+
+#: ec39d4e61b194c6297b7b2d2a025d5a2
+msgid "Gnn_net (torch.nn.Module): 图表示网络实例。"
+msgstr "Gnn_net (torch.nn.Module): The graph representation network instance."
+
+#: 4e873dcf60b24374aa428685636ad204
+msgid "output_module (torch.nn.Module): 任务输出网络实例。"
+msgstr "output_module (torch.nn.Module): The task output network instance."
+
+#: 7cb7662c87a245d6a45f6869271d1bf8
+msgid "post_utility (None): 占位符，当前版本中未使用。"
+msgstr "post_utility (None): A placeholder, not used in the current version."
+
+#: 43eddaa105d3468d833a348dddd3e97b
+msgid "执行模型的训练、评估和测试流程。"
+msgstr "Executes the model training, evaluation, and testing pipeline."
+
+#: 71660322daf54884a6b0a321693fbd47
+msgid ""
+"该函数协调整个工作流程： 1. 准备数据。 2. 构建模型。 3. 设置数值精度。 4. 根据配置（训练或测试）初始化 `Model` 实例。 "
+"5. 配置并运行 PyTorch Lightning `Trainer`。 6. 在训练结束后，记录超参数和评估结果。"
+msgstr ""
+"This function coordinates the entire workflow: 1. Prepare data. 2. Build the "
+"model. 3. Set numerical precision. 4. Initialize the `Model` instance based "
+"on the configuration (training or testing). 5. Configure and run the PyTorch "
+"Lightning `Trainer`. 6. After training, log hyperparameters and evaluation "
+"results."
+
+#: 7c732500285440b68df31655ea1f13d5
+msgid "从 YAML 文件中读取并解析后的配置对象。"
+msgstr "The configuration object read and parsed from the YAML file."
+
+#: 194cc83a43504ed0a80abddfa4329f2d
+msgid "程序主函数。"
+msgstr "The main function of the program."
+
+#: fbda9c1bd94c49e0a3c7b43edbc0dbfa
+msgid "解析命令行参数，读取配置，设置全局随机种子以保证可复现性， 并调用 `train_and_eval` 启动整个训练或评估流程。"
+msgstr ""
+"Parses command-line arguments, reads the configuration, sets a global random "
+"seed for reproducibility, and calls `train_and_eval` to start the entire "
+"training or evaluation process."

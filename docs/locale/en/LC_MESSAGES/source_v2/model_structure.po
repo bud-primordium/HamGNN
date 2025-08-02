@@ -1,0 +1,245 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 9e43d0cca25f4ee3b1bc4ea96e2f5e8b
+msgid "模型顶层结构"
+msgstr "Top-level Model Structure"
+
+#: 47caaee29b2c46a98427a93ab04dad61
+msgid "核心的 PyTorch Lightning 模型，用于封装和训练 GNN。"
+msgstr "The core PyTorch Lightning model for encapsulating and training the GNN."
+
+#: de9cfef95572434f82ed305b8a7c0b30
+msgid ""
+"这个类集成了表示网络和输出网络，并定义了完整的训练、验证和测试循环。 "
+"它通过配置文件接收损失函数、评估指标和优化器参数，实现了高度的灵活性和可配置性。"
+msgstr ""
+"This class integrates the representation network and the output network, and "
+"defines the complete training, validation, and test loops. It receives loss "
+"functions, evaluation metrics, and optimizer parameters through a "
+"configuration file, achieving a high degree of flexibility and "
+"configurability."
+
+#: 8e913e1740584b3696726997a3174895
+msgid "图表示网络，用于从输入图数据中提取特征。"
+msgstr "The graph representation network used to extract features from input graph data."
+
+#: 1a9cbd4fde05444d90b9b29e0af3dfe5 1d0b8a079e9945b98956a1dbbc4c8dbf
+#: 95aa88760d7e414998b855ed0f439e6d 973f0112f097477fa4c5f54867de9b9c
+#: a88a6679b23c421f8e241b5d7e1b90c3
+msgid "type"
+msgstr "type"
+
+#: 09deffcf196544ec91d4b92fcdbf613b 0a1e09de8ab148ca9400e88412c59bcb
+msgid "nn.Module"
+msgstr "nn.Module"
+
+#: b7631d82f92745b5a2a52c40186e67d6
+msgid "输出网络，用于从表示网络提取的特征中预测目标属性。"
+msgstr ""
+"The output network used to predict target attributes from features extracted by "
+"the representation network."
+
+#: 7bffb5bf305646a186bfdaee59005aca
+msgid "一个字典列表，定义了用于训练的损失函数。"
+msgstr "A list of dictionaries defining the loss functions for training."
+
+#: 32dd37f893ee40a8a730fb682a3b35f1 ede1d0bd707c4e27bab73e803d43e2fa
+msgid "List[Dict]"
+msgstr "List[Dict]"
+
+#: 187e7024c447448e9f576e2fdc24720d
+msgid "一个字典列表，定义了用于验证和测试的评估指标。"
+msgstr "A list of dictionaries defining the evaluation metrics for validation and testing."
+
+#: 78f714cf11964664b60c7efc7584affa
+msgid "一个可选的后处理函数，用于在测试阶段计算需要梯度信息的物理量。"
+msgstr ""
+"An optional post-processing function to compute physical quantities requiring "
+"gradient information during the test phase."
+
+#: d18ee752f17240e48d05e21c42aa713b
+msgid "callable, optional"
+msgstr "callable, optional"
+
+#: 51ba744d6ad141519a567e19aac3386b
+msgid "根据 `self.losses` 配置计算总损失。"
+msgstr "Calculates the total loss based on the `self.losses` configuration."
+
+#: f6940e2f425a47b49b5b6b0fa62af596
+msgid "例如，对于一个均方误差 (MSE) 损失，其计算方式为："
+msgstr "For example, for a Mean Squared Error (MSE) loss, it is calculated as:"
+
+#: bb160bb0bb974c40b481d9b84c2a7fb2
+#, python-brace-format
+msgid "L_{MSE} = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2"
+msgstr "L_{MSE} = \\frac{1}{N} \\sum_{i=1}^{N} (y_i - \\hat{y}_i)^2"
+
+#: dc83f419b680426aa5a773ed6ae9e355
+#, python-brace-format
+msgid "其中 :math:`y_i` 是真实值，:math:`\\hat{y}_i` 是预测值。"
+msgstr "where :math:`y_i` is the true value and :math:`\\hat{y}_i` is the predicted value."
+
+#: 28c6c0a0e0334f65960ac6782742a19f 516a98145d6f4eca8b92b2f190faeed0
+#: 5acc2a6ef59145ce8daaef28068ceb9f 5e12adabe5c44ccfa54749a0f9494fe4
+#: 653b95a7f7e04d2dacee03f4d67d5cdd 79d27a0f1ce649d89b1a14ce84c4918b
+#: bd42e12a1d984a919be6094e2eb04bdc cb7ea000e9dd48c7baf6ea7f775593b7
+msgid "参数"
+msgstr "Parameters"
+
+#: 2672bda1b10048ec8dc5caeb3d534910 7f950409ce2540a2b2340b917f98d243
+msgid "当前批次的数据，包含目标值。"
+msgstr "The current batch of data, containing target values."
+
+#: 4685087073074fb3803a57f121a019cb b9ac4cb536704723ab894365d46e063d
+msgid "模型的预测输出。"
+msgstr "The model's prediction output."
+
+#: f82a6905ce3f44e49eb100c02a9680f7
+msgid "当前阶段的名称（'training', 'validation', or 'test'），用于日志记录。"
+msgstr ""
+"The name of the current stage ('training', 'validation', or 'test'), used for "
+"logging."
+
+#: 039817070f9a4af6affb4f9202a9cd69 112aea0e7b7f4012a3d2b4c01dbaf85e
+#: 6c091fe6ba8045ed99edcbbddd7df2c2 9f3260da65ca4e2b95f15f7b85f926c1
+#: c6dc5ed2e7194ae8861445a81c2c6414 cdbfd266a15d4f618758ae82d563e763
+msgid "返回"
+msgstr "Returns"
+
+#: 6e311ad0151845839c056f9ff4e13c71
+msgid "计算得到的加权总损失。"
+msgstr "The calculated weighted total loss."
+
+#: 163c1832dfe049de9f354835c6cb7af8 5f9c904058e64daaacc69db7a8992e18
+#: 7dbfa817a4434cd5b29955e26d65a86a 94afc5020ec649cfadd175e1df247899
+#: b8fb658d95844dd39044a880d0e61658 f912965586f44956a1817020d41b7b34
+msgid "返回类型"
+msgstr "Return type"
+
+#: 1897bf276a2a480dad4c7d1bf95ff72a
+msgid "执行单个训练步骤。"
+msgstr "Performs a single training step."
+
+#: e9c4a9d4815449ab819aa1cbe627bcf0
+msgid "当前批次的训练数据。"
+msgstr "The current batch of training data."
+
+#: 76e68300d3de400e96eca5d155bd9da7 9eefd114c131433bb4efd6ac04ff3981
+#: e3436f7db98a49c380a3fc16ef58b11f
+msgid "当前批次的索引。"
+msgstr "The index of the current batch."
+
+#: f4b772bc79104c8bb4a59537a1c1e53a
+msgid "该批次的总训练损失。"
+msgstr "The total training loss for this batch."
+
+#: 41166c77528d4b7f98118af503e83ee8
+msgid "执行单个验证步骤。"
+msgstr "Performs a single validation step."
+
+#: 659b19efd99a4f74bb21935275d45e52
+msgid "当前批次的验证数据。"
+msgstr "The current batch of validation data."
+
+#: 6ea9aacc42994bfcb4212f2b9b2bf2dd
+msgid "包含该批次预测值和目标值的字典，用于 `validation_epoch_end`。"
+msgstr ""
+"A dictionary containing the predictions and targets for this batch, used in "
+"`validation_epoch_end`."
+
+#: 548fcdc028704d48a7c164c2a34a073a
+msgid "在验证的每个 epoch 结束时调用。"
+msgstr "Called at the end of each validation epoch."
+
+#: a01ed52df23b4271a0ea6061945e9ab7
+msgid "该方法聚合所有验证批次的预测和目标，并生成散点图以可视化模型性能。"
+msgstr ""
+"This method aggregates the predictions and targets from all validation batches "
+"and generates scatter plots to visualize model performance."
+
+#: 319f27a8cc5d425c8ceaeb47edfaa762
+msgid "从 `validation_step` 返回的输出列表。"
+msgstr "A list of outputs from `validation_step`."
+
+#: a03505e5c0d445899a20bc0a6228f6f3
+msgid "执行单个测试步骤。"
+msgstr "Performs a single test step."
+
+#: 295a57d0207e4fa1a5853a29af77a98c
+msgid "当前批次的测试数据。"
+msgstr "The current batch of test data."
+
+#: 541880629f304177b953aa74daf93ea3
+msgid "包含预测、目标和任何后处理值的字典。"
+msgstr "A dictionary containing predictions, targets, and any post-processing values."
+
+#: d3b8fdd8f6374b54ad5cfc8c7db70a39
+msgid "在测试的每个 epoch 结束时调用。"
+msgstr "Called at the end of each test epoch."
+
+#: 1929d629eb014eb5a32bd963de53fc4c
+msgid "该方法聚合所有测试批次的结果，将预测和目标保存到 .npy 文件，并生成最终的散点图。"
+msgstr ""
+"This method aggregates the results from all test batches, saves the "
+"predictions and targets to .npy files, and generates final scatter plots."
+
+#: f971433e2a53477b9af1ec187aff42ae
+msgid "从 `test_step` 返回的输出列表。"
+msgstr "A list of outputs from `test_step`."
+
+#: 6669da514ff64dab8fb7ef34a48c4c18
+msgid "定义模型的前向传播逻辑。"
+msgstr "Defines the forward pass logic of the model."
+
+#: e23ddae5370b45e3bbed9a62823b7f31
+msgid "输入的批次数据。"
+msgstr "The input batch of data."
+
+#: 8c525cd712594feba775b372750f5dc0
+msgid "包含预测值的字典。"
+msgstr "A dictionary containing the prediction values."
+
+#: 8352cc27fe11499b94b652ad6c86cdbf
+msgid "根据 `self.metrics` 配置计算并记录所有评估指标。"
+msgstr ""
+"Calculates and logs all evaluation metrics based on the `self.metrics` "
+"configuration."
+
+#: 65a5839d405045ecac993200b534fc27
+msgid "当前阶段的名称（'validation' or 'test'）。"
+msgstr "The name of the current stage ('validation' or 'test')."
+
+#: c3039790f80744e5b7277ffc613b60ab
+msgid "配置模型的优化器和学习率调度器。"
+msgstr "Configures the model's optimizers and learning rate schedulers."
+
+#: 9363cb4f70e64f728950f530081140df
+msgid "包含优化器列表和调度器配置列表的元组。"
+msgstr ""
+"A tuple containing a list of optimizers and a list of scheduler "
+"configurations."
+
+#: 8d10b5be9c7f4313bfc1102375d8e734
+msgid "一个调试辅助函数，用于打印模型参数的名称和梯度信息。"
+msgstr ""
+"A debugging helper function to print the names and gradient information of "
+"model parameters."

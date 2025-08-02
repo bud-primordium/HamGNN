@@ -1,0 +1,219 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: f0e9528c420b43298dd9a2f79fefa7af
+msgid "基函数"
+msgstr "Basis Functions"
+
+#: 2227730088c84cb6a0cc0c73749419f3
+msgid "使用伯恩斯坦多项式计算径向基函数。"
+msgstr "Computes radial basis functions using Bernstein polynomials."
+
+#: 3004066c6fac45a0b944613f0c210be7
+msgid ""
+"这种基函数利用伯恩斯坦多项式作为基底，将距离 `r` 映射到 `num_basis_functions` 维 "
+"的特征空间。为了数值稳定性，计算过程在对数空间中进行。"
+msgstr "This basis function uses Bernstein polynomials as a basis to map the distance `r` to a feature space of `num_basis_functions` dimensions. For numerical stability, the calculation is performed in logarithmic space."
+
+#: afb28451cf924abfa00d095f4d5e5893
+msgid "原始的伯恩斯坦基函数定义为: B_v,n(x) = C(n,v) * x^v * (1-x)^(n-v) 其中 x = r / cutoff。"
+msgstr "The original Bernstein basis function is defined as: B_v,n(x) = C(n,v) * x^v * (1-x)^(n-v) where x = r / cutoff."
+
+#: 7a99258a21e34f3480f82f9db93c6fcc
+msgid ""
+"为了避免当 x 接近 0 或 1 时可能出现的数值下溢，本实现计算其对数： log(B_v,n(x)) = log(C(n,v)) + "
+"v*log(x) + (n-v)*log(1-x) 并利用 `torch.log(-torch.expm1(log(x)))` 来精确计算 "
+"`log(1-x)`。"
+msgstr "To avoid numerical underflow when x is close to 0 or 1, this implementation calculates its logarithm: log(B_v,n(x)) = log(C(n,v)) + v*log(x) + (n-v)*log(1-x) and uses `torch.log(-torch.expm1(log(x)))` to accurately compute `log(1-x)`."
+
+#: daa682108c4040688928ca21406eb826
+msgid "基函数的数量，即输出向量的维度。"
+msgstr "The number of basis functions, i.e., the dimension of the output vector."
+
+#: 03c9142273534f58a2013b86545c67c1 09755a23a1f6443ba17d04b12ed73fcb
+#: 2405f934d8604aaea943803b8d75d809 241e875809ac48e6ab8aeaaa1fef6780
+#: 47a6eed1b52c49fa8ae8e271b62ee6e3 47e59998bea84a00b1c1a1c9e7e9a576
+#: 582c5876c6834d168c7d34384e75473d 5a7e6f5959684ed599936dce64f1fe38
+#: 6103129d5b1f4405a80995773bc841d0 65aebd857aed4a5da1254924feef7953
+#: 70b9a9e7514a401db4f88710462b6f68 7a02ee333de14401a1b17afb25a4d6f7
+#: a3f743b4259e443fa097134e59781154 b96e58e753974687b450332274aec497
+#: c2b68f68506a46dea33fc3eb907904d7 c3d9f56912274ac68288ab44adecb94a
+#: dab2001209634b9caaa2ff80c10bc51d febf7e545ae54437828526cee493ca64
+msgid "type"
+msgstr "type"
+
+#: 07c5d9ecfc684a1bbd9141cf0af89036 38a6830f6445499bbaacded9e4b943b0
+#: d7cedb40005d4a4195b527f4df71ece7 e36cffe26e8544558af56d442748d98c
+msgid "int"
+msgstr "int"
+
+#: 58cb292de2844c61a09ee85835f93caf
+msgid "截断半径，超出此距离的相互作用将被忽略。"
+msgstr "The cutoff radius, beyond which interactions are ignored."
+
+#: 220afee76c2242628e5bdeab7a286aec 2724e49f02c945c4a2898ddf1af98ba5
+#: 2df14aec3b104de2abf671c723a9e398 404a0e72a46f425eb1258d6d3b8f5e62
+#: 49e087d575d54d66806fd950d3724b59 5d83851038eb42238d7de2995162098e
+#: 5da215304258433bb757d08fe2aa093c 7e835fb1245344018d1c0526a386d1a6
+#: 944b4530323946d8a01f89a92f91b1c9 ba8291b2b08d42e0adbc0980b52ad950
+#: c9338991d9744292afa0bad158e04167
+msgid "torch.Tensor"
+msgstr "torch.Tensor"
+
+#: eaf2fb12d5ef4368a8702558d62e548c
+msgid "预计算的对数化二项式系数 log(C(n,v))。"
+msgstr "Precomputed logarithmic binomial coefficients log(C(n,v))."
+
+#: 3ddbad25ffa44ce1a60125d0b5d0dd09
+msgid "伯恩斯坦多项式的次数 n = N-1-v，其中 N 是基函数数量。"
+msgstr "The degree of the Bernstein polynomial n = N-1-v, where N is the number of basis functions."
+
+#: 54c501dac24f47c5879bb263ce920c0d
+msgid "伯恩斯坦多项式的索引 v。"
+msgstr "The index v of the Bernstein polynomial."
+
+#: 0e26186df0ea49dcba625bc5e7f41a4b e35692729a15479b8beb795c057ce19a
+msgid "此基函数没有可训练参数，因此该方法为空。"
+msgstr "This basis function has no trainable parameters, so this method is empty."
+
+#: 118c0868c7fd44fea6403336f420fae7 4991270ccc0340ceb771f4105d7347c1
+#: 4cc292ba96f54d858da6e622879a9ba7 63aa692cb2f1406f99a1a75bb363436a
+#: ac92824e959d4f87b5ce05a53d0517c4
+msgid "计算给定距离 `r` 的径向基函数值。"
+msgstr "Computes the radial basis function values for a given distance `r`."
+
+#: 494493bd28f64a259b14a6367a76afdd
+msgid "参数"
+msgstr "Args"
+
+#: d3ac2fc70f3449e79cb2f8df324a12e8
+msgid "原子间距离张量，形状为 (N_interactions, 1)。"
+msgstr "Tensor of interatomic distances, with shape (N_interactions, 1)."
+
+#: b40ab01bd7aa4a159b3244b6bf522987
+msgid "返回"
+msgstr "Returns"
+
+#: 6a91131bec964295b964d1d88099e9a0
+msgid "径向基函数的值，形状为 (N_interactions, num_basis_functions)。"
+msgstr "The values of the radial basis functions, with shape (N_interactions, num_basis_functions)."
+
+#: 0cbb1ab4f344477c998a4f60b1adf337 2cbe4c3611eb4e40940d0c3b3cdbdc50
+#: 482b024c8ad24ce0b9c802fbe0371edf b1c6564556fe4f029582a4f151228fc2
+#: b3ad74ca864542a8833a3522f863ba03
+msgid "返回类型"
+msgstr "Return type"
+
+#: a5852b23b3ee4988b9828e964a4f0a3c
+msgid "使用指数缩放的伯恩斯坦多项式计算径向基函数。"
+msgstr "Computes radial basis functions using exponentially scaled Bernstein polynomials."
+
+#: 84c2eb537a1547c5ad30c826e1f4f117
+msgid "该变体在标准的伯恩斯坦基函数上引入了一个可学习的指数衰减因子 `alpha`。 这使得基函数能够更好地适应不同尺度上的相互作用。"
+msgstr "This variant introduces a learnable exponential decay factor `alpha` to the standard Bernstein basis functions. This allows the basis functions to better adapt to interactions at different scales."
+
+#: 81a700640e7d45278b482546977d99dd
+msgid ""
+"基函数的变量从 `x = r / cutoff` 替换为 `x = exp(-alpha * r)`。 参数 `alpha` 通过 "
+"`softplus` 函数保证其为正值。"
+msgstr "The variable of the basis function is replaced from `x = r / cutoff` to `x = exp(-alpha * r)`. The parameter `alpha` is ensured to be positive through the `softplus` function."
+
+#: 0f2863702ac247d0810d97173bd06f1e 6bf4487d151d43829f47142effb68cc8
+#: d453bdece1ac426dac17fd710527af87
+msgid "基函数的数量。"
+msgstr "The number of basis functions."
+
+#: 9d017c47bff34745bcf55c9f86f11c53 9dbcdcc2e2964158ac6c0a43147361d2
+#: d43bd2a7083847698a1046dcbc0dbc64
+msgid "截断半径。"
+msgstr "The cutoff radius."
+
+#: 82902f19b3914be49d4bfb1f9d0d7875
+msgid "可训练的衰减系数（softplus之前）。"
+msgstr "The trainable decay coefficient (before softplus)."
+
+#: 3dc446d171f9479c85ff4e60618fe9bc 67958b15bce948f9a0872e8f5f786666
+#: b8bd91a007984250976070abd069c2df
+msgid "nn.Parameter"
+msgstr "nn.Parameter"
+
+#: f25f3afa42ef44989976350055a9029b
+msgid "使用 softplus 的逆函数来初始化 `_alpha`，使其 softplus 后的值等于 `ini_alpha`。"
+msgstr "Initializes `_alpha` using the inverse of the softplus function, so that its value after softplus equals `ini_alpha`."
+
+#: 19382070fd8a4bd3ad085307faf9b7f1 1c0959093049423595dc9feac5d6afcb
+#: 60734064cf624eca808c331bf45cbea0 c80bdd7e9d5948d8a5d56496436de737
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~torch.Tensor\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:class\\:\\`\\~torch.Tensor\\``"
+
+#: d71e8c5462d14b36b983532dc5a01ee6
+msgid "使用指数缩放的高斯函数计算径向基函数。"
+msgstr "Computes radial basis functions using exponentially scaled Gaussian functions."
+
+#: e756b13b45a6433f998f95bb39d00d72
+msgid ""
+"这种基函数由一组高斯函数构成，其中心点在指数空间上均匀分布。 具体来说，中心点位于 `exp(-alpha*r)` 的空间中，而不是直接在 `r`"
+" 上。 这允许基函数在靠近原子核（r较小）的地方分布得更密集。"
+msgstr "This basis function consists of a set of Gaussian functions whose centers are uniformly distributed in an exponential space. Specifically, the centers are located in the space of `exp(-alpha*r)` rather than directly on `r`. This allows the basis functions to be more densely distributed near the atomic nucleus (where r is small)."
+
+#: 1abf28ef4be64ca8915288477915ebb2
+msgid "高斯函数的中心点，在 [1, 0] 区间内线性分布。"
+msgstr "The centers of the Gaussian functions, linearly distributed in the interval [1, 0]."
+
+#: 5a156a3b55e249238bdffc8453288d3f cda67f894c51469c934b881ef80520e6
+msgid "高斯函数的宽度。"
+msgstr "The width of the Gaussian functions."
+
+#: 23c3e86e4da84ccc89b1020b70d6b167
+msgid "可训练的指数衰减系数。"
+msgstr "The trainable exponential decay coefficient."
+
+#: 524490b631ab40be9771268e43962fb5 5413b8432f6c421c88ebf3ec1af295b3
+msgid "初始化 `_alpha` 参数。"
+msgstr "Initializes the `_alpha` parameter."
+
+#: 53220b68cb7d44b7977792e04aa5d8c6
+msgid "使用标准高斯函数计算径向基函数。"
+msgstr "Computes radial basis functions using standard Gaussian functions."
+
+#: 20b745c6713041bda3fed49ee16f6a31
+msgid "这是最常见的一种径向基函数，由一组在距离空间 `r` 上均匀分布的高斯函数构成。"
+msgstr "This is the most common type of radial basis function, consisting of a set of Gaussian functions uniformly distributed in the distance space `r`."
+
+#: b0ca6e9607674a15b52539c0804831fa
+msgid "高斯函数的中心点，在 [0, cutoff] 区间内线性分布。"
+msgstr "The centers of the Gaussian functions, linearly distributed in the interval [0, cutoff]."
+
+#: 8436aaf95ded48fe83beb2c6ba714e2b
+msgid "一个伪参数，仅为兼容性存在，不起实际作用。"
+msgstr "A pseudo-parameter that exists only for compatibility and has no actual effect."
+
+#: 298e76ba4b6f40d684c2a5b016918974
+msgid "使用一种重叠变体的伯恩斯坦多项式计算径向基函数。"
+msgstr "Computes radial basis functions using an overlap variant of Bernstein polynomials."
+
+#: 1a8380caff8d453aab7a36e4d63bdb6f
+msgid "与指数伯恩斯坦基函数类似，但也引入了一个可学习的参数 `alpha`，但其 对距离 `r` 的变换方式不同，旨在更好地描述原子轨道的重叠积分。"
+msgstr "Similar to the exponential Bernstein basis functions, it also introduces a learnable parameter `alpha`, but its transformation of the distance `r` is different, aiming to better describe the overlap integrals of atomic orbitals."
+
+#: fd16037303234060965a24d986ebbd77
+msgid "变量替换为 `x = log(1 + alpha*r) - alpha*r`。"
+msgstr "The variable is replaced with `x = log(1 + alpha*r) - alpha*r`."

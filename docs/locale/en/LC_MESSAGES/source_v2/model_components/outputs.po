@@ -1,0 +1,268 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 425a83a5e7414e7e82f277ec34812c06
+msgid "输出模块"
+msgstr "Output Modules"
+
+#: 0f243b1fa6364fa3ba1525e1f73afc92
+msgid "基于边特征计算原子受力的输出模块。"
+msgstr "An output module for calculating atomic forces based on edge features."
+
+#: 4550eee67e7d4e6bbc2b08c89d86386c
+msgid ""
+"该模块使用一个密集回归模型（`denseRegression`）来处理每条边的特征， 并将其预测的标量值沿着边的方向矢量投影，从而得到力矢量。 "
+"最后，将所有作用到同一个原子上的力矢量进行汇总（scatter-add），得到每个原子的总受力。"
+msgstr "This module uses a dense regression model (`denseRegression`) to process the features of each edge and projects the predicted scalar value along the edge's direction vector to obtain the force vector. Finally, all force vectors acting on the same atom are summed up (scatter-add) to get the total force on each atom."
+
+#: 21aee712c5e346d79698d1bef80eb577 3634ab32cc824ab68b04aab4ab4d231b
+#: 4766b7108ecf4cdc89c015f06965d322 47db6e063d0740379a93fdcef424c17f
+#: 491b78548c2d48b3a78015e81a5bb21f 4d38d944452f44d7ac9a9ed64077ee5e
+#: 5364978b52114096be100cc0657e9ff5 649783dd997c4353a9b9e5f2c1319498
+#: 904d6b3658b645249784560e10f1d396
+msgid "定义前向传播逻辑。"
+msgstr "Defines the forward propagation logic."
+
+#: 1510fe94f9eb4bd5888f4a299ca3d7b2 224ac2d764f24e27a56e4cff1fd12e37
+#: 2e3f88814e04463a9fe82044143de445 5ca373245e3447af9d94a2f3dde10719
+#: 671cef59b0c84bc39798934a56b93d84 7026d641399e49e8ba467ca115b018ba
+#: 826379498f224240b94d50819f401c0c 9ba947bd50b94e948e34f0508eb57328
+#: edbf9dd706804840ac9850674df4732d efa6ce9ea5084649946f451b154d7506
+msgid "参数"
+msgstr "Args"
+
+#: 9a04dd9e186e4a32990261885a0a8c20
+msgid "PyG 图数据对象，包含原子位置 `pos` 和边索引 `edge_index` 等信息。"
+msgstr "PyG graph data object, containing information such as atomic positions `pos` and edge indices `edge_index`."
+
+#: 060041a3cdfa4be1860e4cdcd82d7b06
+msgid "包含图表示的字典，需要 `edge_attr` 键。"
+msgstr "A dictionary containing the graph representation, requiring the `edge_attr` key."
+
+#: 3da23ad7eb134b8fa840cbaf14014d09 3fd497c1423d4c87872b3f4feeae0e15
+#: 689220081802407ab9d367647e6abf1b 689f41b9327e4feb8c28264469d08f7a
+#: 824d28b3d76947e7a1b4491a92ffc219 921033c6167341ea83f13c2b68ab35b6
+#: a4ac25f3f2f54d469e1ab5739f061520 db083f4ec23b4ad28d793e851244dbef
+#: e11ad9d7018a4eda9b969340b1f58e64 e499a0ba3de14e4ca794a6533c742e81
+msgid "返回"
+msgstr "Returns"
+
+#: b8891d2a05574152949da80bbc746513
+msgid "包含计算出的原子受力 `force` 的字典。"
+msgstr "A dictionary containing the calculated atomic forces `force`."
+
+#: 08cd91d3a7804f0e8e02fca8b896546d 1da4d719a5944985afae3814b969a519
+#: 43dd249f2b0a4682be83a16c148d240d 45649e6175e240b0a6eecd309e0bc310
+#: 4e369bb8868a4179b31183c12b2723c2 af918c2c56b140159363b3070ad14a1a
+#: d5b8c82617a1427d942d5b78a2633990 dd74a1ca8e3e4311b3b00c9d1206f5e3
+#: e026174880cc4fcaa7ce43fc13c85a4b ff91f11bc7e547e5abe9efa7fbe38d5d
+msgid "返回类型"
+msgstr "Return type"
+
+#: 3c8f2352d87c44faa33b33cf51cca9c0
+msgid "基于节点标量和矢量特征计算原子受力的输出模块。"
+msgstr "An output module for calculating atomic forces based on node scalar and vector features."
+
+#: 800bb5f7426a45b185b4ee5751ce7e51
+msgid ""
+"这个模块假设原子受力可以表示为一个标量部分和一个矢量部分的乘积。 如果节点特征维度大于1，则使用一个回归模型来计算标量部分； "
+"否则，直接使用节点标量特征。"
+msgstr "This module assumes that the atomic force can be represented as the product of a scalar part and a vector part. If the node feature dimension is greater than 1, a regression model is used to calculate the scalar part; otherwise, the node scalar features are used directly."
+
+#: 5a7d6e597625494a8e45d301aa5902ed 5c9306722d2f4b6294b1c6d669b560b7
+#: 5e12177f744d41eebab88443115862ba 7125ee6a1b494a6da3a9bf11fb2a514a
+#: d278a88278ed42ae95a06e272568afb8 dd5d0e23c46b47efbde797d700a865d8
+#: fd1f1038764c4d2b987224e3a1297321 fe6dece75f0943eda9c8bd07212d2edd
+msgid "PyG 图数据对象。"
+msgstr "PyG graph data object."
+
+#: d64242d3b1d544d2adb757a41407c16e f9b19904dfe2453aaa41b4abcb3a0561
+msgid "包含图表示的字典，需要 `node_attr` 和 `node_vec_attr`。"
+msgstr "A dictionary containing the graph representation, requiring `node_attr` and `node_vec_attr`."
+
+#: 9a5d74dcfa13493bb53dcafa25acf191
+msgid "计算得到的原子受力。"
+msgstr "The calculated atomic forces."
+
+#: 1d4613efae2646639b2b719e888767a9
+msgid "计算 Born 有效电荷张量的输出模块。"
+msgstr "An output module for calculating the Born effective charge tensor."
+
+#: 015672581e3a48fb81e87f6afd906188
+msgid ""
+"该模块通过组合二体（边）和三体（角）相互作用来计算每个原子的 Born 有效电荷张量。 二体项由边特征和边方向矢量的外积（张量积）构成。 "
+"三体项（可选）由三元组特征和两个相关边的方向矢量外积构成。"
+msgstr "This module calculates the Born effective charge tensor for each atom by combining two-body (edge) and three-body (angle) interactions. The two-body term is composed of the outer product (tensor product) of edge features and edge direction vectors. The three-body term (optional) is composed of the outer product of triplet features and the direction vectors of the two associated edges."
+
+#: 731f12e2129e4e39a7ffdf8ab5e5f72a 7dbdeda9bc0f45159e92697f72ecb102
+#: aaf5970fa75c4ac28309fadd7bc0cb04
+msgid "包含图表示的字典。"
+msgstr "A dictionary containing the graph representation."
+
+#: dd63181db46946e793a180bc37c837df
+msgid "每个原子的 Born 张量，形状为 (N_nodes, 9)。"
+msgstr "The Born tensor for each atom, with a shape of (N_nodes, 9)."
+
+#: 3e209eeb0ead4ed690c0b9a4742c91c2
+msgid "基于节点标量和双矢量特征计算 Born 张量的输出模块。"
+msgstr "An output module for calculating the Born tensor based on node scalar and dual vector features."
+
+#: 80fb3ed6ba294c759f945e95ff06ff05
+msgid "此模块假设 Born 张量可以由节点上的两个基矢量（`node_vec_attr`）的 外积（张量积）与一个标量系数相乘得到。"
+msgstr "This module assumes that the Born tensor can be obtained by multiplying the outer product (tensor product) of two basis vectors on the node (`node_vec_attr`) by a scalar coefficient."
+
+#: c96cff87487d4a3983f11dfc729e5c63
+msgid "计算得到的 Born 张量，形状为 (N_nodes, 9)。"
+msgstr "The calculated Born tensor, with a shape of (N_nodes, 9)."
+
+#: 9cecc0c68d7f4f828c85a595e9b17938
+msgid "计算压电张量的输出模块。"
+msgstr "An output module for calculating the piezoelectric tensor."
+
+#: 84a337cacfa74c4588632ae17230ba77
+msgid "该模块通过组合二体和三体相互作用来计算压电张量。压电张量是三阶张量， 描述了材料在应变下产生极化的能力。计算涉及三阶的矢量张量积。"
+msgstr "This module calculates the piezoelectric tensor by combining two-body and three-body interactions. The piezoelectric tensor is a third-rank tensor that describes the material's ability to generate polarization under strain. The calculation involves third-order vector tensor products."
+
+#: f50117e73f564429966e216beddf4ac9
+msgid "包含计算出的压电张量 `piezoelectric` 的字典。"
+msgstr "A dictionary containing the calculated piezoelectric tensor `piezoelectric`."
+
+#: 8fdb5f822dd2456496067c012a450b58
+msgid "一个简单的标量预测模块。"
+msgstr "A simple scalar prediction module."
+
+#: c3ef9baa632a4f1ea36d84d42328aa70
+msgid "该模块直接对节点特征进行全局池化（平均、求和或最大值）来预测一个标量属性。 它不包含任何可学习的参数，主要用于基线模型或简单任务。"
+msgstr "This module directly performs global pooling (mean, sum, or max) on node features to predict a scalar property. It contains no learnable parameters and is mainly used for baseline models or simple tasks."
+
+#: 59ec3d5017a944e2a307f78cc4d21321 b022965d281b489d8db96bf48ba913ac
+#: b75e47a3b56849ff9a3f382b42fb6094
+msgid "包含图表示的字典，需要 `node_attr`。"
+msgstr "A dictionary containing the graph representation, requiring `node_attr`."
+
+#: 600de520b7d74ac795ebd2a0828dc1f1 65ac611ac5a042858b277644cc236b3d
+msgid "包含预测标量 `scalar` 的字典。"
+msgstr "A dictionary containing the predicted scalar `scalar`."
+
+#: 115a8f3c7edb432f8a6ac887bc76d095
+msgid "一个更复杂的标量预测模块，包含一个 MLP。"
+msgstr "A more complex scalar prediction module that includes an MLP."
+
+#: 8b09ec2d91874cdbb27194d6b394061a
+msgid "该模块首先对节点特征进行全局池化，然后将得到的图级别特征 送入一个多层感知机（MLP）进行回归或分类。"
+msgstr "This module first performs global pooling on node features, and then feeds the resulting graph-level features into a multilayer perceptron (MLP) for regression or classification."
+
+#: 7013749626f54235b75c8148b71d49f9
+msgid "计算晶体级别张量的输出模块。"
+msgstr "An output module for calculating crystal-level tensors."
+
+#: e9a44b2385b84779a56488c0ff6a18f3
+msgid "该模块包裹了 `Born` 模块，用于计算原子级别的张量。 然后，它可以选择直接返回原子级别的张量，或者通过平均池化 得到晶体级别的张量。"
+msgstr "This module wraps a `Born` module to calculate atomic-level tensors. It can then choose to either return the atomic-level tensors directly or obtain a crystal-level tensor through average pooling."
+
+#: 1be4f9f87d754f3da0353d370ad5dee3
+msgid "包含 `atomic_tensor` 或 `crystal_tensor` 的字典。"
+msgstr "A dictionary containing either `atomic_tensor` or `crystal_tensor`."
+
+#: 036e06b2b6c04271a855b94f50713ca5
+msgid "同时预测总能量和原子受力的模块。"
+msgstr "A module for simultaneously predicting total energy and atomic forces."
+
+#: de62e8d00476412ca6a86e575536e43a
+msgid "能量被计算为所有原子能量贡献的总和。力是通过对总能量关于原子位置 求负梯度得到的（依据海尔曼-费曼定理）。"
+msgstr "Energy is calculated as the sum of all atomic energy contributions. Forces are obtained by taking the negative gradient of the total energy with respect to atomic positions (according to the Hellmann-Feynman theorem)."
+
+#: fb7fc04537ce4b1b85eb60a2e6a7fe6b
+msgid "包含 `forces` 和 `total_energy` 的字典。"
+msgstr "A dictionary containing `forces` and `total_energy`."
+
+#: 7ca37ece09ec4977a8ca25f40371c751
+msgid "计算电子-声子耦合 (Electron-Phonon Coupling, EPC) 矩阵的模块。"
+msgstr "A module for calculating the Electron-Phonon Coupling (EPC) matrix."
+
+#: fe9d68f4bffa403c93a26cc77f41b3c2
+msgid ""
+"这个类不是一个标准的 `nn.Module`，而是一个可调用的计算流程封装。 它接收一个图表示模型 (representation) "
+"和一个哈密顿量输出模型 (output)， 通过自动微分计算哈密顿量对原子位移的导数，并结合波函数，最终计算出 EPC 矩阵。 EPC "
+"矩阵描述了电子与晶格振动（声子）之间的相互作用强度，是计算材料 电导率、超导电性等关键物理量的核心。"
+msgstr "This class is not a standard `nn.Module` but a callable wrapper for a computational workflow. It takes a graph representation model (representation) and a Hamiltonian output model (output). It calculates the derivative of the Hamiltonian with respect to atomic displacements via automatic differentiation and combines it with the wavefunctions to finally compute the EPC matrix. The EPC matrix describes the interaction strength between electrons and lattice vibrations (phonons) and is crucial for calculating key physical quantities like electrical conductivity and superconductivity."
+
+#: a487cadd17d3417380544e2253c71159
+msgid ""
+"计算的核心是利用 `torch.autograd.functional.jacobian` 来获得雅可比矩阵 `nabla_HK` "
+"(∂H(k)/∂R)，即 k 点哈密顿量相对于原子坐标 R 的梯度。"
+msgstr "The core of the calculation is to use `torch.autograd.functional.jacobian` to obtain the Jacobian matrix `nabla_HK` (∂H(k)/∂R), which is the gradient of the k-point Hamiltonian with respect to the atomic coordinates R."
+
+#: e868ac428afe4c25bf417d48b143a6bb
+msgid "此类要求批处理中所有晶体的原子数量必须相等。"
+msgstr "This class requires that all crystals in a batch have the same number of atoms."
+
+#: b55ce1754fbc461798434d0a1cde31b5
+msgid "GNN 模型，用于从原子结构数据计算图表示。"
+msgstr "A GNN model for computing graph representations from atomic structure data."
+
+#: 2a1cf39be49547138b30b0846c854387 7f4d54530f3d466fa9fed6e5bd12f0a4
+#: b962ddac2a1b4ecdad43cf5187195f4f c29dac00534a427c99783085ff9eaa1b
+msgid "type"
+msgstr "type"
+
+#: 55560b4bd9fe43e494026f1d839163df f3ad7545c50441389616d75fde8747ed
+msgid "Callable"
+msgstr "Callable"
+
+#: 043c04e4716042bda17d0f3cf8a023d5
+msgid "基于图表示计算哈密顿量 `HK`、重叠矩阵 `SK` 等物理量的模型。 该模型还需提供 `basis_def` 属性以定义原子轨道基组。"
+msgstr "A model for calculating physical quantities such as the Hamiltonian `HK` and overlap matrix `SK` based on the graph representation. This model must also provide a `basis_def` attribute to define the atomic orbital basis set."
+
+#: 857404a78bcc45f8a6624b39e7a215c3
+msgid "计算 EPC 矩阵时所考虑的能带窗口的起始索引 (从 1 开始)。"
+msgstr "The starting index (1-based) of the band window considered when calculating the EPC matrix."
+
+#: 2992b8d878b7456b84b49a3cd3efc63e 80d5b680f4a541be9f68728364d11651
+msgid "int"
+msgstr "int"
+
+#: dd71dc78bebb4a7591b52c5f5ccb9f51
+msgid "计算 EPC 矩阵时所考虑的能带窗口的结束索引。"
+msgstr "The ending index of the band window considered when calculating the EPC matrix."
+
+#: 41a2251986744c7f8f9f10b5237ecb45
+msgid "执行 EPC 矩阵的前向计算。"
+msgstr "Performs the forward calculation for the EPC matrix."
+
+#: 2e8a585ad05842928b05e9495fd8821e
+msgid "PyG 图数据对象，包含原子坐标 `pos`、原子类型 `z`、晶胞 `cell` 等信息。"
+msgstr "PyG graph data object, containing information such as atomic coordinates `pos`, atomic types `z`, and unit cell `cell`."
+
+#: 0d6a680ce3bb47cdb4d71f4204d42206
+msgid ""
+"一个包含哈密顿量 `hamiltonian` 和 EPC 矩阵 `epc_mat` 的字典。       `epc_mat` 的形状为 "
+"[N_batch, n_k, n_bands, n_bands, n_atoms, 3]。"
+msgstr "A dictionary containing the Hamiltonian `hamiltonian` and the EPC matrix `epc_mat`. The shape of `epc_mat` is [N_batch, n_k, n_bands, n_bands, n_atoms, 3]."
+
+#: 0270f37d29f94d9f989af39d5151f5d1
+msgid "一个包含哈密顿量 `hamiltonian` 和 EPC 矩阵 `epc_mat` 的字典。"
+msgstr "A dictionary containing the Hamiltonian `hamiltonian` and the EPC matrix `epc_mat`."
+
+#: 627057a619cc4db587375d55cf5f4297
+msgid "`epc_mat` 的形状为 [N_batch, n_k, n_bands, n_bands, n_atoms, 3]。"
+msgstr "The shape of `epc_mat` is [N_batch, n_k, n_bands, n_bands, n_atoms, 3]."

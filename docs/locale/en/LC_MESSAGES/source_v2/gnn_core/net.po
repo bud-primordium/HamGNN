@@ -1,0 +1,775 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 92ba995c8be847e09cfbfd447acfdeb4
+msgid "HamGNN 网络 (net.py)"
+msgstr "HamGNN Network (net.py)"
+
+#: 053bc2960b1d4486a3f16f4d0fa16a8d ed8c2af6895647c0b94e2915c5301b18
+msgid "基类：:py:class:`~HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel`"
+msgstr "Bases: :py:class:`~HamGNN_v_2_0.models.HamGNN.BaseModel.BaseModel`"
+
+#: c1a53e4ddccd426b986de60b605f8f71
+msgid "基于 E(3) 等变图卷积的 HamGNN 模型。"
+msgstr "HamGNN model based on E(3) equivariant graph convolutions."
+
+#: 02633dc8fc104a159121af3efd654734
+msgid ""
+"该模型通过堆叠多个等变卷积层来学习原子及其相互作用的表示。 每一层都会更新原子（节点）和原子对（边）的特征，同时严格保持在旋转下的等变性。 "
+"最终输出节点和边的等变特征，用于后续的物理属性预测。"
+msgstr ""
+"This model learns representations of atoms and their interactions by stacking "
+"multiple equivariant convolutional layers. Each layer updates the features of "
+"atoms (nodes) and atomic pairs (edges) while strictly maintaining "
+"equivariance under rotation. The final output consists of equivariant "
+"features for nodes and edges, which are used for subsequent prediction of "
+"physical properties."
+
+#: 5ccc5a583df74daf86280f8203b76e8c d0b309f1fafc4d908ae22751664cd128
+msgid "系统中原子种类的数量。"
+msgstr "Number of atomic species in the system."
+
+#: 08499fd3100c46a7b860993f73a3cd6d 09fbb115727749b1a659282a682bae7e
+#: 0f7faa1f282c4799a50311f450263460 12142acc0e014c8496b52ddb633eebbf
+#: 17aaf7bc6e8a4747acd1fc16ee00b63e 206a39fb4ea54c5c91a86578083728e9
+#: 22e408c0226c4da0b5ccc0b25dda25a6 293be8590a47400381133085e589d8e8
+#: 3087d41579824203a1e2fdefc2118dc7 30af056b85cd4dfdb45b0fecc2afef20
+#: 30d1f21e64a64ed5b94befea9f5b06ee 5327129056fd4dfe890d1b72835a62a9
+#: 5c84b5054da9477a88f793abf894aa81 664498f86d944304ba1240e490e05953
+#: 792cd21bfebb428a881f7f4c5795e42e 808369cc32f74880ac5b79008877adb9
+#: 82962d9083034d289c867be630889017 8354189e975a430287b922def37ef18d
+#: 88d0acfc8a6445d4a611df08ee189dd4 94da0dfbf09740b9948193879e5a4696
+#: 97a728aafef84440a9f04f71d7087a2d 994662b1b73c4741ae9ec9d396d396c3
+#: 99677dd9fa5c45fe8291cb10bc4b0c14 a4878a2bc86a4289bcedc08de540603f
+#: b164211885b74e8a89a117dd82418e70 b270e3bf98494ffaa699a55190fb3d06
+#: bd15f49da38541e6b8c0318d56944ee0 bde3c7a9234d4ae4b6ad7e7d4d37fad3
+#: c48d07e3ab744f8390e5817e8374d7cc c6cbc5bd952e4de59b62a832d292f8b2
+#: d5a77ffe39fb4d458e5bbc1801420332 e069593b20b942ea98337ddca1f1656a
+#: f5a2e04f6f7d4d47b6e5ec78f4e23b11 f9511a0d34d64571abdbae8ab767f0a6
+#: f96572a3536d4e7caa8fdbae806a61e3 fff8db6f50f24f6d9a56b6d6b51f766b
+msgid "type"
+msgstr "type"
+
+#: 485ef5a5fbee4a71a475469e7c6e05f9 568b52d24ede4fe086d4b570db22d110
+#: 6bcbba681b604c1194bf93961c96839f 95556e5884c54d6085a557ed86f6fb80
+#: c8a617def9a146279366ab2f51c9d023 ebb4233667fb49d0b22964ca134597c2
+msgid "int"
+msgstr "int"
+
+#: 8bd2ee4d058947d4a4aba566b3079533 bdb5871784f24fdfb3c16b46b8565f51
+msgid "径向截断半径。"
+msgstr "Radial cutoff radius."
+
+#: 11bcf52bef374571887b19a169742ca7 f1ec02154fdf40d3a56deeba15a4a9f4
+msgid "float"
+msgstr "float"
+
+#: e1bcc8517bee4ae8818dd20015448627
+msgid "等变卷积层的数量。"
+msgstr "Number of equivariant convolutional layers."
+
+#: 3351037b6ae04d4da059df262913db3e 7a4355b290f54309954e36db97c87c3d
+msgid "节点特征的不可约表示。"
+msgstr "Irreducible representations of node features."
+
+#: 348c21722c644cde97c15e524609f193 5eb340f251a249eeb184c9bb706ec986
+#: c3bae4db7e684e60be3ff02cbba7be25
+msgid "o3.Irreps"
+msgstr "o3.Irreps"
+
+#: 017e46a81bd545239cdba7d6319a23a0 2981614016404936841b599374730a1f
+msgid "径向基函数模块。"
+msgstr "Radial basis function module."
+
+#: 0d533c111f1d4320ae1c31d1a010c31e 1957d890ef1d469faa954b93f2043333
+#: 23534bd68f6847cea7cdc9c80d4785f1 4a6be55f518f4ba09b7c5404fea314b5
+#: 7784a392adac4297b40308ad981005c8 77d42baa2f624ac3817474279271b476
+#: 7e80bcf68b994b7d8b2a7400235b27e3 8044e9d9af1b45c9a56387cfebc72f16
+#: 804e01ea64404c10a862095540f8e3a2 8578cdb587d2412e9314daf01fa8ad59
+#: 896d79f8151b41d9a416b6244e8cd457 94a3983c19984de0955fdda04fb89fd9
+#: a60d87486f234084b217f2eebaf93c9e fc5fc03190574742a0289108dfa17ee6
+msgid "nn.Module"
+msgstr "nn.Module"
+
+#: 7b20707fddde4a2e8d9bff9644ded62b e8a7b409b89744c490b9aaf2f21da932
+msgid "将原子种类转换为独热编码的模块。"
+msgstr "Module to convert atomic species to one-hot encoding."
+
+#: 92478f020f4e4da7b4960cdb2b2875be d97e803c32dd49079a95cfb6170f23ff
+msgid "计算边向量的球谐函数的模块。"
+msgstr "Module to compute spherical harmonics for edge vectors."
+
+#: 92a19ee9d0a0419bb8e70b980e3058aa becdfaf83ca941b085df7ca43557cde5
+msgid "编码边长度的径向基函数模块。"
+msgstr "Radial basis function module for encoding edge lengths."
+
+#: 2ebe671a17fe474ca7a52170b0188945 453782ddf0524b109b095b7f717bce92
+msgid "嵌入原子对相互作用的初始特征。"
+msgstr "Embedding for the initial features of atomic pair interactions."
+
+#: 086cd3f7262f4bdf9f1b65fb864fd2d4 3469ae3f9f4d4ad3bf41a5f00db0370f
+msgid "将独热编码嵌入到初始节点特征中。"
+msgstr "Embeds one-hot encoding into initial node features."
+
+#: 13be65028ddc4322907a2454e3016939
+msgid "等变卷积层列表。"
+msgstr "List of equivariant convolutional layers."
+
+#: 0b3651a2437a4a1188b7c64033b28820 5eab10673c5f423ba33354a0091d2a33
+#: 6c0c32f07cd24c77ac5c5e590a02d8f3 8fd986819cb9408ea383581bd555f5f4
+#: b596197efa0d479a9bfe51e4c04c10c8 cb0cf938feff42a493fa4d918b2c4242
+msgid "nn.ModuleList"
+msgstr "nn.ModuleList"
+
+#: 24acf1f8e15e4e5993064ded9b3d8ae5
+msgid "（可选）相关性乘积层列表。"
+msgstr "(Optional) List of correlation product layers."
+
+#: 284e9815a355447cadb827c5df6be8de 38c982ebf6f74df4884c4fe6e853ccd7
+msgid "原子对相互作用层列表。"
+msgstr "List of atomic pair interaction layers."
+
+#: 2fef96a95f4b47399915a4d7ca110115 b1ba2de753b44dbea8eb4de7d3bc020e
+msgid "执行模型的前向传播。"
+msgstr "Performs the forward pass of the model."
+
+#: 1d68319448d94d73b48d3035e9ffd6a1 23e35b353f4c460c8b7fbb5c21a8bcf2
+#: 3328fc7d4ac44605909d97f64e301ac6 36d094030d3f4a349fce35c2d747a52a
+#: 391e9b293e114a2cb47629331c389479 394eb98f3fbd4cc5b4c50679a5c9654f
+#: 3db1bfab6c9d437da4bf41342a16b5d2 40f9bc01c8e64a0b830def5a87f42992
+#: 512aa085341c49b9962be7c0bf8b4c72 5bd9c3c9d49c4bf2b6484f288edacc71
+#: 70dc53cf78734610a12833ea1c23877d 714f01e0b1ca438e8b04989eadb5da10
+#: 76cbe276d3a54c93a71ef02566ee62de 7c5576c9fe3f4523b2ed17d3176d9308
+#: 8393cb0272e540c5b72786f479ace963 86795af8572f40ec8ba8491a9c9f35dc
+#: b70c706e5da44a769203f361517647cf ba020720d0bd4891aee74ca14efb7940
+#: bfceb5408271475bb72aa80c660e25c9 d3b670c18a5f4b11a5f79f84152576b1
+#: ddbf1d42191746a5bae2956df1dc313b ec6a60b64b994671b1c0a48eaee96603
+#: ed7f72369ea74666b90ee33ac16542e2 f54fb7a240004e54b0d8ab15dabfdab5
+#: f66f78a9c95845e484c27564490af30f
+msgid "参数"
+msgstr "Parameters"
+
+#: 590f36cdc2fc4dd6867986d1db73aa56 609bcebc08d54e1faaf1e4c0feb4f509
+msgid "输入的图数据对象，遵循 PyG 或 Nequip 的数据格式。 需要包含 `pos`, `z`, `edge_index` 等原子结构信息。"
+msgstr "Input graph data object, following PyG or Nequip data format. It needs to include atomic structure information such as `pos`, `z`, `edge_index`."
+
+#: 058c7754b7a5437ba00ebbe72223e9dd 08dc5636d33b4572aa5074c0eb87a65a
+#: 0ce9d99313e143909b44b8563068714a 0e7267e9704b48b590629bb2cf322759
+#: 150779cf3c50405681e67ccbd85e5bfb 1827ae69d5f74a538c30a96e938f1969
+#: 1b80886e211c40429e5997e1bedee9ab 1cb8eacd917b4530b5b9256b13610e6f
+#: 2cdaf0a691474e20934910ffd3b3f99e 40fd1899801e49d196495c01317ca7c3
+#: 4d1bacabe3b9478484f890187d1acebf 587376a7e8e248779051e7074a337d2f
+#: 7651705ce6804c8dbbaab8c63b5a0f9f 7733fb787ac943babaa3898a65a4b126
+#: 78303a0702104608939ee7382f4f3e58 792794f5b2004c72a17c1d7118b9982d
+#: 79601a6ea09741c198cb1128f89c9b02 8e676d1b3e0140a6a36bc7fdfe7e0cb1
+#: 9c482cc316544ee896cb354f066177be be8e2f2b873f4916ac0921ccb2043247
+#: d0da097a39d345118a43249cb6747322 de7e806588424c448fb37e93009333b7
+#: e8f11e86ec804050ab888c915618401e fa822a9dcf6e42d2aa279a93130fe8e8
+#: fe1b68fa7c0442628dc6693ca659aed9
+msgid "返回"
+msgstr "Returns"
+
+#: e123bd8406434835989e35a3b642abce e354243aebe247debc5ff5bb518b765d
+msgid "一个包含最终节点和边等变特征的字典。 - 'node_attr': 节点的等变特征张量。 - 'edge_attr': 边的等变特征张量。"
+msgstr "A dictionary containing the final equivariant features for nodes and edges. - 'node_attr': The equivariant feature tensor for nodes. - 'edge_attr': The equivariant feature tensor for edges."
+
+#: 0a7b6b1a327f49a5a6a858ed720d3a94 0c811deb3841450fba6f6e58727a8ebb
+#: 4e41b2fccfcb4b83813ac0f9b5708cc0 4eb91066f9514061968b273c8e273990
+#: 4f7e38c80522414a892c6a22431e0bc5 5d0d530319c84dceb7aba1b046f4f4dc
+#: 5ffc1abca2d54787b50512b013413b66 65907a55699443cabd47fde00e728657
+#: 67914cc61ec443cd9b331582d6781e0a 796e027742dc477c9d3c248024f30352
+#: 7ca4dd144703407ab08adc9a91c4061a 8a3b9180e8594010950d7135a9dcacdb
+#: 8c73af08d6e44640bbdd9606b6f2b0a1 a692706f225e427abca9465a805a2db1
+#: bdffe406f33c4caa8ef642dd75923123 cc31039831e9408d92a66b5bb4229121
+#: d48e613d2935411b94fc3d0a27eb5094 d6f63b14b7d74bd5922397f13057ac8f
+#: dbba773836294bd88957329dad190e24 dd13f94233a94a80b4c033e2823ecd2e
+#: dd2fce93b8ea4342b25edb359b2af4f9 e40c36a9f2fa4d499f57bffea8279191
+#: ea90c226f2b84233a979b461d3f840b9 f07ede14c5064f59a3822420c2298c02
+#: f1ea4774dcf5473da571a0702b740d52
+msgid "返回类型"
+msgstr "Return type"
+
+#: 855983cbdd634ef48104e259e46f0139
+msgid "基于 E(3) 等变 Transformer 的 HamGNN 模型。"
+msgstr "HamGNN model based on E(3) equivariant Transformer."
+
+#: 414b275e1dee47a78baa7c1ede5a8248
+msgid ""
+"该模型采用等变自注意力机制来捕捉原子间的相互作用，替代了传统的卷积操作。 它允许模型在更新节点特征时，动态地权衡来自不同邻居的信息。 "
+"模型的整体结构与 `HamGNNConvE3` 相似，但核心交互层换成了 `AttentionBlockE3`。"
+msgstr ""
+"This model uses an equivariant self-attention mechanism to capture "
+"interactions between atoms, replacing traditional convolution operations. It "
+"allows the model to dynamically weigh information from different neighbors "
+"when updating node features. The overall structure of the model is similar "
+"to `HamGNNConvE3`, but the core interaction layer is replaced with "
+"`AttentionBlockE3`."
+
+#: 0068f8c29d4b4214af9b01f57936a1f2
+msgid "等变 Transformer 层的数量。"
+msgstr "Number of equivariant Transformer layers."
+
+#: 4f0e4c87df86440098f874485db679a4
+msgid "自注意力机制中的头数。"
+msgstr "Number of heads in the self-attention mechanism."
+
+#: 83967bc28ae2450e91fe06b0e439181b
+msgid "等变 Transformer 层列表。"
+msgstr "List of equivariant Transformer layers."
+
+#: 1bc7fb5a177e4f1d85b814aaa96be4a9
+msgid "相关性乘积层列表。"
+msgstr "List of correlation product layers."
+
+#: 4bc7400f43ba4946b103eb917b4c46d3
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: 658f3ca510644456bc6bd3586b23a0ca
+msgid "HamGNN 的输出模块，用于构建物理哈密顿量并计算相关属性。"
+msgstr "Output module for HamGNN, used to construct the physical Hamiltonian and compute related properties."
+
+#: ef0952e1d75a41c9b71f64354c3ea835
+msgid ""
+"这个模块接收图神经网络编码的等变特征，并利用这些特征作为系数， 通过 Clebsch-Gordan 张量积将它们组合成完整的哈密顿量 (H) "
+"和重叠矩阵 (S)。 它能够处理多种 DFT 软件（如 OpenMX, SIESTA, ABACUS）的基组，支持自旋轨道耦合（SOC）、 "
+"自旋约束计算，并能最终求解能带结构。"
+msgstr ""
+"This module receives equivariant features encoded by the graph neural "
+"network and uses them as coefficients to construct the complete Hamiltonian "
+"(H) and overlap matrix (S) via Clebsch-Gordan tensor products. It can handle "
+"basis sets from various DFT software (e.g., OpenMX, SIESTA, ABACUS), "
+"supports spin-orbit coupling (SOC), spin-constrained calculations, and can "
+"ultimately solve for the band structure."
+
+#: 5b1a2faa6edc481ba4e2e3c8d9997e77
+msgid "这个类的实现非常复杂，因为它紧密地耦合了物理学（量子化学、固体物理） 和 E(3) 等变神经网络的数学原理。"
+msgstr "The implementation of this class is highly complex as it tightly couples physics (quantum chemistry, solid-state physics) with the mathematical principles of E(3) equivariant neural networks."
+
+#: 4359b8be7a654c35aa30457bde6f4e30
+msgid "预设的最大原子轨道数。"
+msgstr "Preset maximum number of atomic orbitals."
+
+#: 10118d0d7e8044459c5efc9fc1f5f169
+msgid "使用的 DFT 基组类型 (例如 'openmx')。"
+msgstr "Type of DFT basis set used (e.g., 'openmx')."
+
+#: cc6aea01f0c24ecfbc246ff8fad80550
+msgid "str"
+msgstr "str"
+
+#: 525ab69532bc43a18f96c40b3718e485
+msgid "如果为 True，则只计算哈密顿量，不计算重叠矩阵。"
+msgstr "If True, only the Hamiltonian is computed, not the overlap matrix."
+
+#: 15a902ecf5174d949dadbc51d160063c 6463c7475ff145388af4aafa0d1cfc59
+#: e60ffea0458843c3a200e6053e39f726
+msgid "bool"
+msgstr "bool"
+
+#: 55356062867741349eaabf378881f4dd
+msgid "是否启用自旋轨道耦合计算。"
+msgstr "Whether to enable spin-orbit coupling calculation."
+
+#: 541fe8b735a8406abe814253df0ce843
+msgid "是否进行自旋约束计算。"
+msgstr "Whether to perform spin-constrained calculation."
+
+#: c43de6070b1f42efb85b1486e13a2cb1
+msgid "哈密顿量/重叠矩阵块的不可约表示。"
+msgstr "Irreducible representations of the Hamiltonian/overlap matrix blocks."
+
+#: 32fe2c2cc6f24f8893a08cc176f72351
+msgid "用于从节点特征预测 onsite 哈密顿量块的网络。"
+msgstr "Network for predicting onsite Hamiltonian blocks from node features."
+
+#: 6b3a5d8d76b8432a8788dac91a3c5dbf
+msgid "用于从边特征预测 offsite 哈密顿量块的网络。"
+msgstr "Network for predicting offsite Hamiltonian blocks from edge features."
+
+#: 909e4be215584c6a9edc415c715b48d9
+msgid "用于计算 Clebsch-Gordan 系数的工具。"
+msgstr "Tool for calculating Clebsch-Gordan coefficients."
+
+#: c03aec744de7436db270377bc8d424d1
+msgid "ClebschGordanCoefficients"
+msgstr "ClebschGordanCoefficients"
+
+#: 1b1042f2bed349d79992ec74cc558d9f
+msgid "将一系列球谐系数（等变特征）通过 Clebsch-Gordan 积合并成矩阵块。"
+msgstr "Merges a series of spherical harmonic coefficients (equivariant features) into matrix blocks via Clebsch-Gordan products."
+
+#: 5f4de16b675d4fad946f684fbfab9870
+msgid "这是模型的核心步骤之一，它将神经网络预测的抽象特征（`sph_split`） 转换为物理上可解释的哈密顿量或重叠矩阵的组成部分。"
+msgstr "This is one of the core steps of the model, converting abstract features (`sph_split`) predicted by the neural network into physically interpretable components of the Hamiltonian or overlap matrix."
+
+#: 7da93db94d61463a92a24a33d80d50c5
+msgid "一个张量列表，每个张量对应 `self.ham_irreps` 中的一个不可约表示的系数。 形状为 `(N_batch, 2L+1)`。"
+msgstr "A list of tensors, where each tensor corresponds to the coefficients of an irreducible representation in `self.ham_irreps`. The shape is `(N_batch, 2L+1)`."
+
+#: cf4c3f1e692d4f1bac86ff228f35104f
+msgid "合并后的矩阵块，形状为 `(N_batch, nao_max * nao_max)`。"
+msgstr "The merged matrix block, with a shape of `(N_batch, nao_max * nao_max)`."
+
+#: cae43fba44b74c49b6f9566c7263344e
+msgid "将球谐系数合并为二阶张量（3x3矩阵），用于 SOC 计算中的交换项 J。"
+msgstr "Merges spherical harmonic coefficients into a second-order tensor (3x3 matrix) for the exchange term J in SOC calculations."
+
+#: e42d8a996b7b4c439c3546cb6885695e
+msgid "对应 `self.J_irreps` 的球谐系数列表。"
+msgstr "List of spherical harmonic coefficients corresponding to `self.J_irreps`."
+
+#: 8dd893d6f6814694869188f0fc052433
+msgid "形状为 `(N_batch, N_blocks, 3, 3)` 的张量。"
+msgstr "A tensor with a shape of `(N_batch, N_blocks, 3, 3)`."
+
+#: 36cf67ee6c874945995fc49ac07e89f0
+msgid "将零阶（标量）球谐系数合并为矩阵。"
+msgstr "Merges zeroth-order (scalar) spherical harmonic coefficients into a matrix."
+
+#: a814b22d5c8a4ab89cdb52d61e922878
+msgid "这用于非 SOC 情况下的交换项 J，其中 J 是一个标量。"
+msgstr "This is used for the exchange term J in non-SOC cases, where J is a scalar."
+
+#: b89a78917cd1480b9a8b245af85bc055
+msgid "对应零阶 Irreps 的系数列表。"
+msgstr "List of coefficients corresponding to zeroth-order Irreps."
+
+#: 30c69961207a4fdfabb1f2f05ea74a94
+msgid "形状为 `(N_batch, nao_max, nao_max)` 的矩阵。"
+msgstr "A matrix with a shape of `(N_batch, nao_max, nao_max)`."
+
+#: e84ad04b4f3146c89d95f180be89d56c
+msgid "将拉格朗日乘子（交换场）合并成完整的交换相互作用矩阵 J。"
+msgstr "Merges Lagrange multipliers (exchange fields) into the complete exchange interaction matrix J."
+
+#: ed6f37bd59e24e0eadc161ea53aaa504
+msgid "神经网络预测的交换场系数。"
+msgstr "Exchange field coefficients predicted by the neural network."
+
+#: 657fda2006c94a6bbf32a8e94c4a2f57
+msgid ""
+"交换相互作用矩阵 J。 如果 `soc_switch` 为 True, 形状为 `(N_batch, nao_max, nao_max, 3, "
+"3)`。 否则，形状为 `(N_batch, nao_max, nao_max)`。"
+msgstr ""
+"The exchange interaction matrix J. If `soc_switch` is True, the shape is "
+"`(N_batch, nao_max, nao_max, 3, 3)`. Otherwise, the shape is `(N_batch, "
+"nao_max, nao_max)`."
+
+#: 0be1cbee73bf4656b2174c8f277a1add
+msgid "将拉格朗日乘子合并成四阶相互作用矩阵 K。"
+msgstr "Merges Lagrange multipliers into the fourth-order interaction matrix K."
+
+#: 1e6a80e3751e48d4a5dce17a6b4d1541
+msgid "神经网络预测的四阶项系数。"
+msgstr "Fourth-order term coefficients predicted by the neural network."
+
+#: 7e06dfeb591d43f9bb8e65405b561ff5
+msgid "四阶相互作用矩阵 K，形状 `(N_batch, nao_max, nao_max)`。"
+msgstr "The fourth-order interaction matrix K, with a shape of `(N_batch, nao_max, nao_max)`."
+
+#: dcaf2f9c621942109c0b54ee536dbf17
+msgid "根据 DFT 软件（如 openmx, siesta）的约定，调整输出矩阵元素的顺序。 这确保了生成的哈密顿量与目标软件的原子轨道顺序相匹配。"
+msgstr "Adjusts the order of output matrix elements according to the conventions of DFT software (e.g., openmx, siesta). This ensures that the generated Hamiltonian matches the atomic orbital order of the target software."
+
+#: ef5ec68fcea64f5fa10d98652cb23eb8
+msgid "原始哈密顿量矩阵。"
+msgstr "The original Hamiltonian matrix."
+
+#: 4183881b2c5949ad9792977cd73c474e
+msgid "索引调整后的哈密顿量。"
+msgstr "The Hamiltonian after index adjustment."
+
+#: 20a4ff2c3aeb4a2b80d2ae0238df7919
+msgid "将 onsite 和 offsite 矩阵块组装成完整的分子哈密顿量。 这个函数目前似乎没有被使用。"
+msgstr "Assembles onsite and offsite matrix blocks into a complete molecular Hamiltonian. This function does not seem to be currently in use."
+
+#: 94a5c58c97cc414094a096a00b8169da dfdd168c98c64aa69af512ec8a090747
+msgid "输入的图数据。"
+msgstr "Input graph data."
+
+#: 4a458562f85748af9fed79ec176acd73
+msgid "Onsite 哈密顿量块。"
+msgstr "Onsite Hamiltonian blocks."
+
+#: 7109e5e9eaa648bea619f730d2fab41a
+msgid "Offsite 哈密顿量块。"
+msgstr "Offsite Hamiltonian blocks."
+
+#: c54c9e31a19342dc92be14fd153a4a36
+msgid "组装后的完整哈密顿量。"
+msgstr "The assembled complete Hamiltonian."
+
+#: a4298fa2d5784ece8c68d0e76e2c02e4
+msgid "将批处理中的 onsite 和 offsite 矩阵块按顺序拼接起来。"
+msgstr "Concatenates the onsite and offsite matrix blocks from the batch in order."
+
+#: 6d02ee198fa149d38a1d60af839b8b24 8e9a94054b4c431f959ece659e63caa2
+msgid "Onsite 矩阵块。"
+msgstr "Onsite matrix blocks."
+
+#: dde1d62c3b824853baeab6c69c9b2228 fef12a8cd6f441bf83f3c5b2aeb166b0
+msgid "Offsite 矩阵块。"
+msgstr "Offsite matrix blocks."
+
+#: dd67d56e82c040b0965cd1fcd17377b1
+msgid "拼接后的矩阵块。"
+msgstr "The concatenated matrix blocks."
+
+#: e8370e9b7aec45ab99c6a4029ff37e6b
+msgid "对称化 Onsite 矩阵块。"
+msgstr "Symmetrizes the onsite matrix blocks."
+
+#: a6aa565a9e2f4aa3bb4bb6d11e3c6897
+msgid "对称化方式，'+' 表示 (A + A.T)/2 (厄米)，'-' 表示 (A - A.T)/2 (反厄米)。"
+msgstr "Symmetrization method, '+' for (A + A.T)/2 (Hermitian), '-' for (A - A.T)/2 (anti-Hermitian)."
+
+#: 9fa4d2ac26614b5a8850ab4382edc6b0 b44e3ceacb144a4a96b9d7a0c48fe67b
+msgid "对称化后的矩阵。"
+msgstr "The symmetrized matrix."
+
+#: b3c9115811ec442d875026f05416be0d
+msgid "对称化 Offsite 矩阵块。 利用 `inv_edge_idx` (逆向边的索引) 来确保 H_ij = H_ji.T。"
+msgstr "Symmetrizes the offsite matrix blocks. Uses `inv_edge_idx` (inverse edge index) to ensure H_ij = H_ji.T."
+
+#: 96c8d8b682f24d7f94a9c5d7cbb3bb74
+msgid "逆向边的索引。"
+msgstr "Inverse edge index."
+
+#: b54fba0d06634d67864890901be5816c
+msgid "对称化方式，'+' 或 '-'。"
+msgstr "Symmetrization method, '+' or '-'."
+
+#: 5e9f0e7060a74c49baa111ae1adbef82
+msgid "对称化包含 SOC 的 Onsite 矩阵块 (尺寸为 2*nao_max)。"
+msgstr "Symmetrizes onsite matrix blocks containing SOC (size 2*nao_max)."
+
+#: 019b8b6b251b46f2bad002701fb154b1
+msgid "对称化包含 SOC 的 Offsite 矩阵块 (尺寸为 2*nao_max)。"
+msgstr "Symmetrizes offsite matrix blocks containing SOC (size 2*nao_max)."
+
+#: 94c1719f3e504c868161ea82addcc2e0
+msgid "计算能带结构（调试版本）。"
+msgstr "Calculates the band structure (debug version)."
+
+#: 2e0f2458dafa4e27b9663ebf9be8f9eb
+msgid ""
+"通过傅里叶变换将实空间的哈密顿量 H(R) 和重叠矩阵 S(R) 转换为 倒易空间的 H(k) 和 S(k)，然后求解广义本征值问题 `H(k)c"
+" = ES(k)c` 来得到能带。"
+msgstr ""
+"Transforms the real-space Hamiltonian H(R) and overlap matrix S(R) to "
+"reciprocal-space H(k) and S(k) via Fourier transform, then solves the "
+"generalized eigenvalue problem `H(k)c = ES(k)c` to obtain the band structure."
+
+#: 2a4c3ef4ab8c40968333707ec797d392
+msgid "预测的 onsite 哈密顿量。"
+msgstr "Predicted onsite Hamiltonian."
+
+#: 275074d3a583432b8df30f01839141fb
+msgid "预测的 offsite 哈密顿量。"
+msgstr "Predicted offsite Hamiltonian."
+
+#: 24e52698b513422e8222367d506a2865
+msgid "预测的 onsite 重叠矩阵。"
+msgstr "Predicted onsite overlap matrix."
+
+#: 882db1129aa943ab9e35649cbb3ad94d
+msgid "预测的 offsite 重叠矩阵。"
+msgstr "Predicted offsite overlap matrix."
+
+#: b2ab37274e5348d28f27a1d152d4a70a
+msgid "输入数据。"
+msgstr "Input data."
+
+#: 7fb5545511b744768c1cd39572b06961
+msgid "是否返回倒易空间矩阵。"
+msgstr "Whether to return reciprocal-space matrices."
+
+#: 490ab682cbde4b6c889e126df40847ee
+msgid "包含能带能量、波函数、带隙等信息的元组。"
+msgstr "A tuple containing information such as band energy, wavefunctions, and band gap."
+
+#: 93c032891c734bd5bdcd34beae8054dc
+msgid "计算能带结构（非调试的正式版本）。"
+msgstr "Calculates the band structure (official, non-debug version)."
+
+#: 1603e571745743af9241b2bcd894bc20
+msgid ""
+"此函数通过给定的 onsite 和 offsite 矩阵块，为一批晶体构建 k 点依赖的哈密顿量 "
+"和重叠矩阵，然后通过求解广义本征值问题来计算能带结构。 该过程与 `cal_band_energy_debug` "
+"类似，但流程更精简，不涉及对预计算 `Son`, `Soff` 的依赖。"
+msgstr ""
+"This function constructs k-point dependent Hamiltonians and overlap matrices "
+"for a batch of crystals from given onsite and offsite matrix blocks, then "
+"calculates the band structure by solving the generalized eigenvalue problem. "
+"The process is similar to `cal_band_energy_debug` but more streamlined, "
+"without dependency on pre-calculated `Son` and `Soff`."
+
+#: 2b8969951ecf49caaaaea6e2cae1a6c8 89ba92e346604e689822c651d2f888b8
+msgid "当前实现主要针对 `openmx` 类型的哈密顿量。"
+msgstr "The current implementation primarily targets `openmx`-type Hamiltonians."
+
+#: 1f8b9c68e90844a1b80ffd1cf408c5a9
+msgid "批处理中所有原子/轨道的 Onsite 矩阵块，形状通常为 `(N_nodes, nao_max*nao_max)`。"
+msgstr "Onsite matrix blocks for all atoms/orbitals in the batch, typically with a shape of `(N_nodes, nao_max*nao_max)`."
+
+#: 90b5af11f3f242b0ac6b9ff00aa610a6
+msgid "批处理中所有边的 Offsite 矩阵块，形状通常为 `(N_edges, nao_max*nao_max)`。"
+msgstr "Offsite matrix blocks for all edges in the batch, typically with a shape of `(N_edges, nao_max*nao_max)`."
+
+#: d6750f3cc592438786664b6e0da00854
+msgid "PyG 图数据对象，包含原子结构、k点等信息。"
+msgstr "PyG graph data object, containing atomic structure, k-points, and other information."
+
+#: e1ecba1820604776867e0a6d7ad91fbe
+msgid "如果为 True，则额外返回倒易空间中的 哈密顿量 `HK`、重叠矩阵 `SK`、`SK`的导数`dSK` 和波函数。默认为 `False`。"
+msgstr "If True, additionally returns the Hamiltonian `HK`, overlap matrix `SK`, derivative of `SK` `dSK`, and wavefunctions in reciprocal space. Defaults to `False`."
+
+#: 28b368e701524b2ba9db649b316f67c4
+msgid ""
+"如果 `export_reciprocal_values` 为 `False`，返回 `(band_energy, wavefunction, "
+"gap, H_sym)`。 如果 `export_reciprocal_values` 为 `True`，返回 `(band_energy, "
+"wavefunction, HK, SK, dSK, gap)`。"
+msgstr ""
+"If `export_reciprocal_values` is `False`, returns `(band_energy, "
+"wavefunction, gap, H_sym)`. If `export_reciprocal_values` is `True`, returns "
+"`(band_energy, wavefunction, HK, SK, dSK, gap)`."
+
+#: 9347d54c986640d5a04474776a19bf05
+msgid "计算包含自旋轨道耦合（SOC）的能带结构。"
+msgstr "Calculates the band structure including spin-orbit coupling (SOC)."
+
+#: 099cb006ffd448b291a3fa9dd31acfb7
+msgid ""
+"此方法通过给定的 onsite 和 offsite SOC 哈密顿量的实部和虚部，构建一个 2x2 的块矩阵来表示完整的 SOC "
+"哈密顿量。其中，对角线块是自旋守恒的部分， 非对角线块是自旋翻转的部分。然后通过求解该复厄米矩阵的本征值问题得到能带。"
+msgstr ""
+"This method constructs a 2x2 block matrix to represent the full SOC "
+"Hamiltonian from the given real and imaginary parts of the onsite and "
+"offsite SOC Hamiltonians. The diagonal blocks are the spin-conserving parts, "
+"and the off-diagonal blocks are the spin-flipping parts. The band structure "
+"is then obtained by solving the eigenvalue problem of this complex Hermitian "
+"matrix."
+
+#: 37188a043f014ca59ebdc0ee6b63c434
+msgid "Onsite SOC 哈密顿量的实部。"
+msgstr "Real part of the onsite SOC Hamiltonian."
+
+#: 69cb08d8aab94f6bba771fa68d9e585a
+msgid "Onsite SOC 哈密顿量的虚部。"
+msgstr "Imaginary part of the onsite SOC Hamiltonian."
+
+#: 3ee7b0d66a1a46e58c3fc2bd6e078378
+msgid "Offsite SOC 哈密顿量的实部。"
+msgstr "Real part of the offsite SOC Hamiltonian."
+
+#: a8d93e3847de422c96f232757e21543d
+msgid "Offsite SOC 哈密顿量的虚部。"
+msgstr "Imaginary part of the offsite SOC Hamiltonian."
+
+#: bfb7a7d8b40d4564ac02fc549947f8bc
+msgid "输入数据，包含原子结构、k点、重叠矩阵等信息。"
+msgstr "Input data, containing atomic structure, k-points, overlap matrix, etc."
+
+#: 9b01d30ab5b8431ea46c18171bbe38cc
+msgid "返回一个包含能带能量 `band_energy` 和扁平化的波函数 `wavefunction` 的元组。"
+msgstr "Returns a tuple containing the band energy `band_energy` and the flattened wavefunction `wavefunction`."
+
+#: 140a09870bd446b29b5606c89a1efa45
+msgid "根据每种原子的实际轨道数，对哈密顿量和重叠矩阵进行掩码操作。"
+msgstr "Masks the Hamiltonian and overlap matrix according to the actual number of orbitals for each atom type."
+
+#: 467995f723234e2a90bf1a7062bab74a
+msgid "此函数确保只有在物理上存在的原子轨道之间的矩阵元才具有非零值， 而那些由于使用固定大小 `nao_max` 导致的填充项则被置零。"
+msgstr "This function ensures that only matrix elements between physically existing atomic orbitals have non-zero values, while those padding entries resulting from the use of a fixed size `nao_max` are set to zero."
+
+#: 4b5a19290f1a48ea97e382034e2157e4
+msgid "Onsite 矩阵块 (哈密顿量或重叠矩阵)。"
+msgstr "Onsite matrix blocks (Hamiltonian or overlap matrix)."
+
+#: bcc958bb96ef4830973eea91866a0870
+msgid "Offsite 矩阵块 (哈密顿量或重叠矩阵)。"
+msgstr "Offsite matrix blocks (Hamiltonian or overlap matrix)."
+
+#: a46b92bfe8234fde9af06e4e144f3ab9
+msgid "输入数据，需要 `z` 和 `edge_index`。"
+msgstr "Input data, requires `z` and `edge_index`."
+
+#: 6994a9552f2548de908700d8098c41ad
+msgid "返回一个元组，包含掩码后的 `(Hon, Hoff)`。"
+msgstr "Returns a tuple containing the masked `(Hon, Hoff)`."
+
+#: ec1b66ce0fe94c07a1c67743acdacd88
+msgid "从自旋对角（实部）和自旋非对角（虚部）块构建复数 SOC 哈密顿量。"
+msgstr "Constructs the complex SOC Hamiltonian from spin-diagonal (real part) and spin-off-diagonal (imaginary part) blocks."
+
+#: 50ad861e92b84f8798f295c27728f469
+msgid "SOC 哈密顿量的实部块。"
+msgstr "Real part blocks of the SOC Hamiltonian."
+
+#: 1967f12e42df49d09f5232c2f5bc7db9
+msgid "SOC 哈密顿量的虚部块。"
+msgstr "Imaginary part blocks of the SOC Hamiltonian."
+
+#: 3047291dce354445a42eba69cb79f390
+msgid "完整的复数 SOC 哈密顿量张量。"
+msgstr "The complete complex SOC Hamiltonian tensor."
+
+#: 72ab3ddb6edc40f3ad1c9db189ede7cc
+msgid "通过 Clebsch-Gordan 分解，将矩阵块分解为球谐系数（等变特征）。"
+msgstr "Decomposes matrix blocks into spherical harmonic coefficients (equivariant features) via Clebsch-Gordan decomposition."
+
+#: e8c9e16045a744568a15973f2e0bc8d2
+msgid ""
+"这是 `matrix_merge` 的逆过程。它通过在轨道组内取平均值来近似地提取 具有特定角动量 `l` "
+"的特征分量。这主要用于调试或分析目的，以检查 网络是否学习到了符合物理对称性的特征。"
+msgstr ""
+"This is the inverse process of `matrix_merge`. It approximately extracts "
+"feature components with a specific angular momentum `l` by averaging within "
+"orbital groups. This is mainly used for debugging or analysis purposes to "
+"check if the network has learned features that conform to physical symmetries."
+
+#: d2bf91796ecb4f3c9546a0707bf7eb83
+msgid "形状为 `(N, nao_max, nao_max)` 的矩阵块。"
+msgstr "Matrix blocks with a shape of `(N, nao_max, nao_max)`."
+
+#: d4c44b7621d7447899df16cebf6970de
+msgid "分解得到的球谐系数，形状被重新扁平化为 `(N, nao_max*nao_max)`。"
+msgstr "The resulting spherical harmonic coefficients from decomposition, reshaped to `(N, nao_max*nao_max)`."
+
+#: 3d8268c0432447e0a681e309b73fb6f1
+msgid "将每个唯一的晶胞位移向量映射到其在唯一列表中的索引。"
+msgstr "Maps each unique unit cell shift vector to its index in the unique list."
+
+#: 1ecce34736464ae78188c02e6a0e88a3
+msgid "唯一晶胞位移向量的列表。"
+msgstr "A list of unique unit cell shift vectors."
+
+#: 97a00b060c494556b60f20cf349d6e9a
+msgid "一个字典，键是晶胞位移元组，值是其索引。"
+msgstr "A dictionary where keys are unit cell shift tuples and values are their indices."
+
+#: facc4c06f2ab43ef904119a1bd5d90bc
+msgid "从边的晶胞位移中找到唯一的位移向量，并为每条边提供其对应的唯一位移索引。"
+msgstr "Finds unique shift vectors from the edge cell shifts and provides each edge with its corresponding unique shift index."
+
+#: 0b76d67fc9264e7da32cd6d30a006859 2d33cb3525c642729f02941714c20117
+#: 8effd0ee61764fdf9b8c130ea0e8e686 e37ea6e8703249ca882011f84ba21767
+msgid "PyG 图数据对象。"
+msgstr "PyG graph data object."
+
+#: 069cae765da7445a9d28a0aea8dd938b
+msgid "返回 `(unique_cell_shift, cell_shift_indices, cell_index_map)`。"
+msgstr "Returns `(unique_cell_shift, cell_shift_indices, cell_index_map)`."
+
+#: 64db2a4abc024bb59440a287423e65eb
+msgid "为掩码计算创建并返回基组定义张量。"
+msgstr "Creates and returns the basis set definition tensor for mask calculation."
+
+#: 9241b659d75e4dc09ff6a70d7ac17b87
+msgid "原子序数张量。"
+msgstr "Atomic number tensor."
+
+#: cd204c5da995400e95219efece0bd320
+msgid ""
+"一个 `(99, nao_max)` 的张量，其中 `basis_definition[z, i] = 1`               表示原子"
+" `z` 包含轨道 `i`。"
+msgstr ""
+"A `(99, nao_max)` tensor where `basis_definition[z, i] = 1` indicates that "
+"atom `z` includes orbital `i`."
+
+#: 1d1a7be63073479291ad48d192b08245
+msgid "一个 `(99, nao_max)` 的张量，其中 `basis_definition[z, i] = 1`"
+msgstr "A `(99, nao_max)` tensor where `basis_definition[z, i] = 1`"
+
+#: 8c0dd57ca4bc471ba4f7fac251323dad
+msgid "表示原子 `z` 包含轨道 `i`。"
+msgstr "indicates that atom `z` includes orbital `i`."
+
+#: 7192f8a5fa8543e89a69283dc23fc661
+msgid "构建掩码张量并返回拼接后的掩码张量。"
+msgstr "Builds the mask tensor and returns the concatenated mask tensor."
+
+#: bd7afa7d02bc4064859e9f0c12cc3e2e
+msgid "拼接后的 on-site 和 off-site 掩码。"
+msgstr "The concatenated on-site and off-site masks."
+
+#: 07666dca66f446838c68bcf0e3f71fe3
+msgid "为共线自旋情况构建掩码张量。"
+msgstr "Builds the mask tensor for the collinear spin case."
+
+#: d4ebf2cdf9434b74850e21c459b1ab80
+msgid "适用于共线自旋计算的拼接掩码。"
+msgstr "The concatenated mask suitable for collinear spin calculations."
+
+#: d9d7d6f0df194d4fad4f4ba87340a544
+msgid "为包含自旋轨道耦合的情况构建掩码张量。"
+msgstr "Builds the mask tensor for the case including spin-orbit coupling."
+
+#: d9e1fe4a3e954b6b8148308265cb0cf9
+msgid "返回一个元组 `(mask_real_imag, mask_all)`，        分别对应 SOC 哈密顿量的实部/虚部掩码和总掩码。"
+msgstr "Returns a tuple `(mask_real_imag, mask_all)`, corresponding to the real/imaginary part mask and the total mask of the SOC Hamiltonian, respectively."
+
+#: b1bcb7faebcb41148b9f862a727363b6
+msgid "返回一个元组 `(mask_real_imag, mask_all)`，"
+msgstr "Returns a tuple `(mask_real_imag, mask_all)`,"
+
+#: b7c6246f02cc44d5a68bd95f2a318fc3
+msgid "分别对应 SOC 哈密顿量的实部/虚部掩码和总掩码。"
+msgstr "corresponding to the real/imaginary part mask and the total mask of the SOC Hamiltonian, respectively."
+
+#: b46cf0b59404423bbdb319ae72d324ec
+msgid "模型的核心前向传播逻辑。"
+msgstr "The core forward propagation logic of the model."
+
+#: 36afc5a3a2b24c808a0fdc75dd24affa
+msgid ""
+"该方法根据 `__init__` 中设置的各种开关（如 `soc_switch`, `spin_constrained` 等）， "
+"执行不同的计算路径来构建哈密顿量和重叠矩阵，并最终计算能带结构等物理属性。"
+msgstr ""
+"This method executes different computational paths to construct the "
+"Hamiltonian and overlap matrix based on various switches set in `__init__` "
+"(e.g., `soc_switch`, `spin_constrained`), and ultimately calculates physical "
+"properties like the band structure."
+
+#: 15b1dfbccd834a8f84e537fbe109e780
+msgid "PyG 图数据对象，可能包含预计算的矩阵。"
+msgstr "PyG graph data object, which may contain pre-calculated matrices."
+
+#: c10809308da944f8a28ac6e9cd8a1e5b
+msgid "来自 GNN 表示层的节点和边等变特征字典。"
+msgstr "A dictionary of equivariant node and edge features from the GNN representation layer."
+
+#: addc246100244287a409666c4be508b5
+msgid ""
+"一个包含计算结果的字典，可能包括 'hamiltonian', 'overlap',       'band_energy', "
+"'wavefunction' 等键。"
+msgstr ""
+"A dictionary containing the calculation results, which may include keys such "
+"as 'hamiltonian', 'overlap', 'band_energy', 'wavefunction'."
+
+#: b286aa9211f142f7bb2457f76e10e953
+msgid "一个包含计算结果的字典，可能包括 'hamiltonian', 'overlap',"
+msgstr "A dictionary containing the calculation results, which may include 'hamiltonian', 'overlap',"
+
+#: 9715ce0a662745a0aeac64071b2d166a
+msgid "'band_energy', 'wavefunction' 等键。"
+msgstr "'band_energy', 'wavefunction', and other keys."

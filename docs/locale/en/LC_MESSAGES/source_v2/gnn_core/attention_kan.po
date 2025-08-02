@@ -1,0 +1,811 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: a2e65b26fd454229a68542c25f055803
+msgid "注意力与 KAN 层 (Attention_kan.py)"
+msgstr "Attention and KAN Layers (Attention_kan.py)"
+
+#: 0d497d57782b49629fffce403eca594e 1179487c55d64d918fc867f54a37b1d3
+#: 15f07bdd937e4239875ff99c15f829fe 163e6c9d94e44771a710da18e3f2cf0f
+#: 25f64a3f7aeb42f7bb4e3f8becae82f9 2655fb560e9c445ea0579bd14a9e1294
+#: 50160f7bc3034aab8424501fa09b028a 56b24663c02b4be691ccd9e78bb663d1
+#: 581e113317e848059718874751f001e2 78872ce0196046469d7c778280d00632
+#: 8ae87ddc7ac1485ebd1aca3e3ae40899 8f5566f5006b4e6691512d84c45a93f7
+#: 920802d19ef046f0873a863190d2a3a8 ae7258c8a76e42bd9526496780c3ed10
+#: b02755b3d2d74dd1a7e62b3e7937f2cc b0fb8bfbc5df42c882c33ef98ad1f414
+#: bd587064c87444349789168ffba04461 c59be5b825a24fba8cb13d524998b819
+#: c73e21fa82b2480cb3e8fbb6202cae43 d93ab80c9f5c49e58254398a7ce3b7ad
+#: e39f852c55ca4f1fbdfa301ee7812c7d ebe4469662f34e4391830a6c5dd7d8d7
+#: f41cbd6247204e28ad574704199f3770
+msgid "基类：:py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~torch.nn.modules.module.Module`"
+
+#: d1e823ce81174648978e8cebab9f55c7
+msgid "将哈密顿量或重叠矩阵从原子轨道基组展开为球谐函数基组。"
+msgstr "Expand Hamiltonian or overlap matrices from atomic orbital basis sets to spherical harmonic basis sets."
+
+#: b58318b748dd425dac9e602893151cea
+msgid ""
+"该模块的核心操作是执行以下基组变换，将原子轨道 :math:`|l_i, m_i \\rangle` 和 :math:`|l_j, m_j "
+"\\rangle` 耦合为总角动量 :math:`|L, M \\rangle` 的不可约表示："
+msgstr "The core operation of this module is to perform the following basis transformation, coupling atomic orbitals :math:`|l_i, m_i \\rangle` and :math:`|l_j, m_j \\rangle` into irreducible representations (irreps) of the total angular momentum :math:`|L, M \\rangle`:"
+
+#: d6ad1241562a4d63b99fb48051570e24
+#, python-brace-format
+msgid ""
+"O_{LM} = \\frac{1}{N} \\sum_{m_i, m_j} C_{l_i m_i, l_j m_j}^{L M} \\cdot "
+"H_{l_i m_i, l_j m_j}"
+msgstr ""
+"O_{LM} = \\frac{1}{N} \\sum_{m_i, m_j} C_{l_i m_i, l_j m_j}^{L M} \\cdot "
+"H_{l_i m_i, l_j m_j}"
+
+#: 7933b0507ec94415bd697835a84a9ae9
+msgid "其中 :math:`C` 是 Clebsch-Gordan 系数。"
+msgstr "where :math:`C` are the Clebsch-Gordan coefficients."
+
+#: 2eecf3a504bc4de5943bf2257c313e07
+msgid ""
+"该模块还能处理不同DFT软件（如 'openmx', 'siesta', 'abacus'）的原子轨道排序约定， 并将它们统一转换为 e3nn "
+"库兼容的不可约表示 (irreps) 形式。"
+msgstr "This module can also handle atomic orbital ordering conventions from different DFT software (e.g., 'openmx', 'siesta', 'abacus') and convert them into a unified format compatible with the e3nn library's irreducible representations (irreps)."
+
+#: b722886add76494b848c11ca9796ddde
+msgid "哈密顿矩阵类型 ('openmx', 'siesta', 'abacus', 'pasp')。"
+msgstr "Type of the Hamiltonian matrix ('openmx', 'siesta', 'abacus', 'pasp')."
+
+#: 0337bfd7ae184db9ba8e9d96f0ee2c0a 2205bf93c2de4f7f838add400b356790
+#: 4f15289b762942199477b7f3a60a05b8 7f7fce96e5664571b0e9a6495609d37b
+#: 8393f46a685046dcb56d2713a71ed039 86ca026ceca546fd960871be8f59f3ee
+#: 87daefb8127f4a95a82821c787c3c609 8cf0f39e079d427dab0c1171b34c1875
+#: c85bf149ea844de39ae3834a4585fa3e d6b31010ba7c42e8957ae2f720b63e4b
+#: e8df0bea6f9740678692e26e498a8fd4 eb56c6f98be44d1f973e6887576f8c25
+msgid "type"
+msgstr "type"
+
+#: 77419f7eb1524e90afeb499612a4453f c39b33676daf4c369fb3912fe50ab7fa
+msgid "str"
+msgstr "str"
+
+#: ced6ca206a6447e981fcf08f17d211d9
+msgid "原子轨道的最大数量。"
+msgstr "Maximum number of atomic orbitals."
+
+#: 77a46dcd373d49e085bfcc6d7a54cf60 b4a6e96d99a4427884b698ef1b1ecfac
+msgid "int"
+msgstr "int"
+
+#: 668ac5d011f44c5598174f5e66c04546
+msgid "展开后的输出不可约表示。"
+msgstr "The output irreducible representations after expansion."
+
+#: 34f0c9c265ea49fc90db626d85579394 6b4ca74a48bc4810a10d381be09baf6b
+#: 8a7b34a348d04723b52a4565d64f6e48 8ead2a67ccd141018bbd54b9a8fbe0ee
+msgid "o3.Irreps"
+msgstr "o3.Irreps"
+
+#: 8d370067d3cf4e0c82b3f90bc064bf06
+msgid "前向传播，将输入矩阵展开为球谐函数基组。"
+msgstr "Forward pass to expand the input matrix into the spherical harmonic basis set."
+
+#: 028a9c3ad6514e96942921b65cdba924 0296d02b61b6474dafdf4127303694d3
+#: 03c2c6afca0341b6a7e0b5b1c10c1661 0a8e4b65aa74401288d35a8df21ca602
+#: 0b476948967942c2bfedfbcbd22bcf4d 2281ecf6d523402f92e9db6d131c130a
+#: 2974e46590054d1789ce855b0f2f5d2c 33c130509fde474ab4eaea886c8ac995
+#: 456a2c4759a94dd3a952171ceaa25bd8 45dd2b637fab4936bb28b1ff78e89ca3
+#: 516a583d6ae2463e9ec4a4db9db75b9f 525de52b73a743a28d597dfe07f52599
+#: 6951de075c1d4738afc9e705dc69097c 6c9b7c1a543545278b4d8e527f8edc77
+#: 70f0b8d21a7d4923814cbec7130a803e 788ba1c2db4e4f85812991fd38b6b41c
+#: 7c027063a28141ebaf963c595386ac59 83e420a7d77e479b997dbd66352653a3
+#: 8501843e532548e0946c89264e90c268 861a275668ee4be7912fbcc98a8ae2a0
+#: 87750b5e0208458da330b29eb62a24d8 8e996773d3c14f9aae05b327e6efef8b
+#: 985fce8203b446bb847740e63d0e0cdf aa3d75a45d50438dbea265b56c6c5b01
+#: b1b8990927d64080b794f2de06bd2fb7 bf3adf42dafd43efaddd43f28b6dba44
+#: c932ad3062ee42b59a9be716fc143ce6 e5c9655f6aa44490b3995853c3b05544
+#: eae373a9d1504023958d2c4223920bf8 f1fb3becc9ef4a9488f16e093be5a1dc
+#: f6cfbdeb88154143ac8299e26357fec4
+msgid "参数"
+msgstr "Parameters"
+
+#: f9488ddfcacd407598ac89afe09ad943
+msgid "输入张量，形状为 (\\*, row.dim, col.dim)。"
+msgstr "Input tensor of shape (\\*, row.dim, col.dim)."
+
+#: 022f4ab9447548aa8cb1f1b770c8b18c 0a158e733f9c42b7b5d83d0aa2ad9719
+#: 0c8e0ed7cde8492881defbd934a1e567 12298fb8f17640b68597aed6126c32e0
+#: 15b988a42bf640ad8b65431bd36f9820 1eb8a5f05e79428f8ad3c8727418cf8d
+#: 23fcbdd3eb6446eaa569a5f3e36d94f2 27c41dbb43ef4f388f0043350d54fa37
+#: 29673095e2fd4b7db463119b9b095feb 3cb5536200ab472b9ff0a5a4ec275f93
+#: 509ed6d92fed45b09259c5ffb122033e 5529047fb4c64f7d94f6b182bda46794
+#: 5b672750adce406d9382ec56ac74b9bb 5b90ef1b6b0543399719a733d886ecdd
+#: 5f5297dceeb94c08ba3675b5a604c0e1 60f4c7906fa2461f9d01c7cb0aa6bdd0
+#: 63da2cb290754221a56339923a84e084 67d013ad90e04b81862f7cbd3c11857d
+#: 7595535647af471db02832f93f625bdf 790282ac05b14b43bf82bd72658eb652
+#: 8298bb08268949c0bf2ac2fe962c5898 8b83b0d994844825ab12b5cab791b8ba
+#: 90339fbe6539478782b8a9da3b5bcc88 9d4ae5c7a9144f00a8494f9a4c28d769
+#: a1654ae6c82b45a4ab6f0751dead45d8 a2f57953cdf04ae4aa608fbb86c02fa0
+#: a9fcbe235fe340f78038da7c965de010 b07cada0afd64a68bb6846d0e801dd23
+#: b5114a2da8c546069d68c67b381ec505 bc30c725c1cf44019953e48ee4fe91bd
+#: cc3ed4669eaf4f5d8bcbc5c64c998923
+msgid "返回"
+msgstr "Returns"
+
+#: 4b74cbcaafd64529bbeb84930ccd2ae0
+msgid "展开后的张量，其不可约表示由 `self.irreps_out` 定义。"
+msgstr "The expanded tensor, with its irreducible representations defined by `self.irreps_out`."
+
+#: 09589a12905e4568ade8b5bba26248b2 0c8d312bff69445680594d703f150e75
+#: 14d393bf25104826a0c5527826945358 19ddeb8a2dfb4a468a9b6e3ce811834c
+#: 1eb0d2574a9549679b2b577732f661d2 2673d30bd9a444a784366d25fe9216fd
+#: 29001989bf1b4649af8eeeeba5dfb959 3dc866a2899c425b91b932ec4d5bb915
+#: 43ba522a3e9e490b9d8a39ccd3223119 462565dcfe2e4ea885e58c9bb92d824d
+#: 4f1e92eabdc143e89d7c4148e9dd4c6a 70b43bbb3f3f451693c5114c1d559c65
+#: 731a2a8513d94e4b9c519049c526b222 7d1fc3dc03364ca083b8bd48d28f86be
+#: 86d8bc1cff6347cbbc2df7f82553e3c3 8b5d46c25c724714b641029b0a9559e9
+#: 91e67f0e8d494f0ab1f28acd088680e4 91ec43af1750426cac6bac1dda0579ab
+#: 93d05de9e3ad41818d318bd3b428d068 9c943fe9a17a461da5a876006fd423e0
+#: a000086a0d3444149b71d05e481d6285 aca8fc8b6713411284c9f7376dff6177
+#: b5d59cd4c8cc417b9eb3d2ca1c4e8b3e baa0c780f8e64876847f335e9f791c8b
+#: c60c3a28622b4e72b9e02a2dcf09a9b6 ce2855818881468a8d10ed8db466bd03
+#: d38fb7ceb6444528a5a7ba0f96bcb2f4 d3c848176b8d4aae83dac41598bd0626
+#: d423309f35af4cac804310aad859d1a8 f6baea18837b4c03a2f2e6fcc665f004
+#: fd8d25bfe3ff4ce58f317cce9c49284c
+msgid "返回类型"
+msgstr "Return type"
+
+#: 0fc8a966ace1409b812c78e533cf0bca
+msgid "一个封装了 `TensorExpansion` 的模块，用于展开重叠矩阵。"
+msgstr "A module that wraps `TensorExpansion` to expand overlap matrices."
+
+#: 5651e57a3b7243e29753d021e87a037f
+msgid "前向传播，展开在位(on-site)和异位(off-site)的重叠矩阵。"
+msgstr "Forward pass to expand on-site and off-site overlap matrices."
+
+#: 4687f3e2d9374d2d865342c510b4d46d
+msgid "包含 'Son' 和 'Soff' 张量的数据对象，待被展开。"
+msgstr "Data object containing 'Son' and 'Soff' tensors to be expanded."
+
+#: 877595d46510431d978231a920d0811a
+msgid "更新后的数据对象，包含展开后的 'Son_expand' 和 'Soff_expand'。"
+msgstr "Updated data object containing the expanded 'Son_expand' and 'Soff_expand'."
+
+#: e7b8eff21d0642bfb95e7ea29f5ce84d
+msgid "预计算和存储 Clebsch-Gordan (CG) 系数的模块。"
+msgstr "A module to precompute and store Clebsch-Gordan (CG) coefficients."
+
+#: c5c20573b77f4c74be684567ac02e66b
+msgid ""
+"该模块利用 `e3nn.o3.wigner_3j` 来计算 Wigner 3j 符号，并通过它们得到 CG 系数。 Wigner 3j 符号与 "
+"CG 系数通过以下关系相关联："
+msgstr "This module uses `e3nn.o3.wigner_3j` to compute Wigner 3j symbols and derives the CG coefficients from them. The Wigner 3j symbols are related to the CG coefficients by the following relation:"
+
+#: fccf89c6e47949d691ff6c1fb5519314
+#, python-brace-format
+msgid ""
+"\\langle l_1 m_1, l_2 m_2 | l_3 m_3 \\rangle =\n"
+"(-1)^{l_1 - l_2 + m_3} \\sqrt{2l_3 + 1}\n"
+"\\begin{pmatrix} l_1 & l_2 & l_3 \\\\ m_1 & m_2 & -m_3 \\end{pmatrix}"
+msgstr ""
+"\\langle l_1 m_1, l_2 m_2 | l_3 m_3 \\rangle =\n"
+"(-1)^{l_1 - l_2 + m_3} \\sqrt{2l_3 + 1}\n"
+"\\begin{pmatrix} l_1 & l_2 & l_3 \\\\ m_1 & m_2 & -m_3 \\end{pmatrix}"
+
+#: 0164b2a9010c43738989ea40781c26f3
+msgid "通过将系数注册为缓冲区 (buffer)，可以在模型的前向传播过程中高效访问，避免重复计算。"
+msgstr "By registering the coefficients as buffers, they can be accessed efficiently during the model's forward pass, avoiding repeated calculations."
+
+#: 59b61039d9ca4956a782d9542d106d6b
+msgid "获取给定角动量的预计算 Clebsch-Gordan 系数。"
+msgstr "Get the precomputed Clebsch-Gordan coefficients for the given angular momenta."
+
+#: ecba6dfb4b254c9fb46d86741b62d4ce
+msgid "第一个角动量。"
+msgstr "The first angular momentum."
+
+#: dad87510a0bc497a8f100d8c46c354d1
+msgid "第二个角动量。"
+msgstr "The second angular momentum."
+
+#: c440b33c5bac4a1e83dc82fadab47cae
+msgid "第三个角动量。"
+msgstr "The third angular momentum."
+
+#: d69a0eb73b1e4f64b98b8db85e1bcdc9
+msgid "对应的 Clebsch-Gordan 系数张量。"
+msgstr "The corresponding Clebsch-Gordan coefficient tensor."
+
+#: dc5ea61097034dc0b29f0e84df04e283
+msgid "一个线性缩放模块，其权重由外部提供。"
+msgstr "A linear scaling module whose weights are provided externally."
+
+#: cda794df8ecd4a0788a1556d67e00881
+msgid ""
+"该模块首先通过张量积(tensor product)将输入特征与一个伪标量(pseudo-scalar)相乘， "
+"然后应用一个外部提供的权重向量。最后，通过一个线性层将结果映射到输出的不可约表示。"
+msgstr "This module first multiplies the input features with a pseudo-scalar via a tensor product, then applies an externally provided weight vector. Finally, the result is mapped to the output irreducible representations through a linear layer."
+
+#: 7a5e538d73434b7c884f1dd74398aa1d
+msgid "带权重的线性变换前向传播。"
+msgstr "Forward pass for the weighted linear transformation."
+
+#: 4c042fa5997149cbb3c07cfda24d8eb0 930240bb22d84b3c9c994ae36a694f3a
+#: ba935f31688b4d10a714da5b811bae63
+msgid "输入张量。"
+msgstr "Input tensor."
+
+#: f3424644cf3e462f8d97e1a9010d455d
+msgid "权重张量。"
+msgstr "Weight tensor."
+
+#: fc93b45d6a6840169203641239c2b7f8
+msgid "变换后的输出张量。"
+msgstr "The transformed output tensor."
+
+#: 46252127cf114d9e87e3e247ee609195
+msgid "一个应用带截断(cutoff)的软单位阶跃函数的模块。"
+msgstr "A module that applies a soft unit step function with a cutoff."
+
+#: c5f3e888e8c94a5dba7aa47ab49346fb
+msgid "该函数在接近截断半径时平滑地将值过渡到零。"
+msgstr "This function smoothly transitions values to zero as they approach the cutoff radius."
+
+#: 4a5ab8ff47644fa0b2cfed3107643953
+msgid "应用截断的距离。"
+msgstr "The distance at which to apply the cutoff."
+
+#: a0fd445fe4734851b429a95ebb85d907
+msgid "float"
+msgstr "float"
+
+#: ae226e2bc02a4299a63e4e44e8922242
+msgid "影响阶跃函数平滑度的可学习参数。"
+msgstr "A learnable parameter that affects the smoothness of the step function."
+
+#: 83daca5ec10c4a548cf20eb68008d039
+msgid "nn.Parameter"
+msgstr "nn.Parameter"
+
+#: 203db3c7e50947b486d2bf6929af7fc0 e9846eb7504a4eeea96e2a880dda74eb
+msgid "模块的前向传播。"
+msgstr "Forward pass of the module."
+
+#: 41b42539abb74588b336079c501207c5
+msgid "对输入的边距离应用软单位阶跃函数。"
+msgstr "Applies the soft unit step function to the input edge distances."
+
+#: 36c8c1488bf54ee4bd66eda60d677fec
+msgid "包含边距离的张量。"
+msgstr "Tensor containing edge distances."
+
+#: 62481d0f856c4899b0eab0e337fc21e8
+msgid "应用截断后计算得到的边权重张量。"
+msgstr "The edge weight tensor calculated after applying the cutoff."
+
+#: 9ff8e97615db4927954bf7903c6343c5
+msgid "计算图中每个节点的邻居数量。"
+msgstr "Calculate the number of neighbors for each node in the graph."
+
+#: 531cec674cce4b328fd8bb349b872841
+msgid "包含源节点索引的一维张量 (通常是 `edge_index[0]`)。"
+msgstr "A 1D tensor containing the source node indices (usually `edge_index[0]`)."
+
+#: 70b94cd044db4a1db1007818c3d4b498
+msgid "一个张量，其索引对应节点ID，值为该节点的邻居数量。"
+msgstr "A tensor where the index corresponds to the node ID and the value is the number of neighbors for that node."
+
+#: ec5aad121642444b83ffe309d9d851c4
+msgid "一个带有内存优化和动态权重的张量积模块。"
+msgstr "A tensor product module with memory optimization and dynamic weights."
+
+#: 37920fa719074461ad387a62f3073a49
+msgid "该模块通过一个径向多层感知机(MLP)或KAN网络从标量输入动态生成权重， 然后将这些权重应用于两个输入不可约表示(irreps)的张量积结果。"
+msgstr "This module dynamically generates weights from a scalar input via a radial Multi-Layer Perceptron (MLP) or KAN network, and then applies these weights to the tensor product result of two input irreducible representations (irreps)."
+
+#: 4df7cac76a4f4dcd83555ab15fbb701b
+msgid "TensorProductWithMemoryOptimizationWithWeight 模块的前向传播。"
+msgstr "Forward pass for the TensorProductWithMemoryOptimizationWithWeight module."
+
+#: 6c17d4b10c664264aa0d84ea526d0c60 d3581fd73f8342db854408fd79baa396
+msgid "第一个不可约表示的输入张量。"
+msgstr "The input tensor for the first irreducible representation."
+
+#: 9636c163b5a44d51ba0d4edd8cdd6ee5 e8d157ae6cc74571b87ab46ef52d01a3
+msgid "第二个不可约表示的输入张量。"
+msgstr "The input tensor for the second irreducible representation."
+
+#: cbb1ecc19ef54550a782975ea2673d05
+msgid "用于生成权重的标量输入张量。"
+msgstr "The scalar input tensor used to generate weights."
+
+#: 6131597adad5441081492893dbc05cdb 9898bd4fe9fb4c1594ee9666e5a56860
+msgid "应用张量积和缩放后的输出张量。"
+msgstr "The output tensor after applying the tensor product and scaling."
+
+#: 5dff8ae9400046f7bbc6921fc1b390e3
+msgid "一个带内存优化的张量积模块，专门处理至少一个输入是标量的情况。"
+msgstr "A tensor product module with memory optimization, specialized for cases where at least one input is a scalar."
+
+#: 197a2a0245c04ca19c6be0c776f9f495
+msgid "从给定的不可约表示中提取并返回标量不可约表示。"
+msgstr "Extracts and returns the scalar irreducible representations from a given set of irreps."
+
+#: af4b11a3b3624105810b71c9ea6237ca
+msgid ""
+"标量不可约表示定义为 l=0 且 p=1 (即 '0e') 的表示。 该函数计算此类标量不可约表示的总多重度，并构造一个仅包含这些表示的新 "
+"Irreps 对象。"
+msgstr "Scalar irreducible representations are defined as those with l=0 and p=1 (i.e., '0e'). This function calculates the total multiplicity of such scalar irreps and constructs a new Irreps object containing only them."
+
+#: b17c15df82944d309ec463aeeb26c0c9
+msgid "要从中提取标量分量的输入不可约表示。"
+msgstr "The input irreducible representations from which to extract the scalar components."
+
+#: 68d8ea71ac9b4620b394f80b56282abe
+msgid "仅包含标量分量的新 Irreps 对象。"
+msgstr "A new Irreps object containing only the scalar components."
+
+#: c68fa5af5a14461ab91ee382f0be435a
+msgid "一个从源节点属性、目标节点属性和边嵌入计算边标量的层。"
+msgstr "A layer that computes edge scalars from source node attributes, destination node attributes, and edge embeddings."
+
+#: 02b9d6acfee54172bc0267e098754cf0
+msgid "前向传播，计算边标量。"
+msgstr "Forward pass to compute edge scalars."
+
+#: dfe36ff092f4470e849d3efc7a450834
+msgid "源节点属性。"
+msgstr "Source node attributes."
+
+#: ec153aa277f947568d8332406276975d
+msgid "目标节点属性。"
+msgstr "Destination node attributes."
+
+#: 3fdc0f45e57f427eae5b80475001ee0a 4c739fce43574753ba3b9c64b36514d3
+msgid "边嵌入。"
+msgstr "Edge embeddings."
+
+#: 67dc8b2ef9194abc9f3886a081382f47
+msgid "计算出的边标量。"
+msgstr "The computed edge scalars."
+
+#: 5829c0eac54249a79289256529ecb086
+msgid "使用节点和边属性、边嵌入和球谐函数来嵌入局部环境。"
+msgstr "Embeds the local environment using node and edge attributes, edge embeddings, and spherical harmonics."
+
+#: 86e374dc08ad46a5bb162beb48d7f4ce
+msgid "前向传播，计算局部环境嵌入。"
+msgstr "Forward pass to compute the local environment embedding."
+
+#: d67cb675ac004a1196d726d766d43db4
+msgid "边的索引。"
+msgstr "Edge indices."
+
+#: dc1965c1c85a48649b87653a5402ee6c
+msgid "节点属性。"
+msgstr "Node attributes."
+
+#: dede68bd7aa5473b9019ed54a2805e13
+msgid "边属性。"
+msgstr "Edge attributes."
+
+#: fb60a3678e6b4fd78ca019aa6876f621
+msgid "局部环境嵌入。"
+msgstr "The local environment embedding."
+
+#: 0ebe977dbeb4498d85e3ca87ab5ce75c
+msgid "一个张量积模块，它首先将第一个输入的多个张量连接起来， 然后再与第二个输入进行张量积。"
+msgstr "A tensor product module that first concatenates multiple tensors from the first input, and then performs a tensor product with the second input."
+
+#: 114e4cac8724448bbd950877bfd9434c
+msgid "ConcatenatedIrrepsTensorProduct 模块的前向传播。"
+msgstr "Forward pass for the ConcatenatedIrrepsTensorProduct module."
+
+#: be4cf2ac5da1472b9a3066ad84d93d77
+msgid "第一个输入的张量列表。"
+msgstr "A list of tensors for the first input."
+
+#: 4ec7b1623f2f4c63aa8ca963a7e18092
+msgid "第二个输入的张量。"
+msgstr "The tensor for the second input."
+
+#: ea87053132e7453ab5fb4e302cf3721c
+msgid "用于生成权重的标量输入。"
+msgstr "The scalar input used for generating weights."
+
+#: 6bca00a251754e408f1272237e85abfa
+msgid "处理后的输出张量。"
+msgstr "The processed output tensor."
+
+#: 99a32794116f4cabb6e51fa87a1d36ac
+msgid "一个消息打包模块，它将节点特征、边特征和局部环境信息组合起来生成消息。"
+msgstr "A message packing module that combines node features, edge features, and local environment information to generate messages."
+
+#: 21e0c4a38ed947d58380d6b9e29546ee 64ee913ae45642c0836e23cb67bfad51
+#: b4bea4cb93a749368192e5e13ddeeab6 eb729646017c4ce291d3e8f6d0d05b8f
+msgid "前向传播。"
+msgstr "Forward pass."
+
+#: 68ae17dbf205472d9c3baa18a93e3d16 8114d9050f0c4421a886f7e15e429605
+msgid "源节点特征。"
+msgstr "Source node features."
+
+#: 36a1fcb309424a77851844c3c5ba6e03 adafbff01abd4381965e0cdd266e4e9d
+msgid "目标节点特征。"
+msgstr "Destination node features."
+
+#: 20359b5bfcb84fd5b849bafb7df0736a f74a522ad0ba45ebb4cc34ff952de284
+msgid "边特征。"
+msgstr "Edge features."
+
+#: 46ad7d48ceaa44138fc2c64b3a0e5747 824b2918d0394dea8a724a8a65cda724
+msgid "局部环境边特征。"
+msgstr "Local environment edge features."
+
+#: c2143c8577794701815f94dd775e1093 ddbe7e81e9fd4fd3a7828559709f75b9
+msgid "边标量。"
+msgstr "Edge scalars."
+
+#: ec76117ccaa848c9a539dbca6f1d2f35 fa61dcd0c0744a83b3f410435d0581c8
+msgid "生成的消息。"
+msgstr "The generated message."
+
+#: 27fceb400b6f4ac483bae7a46fff2f37
+msgid "MessagePackBlock 的一个变体，增加了节点-节点交互项。"
+msgstr "A variant of MessagePackBlock that adds a node-node interaction term."
+
+#: 9c7a3c3cc23b44e0a503e7714c005fe5
+msgid "将不可约表示(irreps)分解为标量和门控(gated)组件，并关联相应的激活函数。"
+msgstr "Decomposes irreducible representations (irreps) into scalar and gated components and associates them with corresponding activation functions."
+
+#: 105b800c4b9d49c3ac4785f7e5d7b871 2e2bca6906e54ea68c3d3217f38d947e
+#: 8c0f1474375d4a1191d29372afb15e85
+msgid "输入的不可约表示。"
+msgstr "The input irreducible representations."
+
+#: 55e8663fd8574840a2a5c10548368657
+msgid "标量组件的激活函数字典，键为宇称(parity)。"
+msgstr "A dictionary of activation functions for the scalar components, keyed by parity."
+
+#: 43b121588a744ceab62a4da3a4ceddc7
+msgid "门控组件的激活函数字典，键为宇称(parity)。"
+msgstr "A dictionary of activation functions for the gated components, keyed by parity."
+
+#: 6a7c089b705a46b9a2a850e0111c9195
+msgid ""
+"一个元组，包含： - ``irreps_scalars`` (o3.Irreps): 标量不可约表示。 - ``irreps_gates`` "
+"(o3.Irreps): 门控不可约表示。 - ``irreps_gated`` (o3.Irreps): 门控后的不可约表示。 - "
+"``act_scalars`` (List[Callable]): 标量激活函数列表。 - ``act_gates`` "
+"(List[Callable]): 门控激活函数列表。"
+msgstr "A tuple containing: - ``irreps_scalars`` (o3.Irreps): Scalar irreducible representations. - ``irreps_gates`` (o3.Irreps): Gating irreducible representations. - ``irreps_gated`` (o3.Irreps): Gated irreducible representations. - ``act_scalars`` (List[Callable]): List of scalar activation functions. - ``act_gates`` (List[Callable]): List of gate activation functions."
+
+#: 4ef30ac8fc6d43b88f046d6e21732c7a
+msgid "按给定因子缩放不可约表示的多重度，确保多重度至少为1。"
+msgstr "Scales the multiplicity of irreducible representations by a given factor, ensuring the multiplicity is at least 1."
+
+#: 9fb8a2b786334e3e90797cf2aaea14bb
+msgid "缩放因子。"
+msgstr "The scaling factor."
+
+#: 366de97687e04ba09b5e8d05831bd536
+msgid "缩放后的不可约表示。"
+msgstr "The scaled irreducible representations."
+
+#: 66a23b2360774a1cbf1efcb6f675c745
+msgid "根据指定的角动量(l)范围过滤和分割不可约表示。"
+msgstr "Filters and splits irreducible representations based on a specified range of angular momentum (l)."
+
+#: d70429de59d345d59212cee21720f55b
+msgid "用于分割多重度的通道数。"
+msgstr "The number of channels to split the multiplicity into."
+
+#: 33ada02b8871428da032acaf1c7aa156
+msgid "最小角动量（包含）。"
+msgstr "Minimum angular momentum (inclusive)."
+
+#: 96b6548a9f064ab793c787bd0b59ab16
+msgid "最大角动量（包含）。"
+msgstr "Maximum angular momentum (inclusive)."
+
+#: 6652adbdf2774acc963e519c4b2260ff
+msgid "过滤和分割后的不可约表示。"
+msgstr "The filtered and split irreducible representations."
+
+#: eb4c021af7b84093a6e02b324ab4bf00
+msgid ""
+"基类：:py:class:`~HamGNN_v_2_0.models.Toolbox.nequip.nn._graph_mixin.GraphModuleMixin`,"
+" :py:class:`~torch.nn.modules.module.Module`"
+msgstr "Bases: :py:class:`~HamGNN_v_2_0.models.Toolbox.nequip.nn._graph_mixin.GraphModuleMixin`, :py:class:`~torch.nn.modules.module.Module`"
+
+#: f83472f1ecb343199e5aabe2c928563c
+msgid "使用指定的径向基组对边长度进行编码。"
+msgstr "Encodes edge lengths using a specified radial basis function."
+
+#: 4b839a04c9b943a6aeb19ccb26a04f15
+msgid "存储编码后边特征的字典键。"
+msgstr "The dictionary key for storing the encoded edge features."
+
+#: 7ead4afc75cf49c18bf03cac646d2c66
+msgid "计算边编码并更新数据字典。"
+msgstr "Computes edge encodings and updates the data dictionary."
+
+#: 2e8b256500434b7f92664137b2d4d3ad 4868948b1199471e8787352dd904b031
+#: 5633c260fcfc4234b1334aeab69965ea 5c6a59936b49491c8b3f31b33d32f449
+#: 93e087aabc384fbe8cf9f16299f32bde fc4d16a784f142ccbfae2386b9bb294e
+msgid "包含图数据的字典。"
+msgstr "A dictionary containing the graph data."
+
+#: 446927aba83947a29c805dbc010fc555
+msgid "带有编码后边特征的更新图数据。"
+msgstr "The updated graph data with encoded edge features."
+
+#: 662ed10d6ffe49c6b1a3120b7b04b6cb
+#, python-brace-format
+msgid "将形状为 :math:`[N, D_{mid}]` 的向量重塑为 :math:`[N, H, D_{head}]` 的多头形式。"
+msgstr "Reshapes a vector of shape :math:`[N, D_{mid}]` into a multi-head form of :math:`[N, H, D_{head}]`."
+
+#: ef061d12ce2443b7901d5c00e181d0b8
+#, python-brace-format
+msgid ""
+"其中 :math:`H` 是注意力头的数量 (num_heads)，:math:`D_{mid}` 是中间特征维度， "
+":math:`D_{head}` 是每个头的特征维度。"
+msgstr "where :math:`H` is the number of attention heads (num_heads), :math:`D_{mid}` is the intermediate feature dimension, and :math:`D_{head}` is the feature dimension per head."
+
+#: 443c7a0e1aa3467099d3fd00ed35efb0
+msgid "注意力头的数量。"
+msgstr "The number of attention heads."
+
+#: eff9b04b46fa46c7b491a32e5142bf3b
+msgid "每个头的不可约表示。"
+msgstr "The irreducible representations for each head."
+
+#: 9bfe711bfb2d4467951ae149466d45a7
+msgid "中间输入的不可约表示。"
+msgstr "The irreducible representations of the intermediate input."
+
+#: f100e46814874ff09aee66057903e6a4
+msgid "用于重塑的索引。"
+msgstr "The indices used for reshaping."
+
+#: b428c708cbdd48b6921959974b247a8b
+msgid "List[Tuple[int, int]]"
+msgstr "List[Tuple[int, int]]"
+
+#: b338b6f3b8ce4c7b811f80b5285549fa
+msgid "重塑后的张量。"
+msgstr "The reshaped tensor."
+
+#: 49d99203ea864cb19f70d0bae477d00b
+#, python-brace-format
+msgid "将 :math:`[N, H, D_{head}]` 的多头注意力向量转换回 :math:`[N, D_{flat}]` 的扁平向量。"
+msgstr "Converts a multi-head attention vector of shape :math:`[N, H, D_{head}]` back to a flat vector of :math:`[N, D_{flat}]`."
+
+#: ed617fe428ff437b9796a2540c4073ef
+#, python-brace-format
+msgid ""
+"其中 :math:`H` 是注意力头的数量, :math:`D_{head}` 是每个头的维度, :math:`D_{flat}` "
+"是扁平化后的总维度。"
+msgstr "where :math:`H` is the number of attention heads, :math:`D_{head}` is the dimension per head, and :math:`D_{flat}` is the total flattened dimension."
+
+#: 41deee87596f4b77aa7258ce0f507fcd
+msgid "定义注意力头结构的不可约表示列表。"
+msgstr "A list of irreducible representations defining the structure of the attention heads."
+
+#: aa5863c085764c2197376aa689255528
+msgid "从不可约表示推导出的每个注意力头的大小列表。"
+msgstr "A list of sizes for each attention head, derived from the irreducible representations."
+
+#: 08c294cc71964196b07f45fef1f80c41
+msgid "List[int]"
+msgstr "List[int]"
+
+#: 83593e574a5845a4ac26cd4ea269f1f0
+msgid "前向传播，处理注意力头并将其扁平化为单个向量。"
+msgstr "Forward pass to process the attention heads and flatten them into a single vector."
+
+#: bddb358a3384490cb552cb9a7dd7e442
+msgid ""
+"输入张量，形状为 (N, num_heads, "
+"input_dim)，其中N为批量大小，num_heads为注意力头数，input_dim为所有头的总维度。"
+msgstr "Input tensor of shape (N, num_heads, input_dim), where N is the batch size, num_heads is the number of attention heads, and input_dim is the total dimension of all heads."
+
+#: 12c455d4b45d4f9da56cf9c4d575de86
+msgid "输出张量，形状为 (N, flattened_dim)，其中flattened_dim为所有头的总维度。"
+msgstr "Output tensor of shape (N, flattened_dim), where flattened_dim is the total dimension of all heads."
+
+#: 851489a6c5654878a75a641be7baa15f
+msgid "抛出"
+msgstr "Raises"
+
+#: a624d53a6c0b48339d16e15656402590
+msgid "如果 `head_sizes` 的总和与输入张量的 `input_dim` 不匹配。"
+msgstr "If the sum of `head_sizes` does not match the `input_dim` of the input tensor."
+
+#: 298364ef4976465b8b736a0aac16d60e
+msgid "使用张量积处理节点特征的等变卷积块，支持跳跃连接(skip-connections)。"
+msgstr "An equivariant convolutional block that processes node features using a tensor product, with support for skip-connections."
+
+#: 17da6ba1cb5d4c758cedc0368f35a915 8114b4f45a534b3ea80957715f196677
+#: 9e76c9848dbf40fbb64e22fe7a7ede2c ecc26edd8e2c4a1d92e4cc3369d5613e
+msgid "创建线性层。"
+msgstr "Create a linear layer."
+
+#: 3670a2756101415aacb17c4573d67c0b eeea28ab15164e549a0c3136d464e9a1
+msgid "线性层的输入不可约表示。"
+msgstr "Input irreducible representations for the linear layer."
+
+#: 3bc040e2b8bd41e99dc7659b3354238e 6190462f3fcf46478e09201c7067f890
+msgid "线性层的输出不可约表示。"
+msgstr "Output irreducible representations for the linear layer."
+
+#: 6aef45222ab34dc7ad85f66436d05afc
+msgid "线性变换层。"
+msgstr "The linear transformation layer."
+
+#: 3a14e0f32876443d81768e0cfbdd8b1f
+msgid "卷积块的前向传播。"
+msgstr "Forward pass of the convolution block."
+
+#: 325c1931016b447c9e6eba5c8d3587af c79961e016884f0ca9b6e103aa6d2582
+#: f371314be47344f2a64f604aab371fa5
+msgid "更新后的节点特征。"
+msgstr "The updated node features."
+
+#: ea4219044bfd4cca924508d366d06c3c
+msgid "一个等变注意力(equivariant attention)聚合模块。 它根据外部计算的注意力权重来聚合值(value)向量。"
+msgstr "An equivariant attention aggregation module. It aggregates value vectors based on externally computed attention weights."
+
+#: c4b7aa4e5e1147f88995d63c94e00bd3 e3472b674c7c49248b8ce3ba8a3da331
+msgid "注意力机制的前向传播。"
+msgstr "Forward pass of the attention mechanism."
+
+#: a674a761134143dcb00a742a730fda3e
+msgid "值向量。"
+msgstr "The value vectors."
+
+#: 0de01bb4a26f49659b4f84178dde5b31
+msgid "边的注意力权重，形状为 (num_edges, num_heads)。"
+msgstr "Edge attention weights of shape (num_edges, num_heads)."
+
+#: 4e44104e388b41e38e4dbf0c89bf5e59
+msgid "边的截断权重，形状为 (num_edges, )。"
+msgstr "Edge cutoff weights of shape (num_edges,)."
+
+#: 3ea8490e0e7b41debe0c035be8760d5c c50632e67981440cbaaf552ec43e82a3
+msgid "边索引。"
+msgstr "The edge indices."
+
+#: f072c9231d62421086ddb857578af00e
+msgid "注意力聚合后的输出向量。"
+msgstr "The output vector after attention aggregation."
+
+#: 7aef48076ee24b2aba64aec07edeb153
+msgid "处理键(key)、值(value)和查询(query)向量的等变注意力机制。"
+msgstr "An equivariant attention mechanism that processes key, value, and query vectors."
+
+#: 8517fd074b8a4a6892a4519517aea662
+#, python-brace-format
+msgid "该模块在图的边上应用缩放点积注意力机制。注意力权重 :math:`\\alpha_{ij}` 的计算方式如下："
+msgstr "This module applies a scaled dot-product attention mechanism on the edges of the graph. The attention weight :math:`\\alpha_{ij}` is calculated as follows:"
+
+#: bcbaef631ed34dfa9b0344a210db84fc
+msgid "\\alpha_{ij} = \\frac{(Q_i \\cdot K_j)}{\\sqrt{d_k}}"
+msgstr "\\alpha_{ij} = \\frac{(Q_i \\cdot K_j)}{\\sqrt{d_k}}"
+
+#: e5445954a3bf4e7ba52ca61aac06ba77
+msgid ""
+"其中 :math:`Q_i` 是目标节点的查询向量，:math:`K_j` 是源节点的键向量，:math:`d_k` 是键向量的维度。 然后使用 "
+"softmax 对权重进行归一化，并用于加权聚合值向量 :math:`V_j`。"
+msgstr "where :math:`Q_i` is the query vector of the destination node, :math:`K_j` is the key vector of the source node, and :math:`d_k` is the dimension of the key vector. The weights are then normalized using softmax and used to weight the aggregation of value vectors :math:`V_j`."
+
+#: b21479d6e0d14931b031c03aa27fc601
+#, python-brace-format
+msgid "键向量，形状为 :math:`(N_{edges}, d_{hidden})`。"
+msgstr "Key vectors of shape :math:`(N_{edges}, d_{hidden})`."
+
+#: ccd55f61643942a6a041a772c3fa25eb
+#, python-brace-format
+msgid "值向量，形状为 :math:`(N_{edges}, d_{hidden})`。"
+msgstr "Value vectors of shape :math:`(N_{edges}, d_{hidden})`."
+
+#: 718263c8292747989929a1d67927ae96
+#, python-brace-format
+msgid "查询向量，形状为 :math:`(N_{edges}, d_{hidden})`。"
+msgstr "Query vectors of shape :math:`(N_{edges}, d_{hidden})`."
+
+#: ef15595175c24fd9aeef38d93fbcff7c
+#, python-brace-format
+msgid "边的截断权重，形状为 :math:`(N_{edges},)`。"
+msgstr "Edge cutoff weights of shape :math:`(N_{edges},)`."
+
+#: 8590120137294adfbe9149608fc9d2ef
+msgid "注意力输出向量。"
+msgstr "The attention output vector."
+
+#: 7330194eba2a43f397e1bc015eef6bdf
+msgid "使用注意力机制(attention mechanism)处理图数据的等变注意力块。"
+msgstr "An equivariant attention block that processes graph data using an attention mechanism."
+
+#: 48443cf40b1f41e7921991800c953724 8927e1cbedae4fbc999143408760448c
+msgid "创建张量积层。"
+msgstr "Create a tensor product layer."
+
+#: 39a02f0d309b4d76afc42a09ea8b429e 5fc95ed9a0f84645bb085468055dd644
+msgid "初始化权重生成器。"
+msgstr "Initialize the weight generator."
+
+#: 4f0ef054e5a848bcb5d1264cf24dc665 b014ceb4902b45ad8aa95729c84b89b1
+msgid "创建非线性模块。"
+msgstr "Create a non-linear module."
+
+#: 8bd309902b114630b0fbac9f428e9172
+msgid "注意力块的前向传播。"
+msgstr "Forward pass of the attention block."
+
+#: 1d2b863b5d214c33a0d574f35cca9487
+msgid "基于节点特征和边属性更新边特征的对交互嵌入块。"
+msgstr "A pair interaction embedding block that updates edge features based on node features and edge attributes."
+
+#: 40f727e080e343f48e5c13b0607607d2 87d3fe3540c245109d30fabe7a044966
+msgid "对交互块的前向传播。"
+msgstr "Forward pass of the pair interaction block."
+
+#: 3f94d0aa716a4b46a1ff38221926acb4 c8aca2c01aac4d8fa349a6ef87a98be8
+msgid "更新后的边特征。"
+msgstr "The updated edge features."
+
+#: c07d184969dc4ff29052dd83adb9e061
+msgid "一个基于节点特征和边属性更新边特征的对交互块。"
+msgstr "A pair interaction block that updates edge features based on node features and edge attributes."
+
+#: 3a62f28983e141f9aad5e1f8f3e9d9d4
+msgid "一个线性变换层。"
+msgstr "A linear transformation layer."
+
+#: 6cfa4c479def4798be065cc61362007f
+msgid "一个使用等变乘积操作更新节点特征的相关性乘积块。"
+msgstr "A correlation product block that updates node features using an equivariant product operation."
+
+#: 8c4cdd670f444454bf30031edfe48c67
+msgid "相关性乘积块的前向传播。"
+msgstr "Forward pass of the correlation product block."
+
+#: e6a35ece4dfc456eb9299aaab7aee132
+msgid "一个在等变神经网络中使用的残差块。"
+msgstr "A residual block for use in equivariant neural networks."
+
+#: 09b5e4e939a64207b25fb150cc3c9f78
+msgid "残差块的前向传播。"
+msgstr "Forward pass of the residual block."
+
+#: 76b84203b44d42e68704216cedf16b7d
+msgid "输入张量，其形状匹配 `irreps_in`。"
+msgstr "Input tensor with shape matching `irreps_in`."
+
+#: 99d4d8f2ae1a4f8e92c3f10f43b069d2
+msgid "输出张量，其形状匹配 `irreps_in`。"
+msgstr "Output tensor with shape matching `irreps_in`."
+
+#: a331fe91bf7849799e478705e319c06b
+msgid "一个哈密顿层，由一个残差块和一个最终的线性变换组成。"
+msgstr "A Hamiltonian layer composed of a residual block and a final linear transformation."
+
+#: dfd04d3cb2f1409b97b241281f61e104
+msgid "输出张量。"
+msgstr "The output tensor."
+

@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 36d18d98f98c433a8c1cec9208a5c44f
+msgid "配置解析"
+msgstr "Configuration Parsing"
+
+#: 71ad7a7aa3574e6baa67c89e32d26b1e
+msgid "从 YAML 文件读取配置，并与默认配置合并。"
+msgstr ""
+"Reads configuration from a YAML file and merges it with the default "
+"configuration."
+
+#: ddee78b583dc4682822a115bd3312edf
+msgid "参数"
+msgstr "Parameters"
+
+#: 66d974b4b92d401e9db36bc7bdff0ca4
+msgid "用户指定的配置文件路径。默认为 'config_default.yaml'。"
+msgstr ""
+"Path to the user-specified configuration file. Defaults to 'config_default."
+"yaml'."
+
+#: fe7c8420066142acb3820842e29c0667
+msgid "包含所有默认参数的字典。默认为本模块中定义的 `config_default`。"
+msgstr ""
+"A dictionary containing all default parameters. Defaults to `config_default` "
+"defined in this module."
+
+#: 819c5149b5f14015acb77614758a8d2f
+msgid "返回"
+msgstr "Returns"
+
+#: f1bb9452db134bbc98c58f059dae8a2c
+msgid "一个 EasyDict 对象，包含了合并后的最终配置，可以通过属性点号 `.` 方便地访问各级配置项。"
+msgstr ""
+"An EasyDict object containing the final merged configuration, allowing "
+"convenient access to configuration items via attribute dot notation `.`."
+
+#: f672944d5c0948288b91ae71df43e2bc
+msgid "返回类型"
+msgstr "Return type"

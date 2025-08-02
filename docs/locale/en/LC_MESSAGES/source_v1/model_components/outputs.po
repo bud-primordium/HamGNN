@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) HamGNN Team
+# This file is distributed under the same license as the HamGNN package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HamGNN \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-01 23:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: 539c05797f474b04971f6e263b942f68
+msgid "输出模块"
+msgstr "Output Modules"
+
+#: 586aab7723524b5392b447091b0972e6
+msgid "基于边特征计算原子受力的模块。"
+msgstr "A module for calculating atomic forces based on edge features."
+
+#: 08e6ee4d50cb49a1ba30749414433f2b 5200bbcf7f2149d588bf110f3bebd718
+#: 6edb2964bead4995927da739522ad6d6 7819f04d81024614a0cf5d74a95b16bb
+#: 7c5bbfe028ea427e8113337da3f486d2 8168f9abca134c868e3f9fc89cc7228b
+#: b5d47b3d0f674b96903bb912c1730eba b9143b11fe904e329f9ee59e63737040
+#: d1e1442c099a47ee9015ec70872464e4
+msgid "参数"
+msgstr "Args"
+
+#: 5cc688edd0e94454806be91cfbfb4d9e 9e912f99cfdf47d4a83eecb3dc8be1f3
+#: a594814fd9714f7b86b480d10ffbaa5c b7a0eb64fa2c47cca995745c4c2142db
+#: bd8813865c634aa296a67fa1fca3dc86 e068848c7dd64e3cb9d9e91417e0ddf3
+#: e085e3fc0da848e1b42d8d25cff89f50 e70dda121e2444a693646c1646c96a5e
+#: fbfb0805ff0e4c7a9aff51a93ce3404f
+msgid "输入的图数据。"
+msgstr "Input graph data."
+
+#: 8306a3dfba4a4bdc99852365301cf7c0
+msgid "包含图表示的字典，需要 'edge_attr'。"
+msgstr "A dictionary containing the graph representation, requires 'edge_attr'."
+
+#: 0bdcf780cbd0462aa8d07768469f28a0 74a5a0d305144a1484e0a4fcff739cf3
+#: 8004752c592242dd996581b3312c4109 8ca946998277437da2500f0293c65d3c
+#: 932181f0b9d345ae80d34e3354c532d7 a6d5f1a598fb486aad2871fd9e63e83c
+#: b997626c3c5444d0b90a47abe9db079f bc9b5ee6e14d4afcafb4cca90434a861
+#: ded8e85f4ac74eb8bd568cc67b975c0e
+msgid "返回"
+msgstr "Returns"
+
+#: 7f84ddf091e64af7ac9f7a84233a20a2
+msgid "包含预测力 'force' 的字典。"
+msgstr "A dictionary containing the predicted forces 'force'."
+
+#: 0a22791470b24135b807287f558eab09 2a110ef7a07848a4b86a53ab3f43837d
+#: 34d1541f101447b8aa8563c740439961 3ff56c78246c4b10b64794c3c3fe3624
+#: 6985a67b2ae34af9a9d28ca4d9cc07bc 6d283ea301154ed1aba2100fe90acce7
+#: 810afee1207142fb89d9669ebe546027 d0afc045b9a749978dc8d38b9b740cee
+#: eedce53a26c04598b9a6288f412d1306
+msgid "返回类型"
+msgstr "Return type"
+
+#: d0bc48dea82a4182b721e60bc9f0ab88
+msgid "基于节点标量和矢量特征计算原子受力的模块。"
+msgstr "A module for calculating atomic forces based on node scalar and vector features."
+
+#: f2df9d3040da48808478df56152b514c f998d3e970084563aa2ac71305654760
+msgid "包含图表示的字典，需要 'node_attr' 和 'node_vec_attr'。"
+msgstr "A dictionary containing the graph representation, requires 'node_attr' and 'node_vec_attr'."
+
+#: 7b495e5421ee44259e582d9aad80b5df
+msgid "预测的力。"
+msgstr "Predicted forces."
+
+#: f3a28889455848c4aba22a78f39f5548
+msgid "计算 Born 有效电荷张量的模块。"
+msgstr "A module for calculating the Born effective charge tensor."
+
+#: b4c8fcc93a4e4c289fce354f552085a8 c652df1cbe3b42c29605a88008394f1f
+#: dad967ec96fc4effb9eec16181ac9a46
+msgid "包含图表示的字典。"
+msgstr "A dictionary containing the graph representation."
+
+#: 6fe10f8a266942cbb68be0b28471aeb2
+msgid "预测的 Born 张量，形状为 (N_nodes, 9)。"
+msgstr "Predicted Born tensor of shape (N_nodes, 9)."
+
+#: 2851eb2fcb1f4f98abb19bae65b4fa5d
+msgid "基于节点标量和矢量特征计算 Born 张量的模块。"
+msgstr "A module for calculating the Born tensor based on node scalar and vector features."
+
+#: a058059ef97441f095fefef0783d2612
+msgid "预测的 Born 张量。"
+msgstr "Predicted Born tensor."
+
+#: 11e50eed38a3472080270e7d64564301
+msgid "计算压电张量的模块。"
+msgstr "A module for calculating the piezoelectric tensor."
+
+#: d42750958866425f9d61230fc9b3a012
+msgid "包含预测压电张量 'piezoelectric' 的字典。"
+msgstr "A dictionary containing the predicted piezoelectric tensor 'piezoelectric'."
+
+#: 6d180f8d8d8c43098f687f43dee6657a
+msgid "一个简单的标量预测模块，仅对节点特征进行池化。"
+msgstr "A simple scalar prediction module that only performs pooling on node features."
+
+#: 3db4ae3c72234e0798830d824662186d 632741c7c41b40928360351df05dec86
+#: cfbd1e476a454346a29af9ceb8d14502
+msgid "包含 'node_attr' 的字典。"
+msgstr "A dictionary containing 'node_attr'."
+
+#: 3122ac33edee4317b4b1296b698a71e6 65e22382f4ba492fa3c0a2b68d770b71
+msgid "包含预测标量 'scalar' 的字典。"
+msgstr "A dictionary containing the predicted scalar 'scalar'."
+
+#: a192431fcaae4a1eb79254a53e6257f3
+msgid "一个更复杂的标量预测模块，包含一个 MLP 回归层。"
+msgstr "A more complex scalar prediction module that includes an MLP regression layer."
+
+#: 887b6529a5764bcdb0afaf732870c7dc
+msgid "预测晶体级别张量的模块。"
+msgstr "A module for predicting crystal-level tensors."
+
+#: 8f8c86a3b9f845e9896ce0985acd74a1
+msgid "包含 'atomic_tensor' 或 'crystal_tensor' 的字典。"
+msgstr "A dictionary containing 'atomic_tensor' or 'crystal_tensor'."
+
+#: 2aa2028fc8c0493b83a416386e188496
+msgid "同时预测总能量和原子受力的模块。"
+msgstr "A module for simultaneously predicting total energy and atomic forces."
+
+#: cc441ac21d3c4c7698ad4e2966eae1f5
+msgid "包含 'forces' 和 'total_energy' 的字典。"
+msgstr "A dictionary containing 'forces' and 'total_energy'."
+
+#: c5b3186554b8455ba280ed5944020c28
+msgid "计算电子-声子耦合（EPC）矩阵的模块。"
+msgstr "A module for calculating the electron-phonon coupling (EPC) matrix."
