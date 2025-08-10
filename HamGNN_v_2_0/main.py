@@ -37,6 +37,33 @@ import socket
 from .models.utils import get_hparam_dict
 import argparse
 
+def initialize_output_parameters(output_params):
+    """初始化输出参数的默认值。
+
+    为输出参数对象设置默认值（如果这些参数不存在的话）。
+    这个函数确保所有必需的输出参数都有合理的默认值，提高代码的鲁棒性。
+
+    Args:
+        output_params (object): 
+            存储输出配置参数的对象。可以是 SimpleNamespace、
+            自定义类实例，或任何支持属性访问的对象。
+
+    Returns:
+        object: 设置了默认值的同一个 output_params 对象。
+    """
+    # 定义默认参数值
+    default_params = {
+        'add_H_nonsoc': False,
+        'get_nonzero_mask_tensor': False, 
+        'zero_point_shift': True
+    }
+    
+    # 为尚未定义的参数设置默认值
+    for param_name, default_value in default_params.items():
+        if not hasattr(output_params, param_name):
+            setattr(output_params, param_name, default_value)
+    
+    return output_params
 
 def prepare_data(config):
     """准备并封装图数据。
@@ -272,13 +299,8 @@ def build_model(config):
     # 核心任务：预测哈密顿量矩阵。使用专门设计的 `HamGNNPlusPlusOut` 模块，该模块能够处理复杂的等变性和对称性约束。
     elif config.setup.property.lower() == 'hamiltonian':
         output_params = config.output_nets.HamGNN_out
-        # 为保证旧配置文件的兼容性，设置默认参数
-        if 'add_H_nonsoc' not in output_params:
-            output_params.add_H_nonsoc = False
-        if 'get_nonzero_mask_tensor' not in output_params:
-            output_params.get_nonzero_mask_tensor = False
-        if 'zero_point_shift' not in output_params:
-            output_params.zero_point_shift = False
+        # 初始化输出参数的默认值
+        output_params = initialize_output_parameters(output_params)
         
         output_module = HamGNNPlusPlusOut(irreps_in_node = Gnn_net.irreps_node_features, irreps_in_edge = Gnn_net.irreps_node_features, nao_max= output_params.nao_max, ham_type= output_params.ham_type,
                                          ham_only= output_params.ham_only, symmetrize=output_params.symmetrize,calculate_band_energy=output_params.calculate_band_energy,num_k=output_params.num_k,k_path=output_params.k_path,
