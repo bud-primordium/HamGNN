@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_1_0.GraphData.data_parsing &mdash; HamGNN v1.0 中文文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=7902463a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/logo.png"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=60817391"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=faab29de"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../source_v1/index.html" class="icon icon-home">
+            HamGNN
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/main_entry.html">主程序入口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.train_and_eval"><code class="docutils literal notranslate"><span class="pre">train_and_eval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.HamGNN"><code class="docutils literal notranslate"><span class="pre">HamGNN()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_structure.html">模型顶层结构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.representation"><code class="docutils literal notranslate"><span class="pre">Model.representation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.output_module"><code class="docutils literal notranslate"><span class="pre">Model.output_module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.losses"><code class="docutils literal notranslate"><span class="pre">Model.losses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.post_processing"><code class="docutils literal notranslate"><span class="pre">Model.post_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.calculate_loss"><code class="docutils literal notranslate"><span class="pre">Model.calculate_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.training_step"><code class="docutils literal notranslate"><span class="pre">Model.training_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_step"><code class="docutils literal notranslate"><span class="pre">Model.validation_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.validation_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.test_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.forward"><code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.log_metrics"><code class="docutils literal notranslate"><span class="pre">Model.log_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Model.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.check_param"><code class="docutils literal notranslate"><span class="pre">Model.check_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/gnn_core.html">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/net.html">神经网络模块 (net.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block"><code class="docutils literal notranslate"><span class="pre">residual_block</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.irreps_in"><code class="docutils literal notranslate"><span class="pre">residual_block.irreps_in</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.feature_irreps_hidden"><code class="docutils literal notranslate"><span class="pre">residual_block.feature_irreps_hidden</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.resnet"><code class="docutils literal notranslate"><span class="pre">residual_block.resnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.equivariant_nonlin"><code class="docutils literal notranslate"><span class="pre">residual_block.equivariant_nonlin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear1"><code class="docutils literal notranslate"><span class="pre">residual_block.linear1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear2"><code class="docutils literal notranslate"><span class="pre">residual_block.linear2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.forward"><code class="docutils literal notranslate"><span class="pre">residual_block.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder"><code class="docutils literal notranslate"><span class="pre">Edge_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder"><code class="docutils literal notranslate"><span class="pre">Triplet_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.ang_emb"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.ang_emb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_kj"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_kj</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_ji"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_ji</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.tp"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.fc"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_triplet"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.triplets"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.triplets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.forward"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer"><code class="docutils literal notranslate"><span class="pre">Ham_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.residual"><code class="docutils literal notranslate"><span class="pre">Ham_layer.residual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.linear"><code class="docutils literal notranslate"><span class="pre">Ham_layer.linear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.forward"><code class="docutils literal notranslate"><span class="pre">Ham_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.one_hot"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.one_hot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.spharm_edges"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.spharm_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.radial_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.radial_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.chemical_embedding"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.chemical_embedding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.convnet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.convnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_node"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_edge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out"><code class="docutils literal notranslate"><span class="pre">HamGNN_out</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.derivative"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.derivative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.create_graph"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.create_graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.nao_max"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.nao_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_type"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_only"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_only</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.include_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.include_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_switch"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_switch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cg_cal"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cg_cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.matrix_merge"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.matrix_merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.change_index"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.change_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.convert_to_mole_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.convert_to_mole_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cat_onsite_and_offsite"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cat_onsite_and_offsite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hon"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hoff"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hoff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_debug"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_debug()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_soc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.mask_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.mask_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.construct_Hsoc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.construct_Hsoc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.reduce"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.reduce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html">物理工具 (wigner.py, clebsch_gordan.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.wigner">Wigner 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.clebsch_gordan">Clebsch-Gordan 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_components.html">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/outputs.html">输出模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force"><code class="docutils literal notranslate"><span class="pre">Force</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force.forward"><code class="docutils literal notranslate"><span class="pre">Force.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec"><code class="docutils literal notranslate"><span class="pre">Force_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Force_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born"><code class="docutils literal notranslate"><span class="pre">Born</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born.forward"><code class="docutils literal notranslate"><span class="pre">Born.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec"><code class="docutils literal notranslate"><span class="pre">Born_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Born_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric"><code class="docutils literal notranslate"><span class="pre">piezoelectric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric.forward"><code class="docutils literal notranslate"><span class="pre">piezoelectric.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar"><code class="docutils literal notranslate"><span class="pre">trivial_scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar.forward"><code class="docutils literal notranslate"><span class="pre">trivial_scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar"><code class="docutils literal notranslate"><span class="pre">scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar.forward"><code class="docutils literal notranslate"><span class="pre">scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor"><code class="docutils literal notranslate"><span class="pre">crystal_tensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor.forward"><code class="docutils literal notranslate"><span class="pre">crystal_tensor.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces.forward"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.EPC_output"><code class="docutils literal notranslate"><span class="pre">EPC_output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/layers.html">层定义</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer"><code class="docutils literal notranslate"><span class="pre">denseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer.forward"><code class="docutils literal notranslate"><span class="pre">denseLayer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression"><code class="docutils literal notranslate"><span class="pre">denseRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression.forward"><code class="docutils literal notranslate"><span class="pre">denseRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope.forward"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff"><code class="docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff.forward"><code class="docutils literal notranslate"><span class="pre">CosineCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression"><code class="docutils literal notranslate"><span class="pre">MLPRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression.forward"><code class="docutils literal notranslate"><span class="pre">MLPRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer.forward"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis"><code class="docutils literal notranslate"><span class="pre">BesselBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis.forward"><code class="docutils literal notranslate"><span class="pre">BesselBasis.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing.forward"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Dense.reset_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/data_processing.html">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html">图数据模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html">数据解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html">配置解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html#HamGNN_v_1_0.input.config_parsing.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/utilities.html">通用工具函数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.forward"><code class="docutils literal notranslate"><span class="pre">SSP.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.extra_repr"><code class="docutils literal notranslate"><span class="pre">SSP.extra_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH.forward"><code class="docutils literal notranslate"><span class="pre">SWISH.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss.forward"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss.forward"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss.forward"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">RMSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../source_v1/index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../source_v1/index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_1_0.GraphData.data_parsing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_1_0.GraphData.data_parsing 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-10-07 20:30:29 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-10-29 15:52:53</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;该模块负责解析晶体结构文件（如 CIF, POSCAR），并将其转换为图数据格式。</span>
+
+<span class="sd">主要功能包括：</span>
+<span class="sd">1.  从晶体文件中读取原子结构信息。</span>
+<span class="sd">2.  为原子类型构建 one-hot 编码表示。</span>
+<span class="sd">3.  根据指定的截断半径（cutoff radius）寻找近邻原子，构建图的边。</span>
+<span class="sd">4.  解析包含目标属性的 CSV 文件。</span>
+<span class="sd">5.  将所有信息封装成 `torch_geometric.data.Data` 对象，并保存为 `.npz` 文件。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">AseAtomsAdaptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>
+
+
+<div class="viewcode-block" id="cal_shfit_vec">
+<a class="viewcode-back" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cal_shfit_vec">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cal_shfit_vec</span><span class="p">(</span><span class="n">image</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算周期性边界条件下，近邻原子相对于中心原子的偏移向量。</span>
+
+<span class="sd">    在晶体中，一个原子的近邻可能位于相邻的晶胞中。这个函数通过晶格矢量</span>
+<span class="sd">    和周期性偏移镜像（image）来计算这种跨晶胞的实际位移。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image (np.array): </span>
+<span class="sd">            形状为 `(3,)` 的整数数组，表示近邻原子所在的晶胞相对于</span>
+<span class="sd">            中心原子所在晶胞的周期性偏移（例如 `[-1, 0, 1]`）。</span>
+<span class="sd">        lattice (np.array): </span>
+<span class="sd">            形状为 `(3, 3)` 的数组，表示晶胞的三个晶格矢量。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: 形状为 `(3,)` 的实际偏移向量。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="n">lattice</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_config">
+<a class="viewcode-back" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.build_config">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;扫描所有晶体文件，构建原子类型的 one-hot 编码配置。</span>
+
+<span class="sd">    该函数会遍历指定路径下的所有晶体结构文件，统计出数据集中出现的所有</span>
+<span class="sd">    原子类型（以原子序数 Z 表示），然后为每种原子创建一个 one-hot 编码向量。</span>
+<span class="sd">    最终的配置信息将保存为一个 JSON 文件。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (easydict.EasyDict): </span>
+<span class="sd">            项目的主配置对象，需要包含以下路径信息：</span>
+<span class="sd">            </span>
+<span class="sd">            - `dataset_params.csv_params.crystal_path`: 晶体文件所在目录。</span>
+<span class="sd">            - `dataset_params.csv_params.file_type`: 晶体文件类型 (&#39;poscar&#39; 或 &#39;cif&#39;)。</span>
+<span class="sd">            - `dataset_params.graph_data_path`: one-hot 配置文件 `config_onehot.json` 的保存路径。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: </span>
+<span class="sd">            一个包含原子序数列表和对应 one-hot 编码矩阵的字典。</span>
+<span class="sd">            例如： `{&#39;atomic_numbers&#39;: [1, 6, 8], &#39;node_vectors&#39;: [[1,0,0], [0,1,0], [0,0,1]]}`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">crystal_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">crystal_path</span>
+    <span class="n">file_type</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">file_type</span>
+    <span class="k">if</span> <span class="n">file_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;poscar&#39;</span><span class="p">:</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s1">&#39;.vasp&#39;</span>
+    <span class="k">elif</span> <span class="n">file_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cif&#39;</span><span class="p">:</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s1">&#39;.cif&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The file type: </span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s1"> has not been supported yet!&#39;</span><span class="p">)</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">graph_data_path</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;config_onehot.json&#39;</span><span class="p">)</span>
+    <span class="n">atoms</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crystal_path</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="o">+</span><span class="n">file_extension</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">all_files</span><span class="p">):</span>
+        <span class="n">crystal</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">atoms</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">crystal</span><span class="o">.</span><span class="n">atomic_numbers</span><span class="p">)</span>
+    <span class="c1"># 统计所有出现过的原子序数并去重</span>
+    <span class="n">unique_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="n">num_z</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_z</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;unique_z:&#39;</span><span class="p">,</span> <span class="n">num_z</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;min z:&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">unique_z</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;max z:&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">unique_z</span><span class="p">))</span>
+    <span class="c1"># 构建配置文件字典</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;atomic_numbers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unique_z</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;node_vectors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">num_z</span><span class="p">,</span><span class="n">num_z</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="c1"># One-hot 编码矩阵</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="get_init_atomfea">
+<a class="viewcode-back" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.get_init_atomfea">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_init_atomfea</span><span class="p">(</span><span class="n">config</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crystal</span><span class="p">:</span><span class="n">Structure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;根据 one-hot 配置文件为晶体中的每个原子生成初始特征向量。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): </span>
+<span class="sd">            由 `build_config` 生成的 one-hot 配置字典，包含 &#39;atomic_numbers&#39; 和 &#39;node_vectors&#39;。</span>
+<span class="sd">        crystal (Structure): </span>
+<span class="sd">            一个 `pymatgen.core.structure.Structure` 对象，代表单个晶体结构。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: </span>
+<span class="sd">            形状为 `(N, D)` 的数组，其中 N 是晶体中的原子数，D 是 one-hot 向量的维度。</span>
+<span class="sd">            每一行是对应原子的 one-hot 特征。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atoms</span><span class="o">=</span><span class="n">crystal</span><span class="o">.</span><span class="n">atomic_numbers</span>
+    <span class="n">atomnum</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;atomic_numbers&#39;</span><span class="p">]</span>
+    <span class="c1"># 创建从原子序数到 one-hot 索引的映射</span>
+    <span class="n">z_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">z</span><span class="p">:</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atomnum</span><span class="p">)}</span>
+    <span class="n">one_hotvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;node_vectors&quot;</span><span class="p">])</span>
+    <span class="c1"># 为晶体中的每个原子提取对应的 one-hot 向量</span>
+    <span class="n">atom_fea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">one_hotvec</span><span class="p">[</span><span class="n">z_dict</span><span class="p">[</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">crystal</span><span class="p">))])</span>
+    <span class="k">return</span> <span class="n">atom_fea</span></div>
+
+
+<div class="viewcode-block" id="cif_parse">
+<a class="viewcode-back" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cif_parse">[文档]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cif_parse</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;解析所有晶体文件和属性文件，生成并保存图数据。</span>
+
+<span class="sd">    这是数据预处理的核心函数。它执行以下步骤：</span>
+
+<span class="sd">    1.  确定晶体文件的类型和路径。</span>
+<span class="sd">    2.  加载或创建原子 one-hot 编码配置。</span>
+<span class="sd">    3.  从 `id_prop.csv` 文件中读取每个晶体ID及其对应的目标属性。</span>
+<span class="sd">    4.  遍历每个晶体ID，执行以下操作：</span>
+
+<span class="sd">        a.  读取晶体结构。</span>
+<span class="sd">        b.  生成原子特征（node_attr）。</span>
+<span class="sd">        c.  寻找近邻，构建边列表（edge_index）和周期性偏移（nbr_shift）。</span>
+<span class="sd">        d.  将所有信息（节点、边、属性等）组装成 `torch_geometric.data.Data` 对象。</span>
+<span class="sd">    </span>
+<span class="sd">    5.  将所有图数据存储在一个字典中，并使用 `np.savez` 保存为压缩的 `.npz` 文件。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (easydict.EasyDict): </span>
+<span class="sd">            项目的主配置对象，提供了所有必需的参数，例如文件路径、截断半径、</span>
+<span class="sd">            最大近邻数以及目标属性的格式等。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">crystal_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">crystal_path</span>
+    <span class="n">id_prop_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">id_prop_path</span>
+    <span class="n">graph_data_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">graph_data_path</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">radius</span>
+    <span class="n">max_num_nbr</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">max_num_nbr</span>
+    <span class="n">l_pred_atomwise_tensor</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">l_pred_atomwise_tensor</span>
+    <span class="n">l_pred_crystal_tensor</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">l_pred_crystal_tensor</span>
+    <span class="n">rank_tensor</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">rank_tensor</span>
+
+    <span class="n">file_type</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dataset_params</span><span class="o">.</span><span class="n">csv_params</span><span class="o">.</span><span class="n">file_type</span>
+    <span class="k">if</span> <span class="n">file_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;poscar&#39;</span><span class="p">:</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s1">&#39;.vasp&#39;</span>
+    <span class="k">elif</span> <span class="n">file_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cif&#39;</span><span class="p">:</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s1">&#39;.cif&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The file type: </span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s1"> has not been supported yet!&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 加载（如果存在）或构建 one-hot 编码配置文件</span>
+    <span class="c1"># 注意：这个功能在未来版本中可能会被弃用</span>
+    <span class="n">config_onehot_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">,</span> <span class="s2">&quot;config_onehot.json&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_onehot_file_path</span><span class="p">):</span>
+        <span class="n">config_onehot</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">config_onehot_file_path</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">config_onehot</span> <span class="o">=</span> <span class="n">build_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">id_prop_path</span><span class="p">),</span> <span class="s1">&#39;id_prop_path does not exist!&#39;</span>
+    <span class="n">id_prop_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_prop_path</span><span class="p">,</span> <span class="s1">&#39;id_prop.csv&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">id_prop_file</span><span class="p">),</span> <span class="s1">&#39;id_prop.csv does not exist!&#39;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">id_prop_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">id_prop_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+
+    <span class="n">cif_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">id_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">id_prop</span> <span class="ow">in</span> <span class="n">id_prop_data</span><span class="p">]</span>
+    <span class="c1"># 解析 id_prop.csv 文件中的目标属性</span>
+    <span class="k">if</span> <span class="n">l_pred_atomwise_tensor</span> <span class="ow">or</span> <span class="n">l_pred_crystal_tensor</span><span class="p">:</span>
+        <span class="c1"># 处理张量类型的目标属性（原子级别或晶体级别）</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">length_tensor</span> <span class="o">=</span> <span class="mi">3</span><span class="o">**</span><span class="n">rank_tensor</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">id_prop_data</span><span class="p">)):</span>
+            <span class="n">target_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">id_prop_data</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="mi">1</span><span class="p">:]))</span>
+            <span class="n">target_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target_idx</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_tensor</span><span class="p">)</span> <span class="c1"># (N_atom, length)</span>
+            <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_idx</span><span class="p">)</span> 
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 处理标量类型的目标属性</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">id_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">id_prop</span> <span class="ow">in</span> <span class="n">id_prop_data</span><span class="p">]</span>
+
+    <span class="n">pbar_cif_ids</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">cif_ids</span><span class="p">)</span>
+    <span class="n">graphs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cif_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pbar_cif_ids</span><span class="p">):</span>
+        <span class="c1">#pbar_cif_ids.set_description(&quot;Processing %s&quot; % cif_id)</span>
+        <span class="n">cif_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crystal_path</span><span class="p">,</span> <span class="n">cif_id</span><span class="o">+</span><span class="n">file_extension</span><span class="p">)</span>
+        <span class="n">crystal</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">cif_path</span><span class="p">)</span>
+
+        <span class="c1"># 获取原子的 one-hot 特征</span>
+        <span class="n">node_attr</span> <span class="o">=</span> <span class="n">get_init_atomfea</span><span class="p">(</span><span class="n">config_onehot</span><span class="p">,</span> <span class="n">crystal</span><span class="p">)</span>
+
+        <span class="c1"># 获取每个原子的所有近邻（在指定半径内），并按距离排序</span>
+        <span class="n">all_nbrs</span> <span class="o">=</span> <span class="n">crystal</span><span class="o">.</span><span class="n">get_all_neighbors</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">include_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">all_nbrs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nbrs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="n">all_nbrs</span><span class="p">]</span>
+
+        <span class="n">edge_src_index</span><span class="p">,</span> <span class="n">edge_tar_index</span><span class="p">,</span> <span class="n">nbr_shift</span><span class="p">,</span> <span class="n">nbr_counts</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ni</span><span class="p">,</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_nbrs</span><span class="p">):</span>
+            <span class="c1"># 如果近邻数小于最大限制，则全部保留</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_num_nbr</span><span class="p">:</span>
+                <span class="n">nbr_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nbr</span><span class="p">))</span>
+                <span class="n">edge_src_index</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ni</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
+                <span class="n">edge_tar_index</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">nbr</span><span class="p">))</span>
+                <span class="n">nbr_shift</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">cal_shfit_vec</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">),</span> <span class="n">nbr</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 如果近邻数超过最大限制，则只保留最近的 max_num_nbr 个</span>
+                <span class="n">nbr_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_num_nbr</span><span class="p">)</span>
+                <span class="n">edge_src_index</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ni</span><span class="p">]</span><span class="o">*</span><span class="n">max_num_nbr</span>
+                <span class="n">edge_tar_index</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">nbr</span><span class="p">[:</span><span class="n">max_num_nbr</span><span class="p">]))</span>
+                <span class="n">nbr_shift</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">cal_shfit_vec</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">),</span> <span class="n">nbr</span><span class="p">[:</span><span class="n">max_num_nbr</span><span class="p">]))</span>
+        
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_src_index</span><span class="p">,</span> <span class="n">edge_tar_index</span><span class="p">]</span>  <span class="c1"># 形状: (2, nedges)</span>
+            
+        <span class="k">if</span> <span class="n">l_pred_atomwise_tensor</span> <span class="ow">or</span> <span class="n">l_pred_crystal_tensor</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="p">[</span><span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+
+        <span class="n">graphs</span><span class="p">[</span><span class="n">cif_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">crystal</span><span class="o">.</span><span class="n">atomic_numbers</span><span class="p">),</span>
+                              <span class="n">node_attr</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">node_attr</span><span class="p">),</span>
+                              <span class="n">y</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">y_label</span><span class="p">),</span>
+                              <span class="n">pos</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">crystal</span><span class="o">.</span><span class="n">cart_coords</span><span class="p">),</span>
+                              <span class="n">node_counts</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">crystal</span><span class="p">)]),</span>
+                              <span class="n">nbr_counts</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">nbr_counts</span><span class="p">),</span>
+                              <span class="n">edge_index</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">edge_index</span><span class="p">),</span>
+                              <span class="n">nbr_shift</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">nbr_shift</span><span class="p">))</span>
+
+    <span class="n">graph_data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">,</span> <span class="s1">&#39;graph_data.npz&#39;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">graph_data_path</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="n">graphs</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># 当该脚本作为主程序运行时，读取配置文件并执行解析</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">input.config_parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_config</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">(</span><span class="n">config_file_name</span><span class="o">=</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">)</span>
+    <span class="n">cif_parse</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    中文注释版 | v1.0 | 中文
+    <span class="fa fa-caret-down"></span>
+  </span>
+  
+  <div class="rst-other-versions">
+    
+    
+    <dl>
+      <dt>分支</dt>
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">中文注释版 ✓</a>
+          </dd>
+        
+      
+        
+          <dd><a href="../../../../torchscript_export/v1.0/zh/source_v1/index.html">TorchScript导出版</a></dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>版本</dt>
+      
+        
+          <dd><a href="../../../v2.0/zh/source_v2/index.html">2.0</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">1.0 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>语言</dt>
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">中文 ✓</a>
+          </dd>
+        
+      
+        
+          <dd><a href="../../en/source_v1/index.html">English</a></dd>
+        
+      
+    </dl>
+    
+    
+    <hr>
+    <dl>
+      <dt>项目主页</dt>
+      <dd>
+        <a href="https://github.com/bud-primordium/HamGNN">
+          <span class="fa fa-github"></span> GitHub
+        </a>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<style>
+/* 自定义样式优化三维切换器 */
+.rst-versions {
+  font-size: 14px;
+}
+
+/* 让版本切换器更醒目 */
+.rst-current-version {
+  background-color: #2c3e50 !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
+  padding: 12px 24px !important;
+}
+
+.rst-current-version:hover {
+  background-color: #34495e !important;
+}
+
+.rst-other-versions dl {
+  margin-bottom: 16px;
+}
+
+.rst-other-versions dt {
+  color: #55a5d9;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.rst-other-versions dd {
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+.rst-other-versions dd.rtd-current-item a {
+  font-weight: bold;
+  color: #55a5d9;
+}
+
+.rst-other-versions hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+</style><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

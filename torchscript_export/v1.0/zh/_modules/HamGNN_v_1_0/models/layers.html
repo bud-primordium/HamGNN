@@ -1,0 +1,884 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_1_0.models.layers &mdash; HamGNN v1.0 中文文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=7902463a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/logo.png"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=60817391"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=faab29de"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../source_v1/index.html" class="icon icon-home">
+            HamGNN
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/main_entry.html">主程序入口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.train_and_eval"><code class="docutils literal notranslate"><span class="pre">train_and_eval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.HamGNN"><code class="docutils literal notranslate"><span class="pre">HamGNN()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_structure.html">模型顶层结构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.representation"><code class="docutils literal notranslate"><span class="pre">Model.representation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.output_module"><code class="docutils literal notranslate"><span class="pre">Model.output_module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.losses"><code class="docutils literal notranslate"><span class="pre">Model.losses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.post_processing"><code class="docutils literal notranslate"><span class="pre">Model.post_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.calculate_loss"><code class="docutils literal notranslate"><span class="pre">Model.calculate_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.training_step"><code class="docutils literal notranslate"><span class="pre">Model.training_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_step"><code class="docutils literal notranslate"><span class="pre">Model.validation_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.validation_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.test_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.forward"><code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.log_metrics"><code class="docutils literal notranslate"><span class="pre">Model.log_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Model.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.check_param"><code class="docutils literal notranslate"><span class="pre">Model.check_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/gnn_core.html">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/net.html">神经网络模块 (net.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block"><code class="docutils literal notranslate"><span class="pre">residual_block</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.irreps_in"><code class="docutils literal notranslate"><span class="pre">residual_block.irreps_in</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.feature_irreps_hidden"><code class="docutils literal notranslate"><span class="pre">residual_block.feature_irreps_hidden</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.resnet"><code class="docutils literal notranslate"><span class="pre">residual_block.resnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.equivariant_nonlin"><code class="docutils literal notranslate"><span class="pre">residual_block.equivariant_nonlin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear1"><code class="docutils literal notranslate"><span class="pre">residual_block.linear1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear2"><code class="docutils literal notranslate"><span class="pre">residual_block.linear2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.forward"><code class="docutils literal notranslate"><span class="pre">residual_block.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder"><code class="docutils literal notranslate"><span class="pre">Edge_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder"><code class="docutils literal notranslate"><span class="pre">Triplet_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.ang_emb"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.ang_emb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_kj"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_kj</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_ji"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_ji</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.tp"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.fc"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_triplet"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.triplets"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.triplets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.forward"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer"><code class="docutils literal notranslate"><span class="pre">Ham_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.residual"><code class="docutils literal notranslate"><span class="pre">Ham_layer.residual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.linear"><code class="docutils literal notranslate"><span class="pre">Ham_layer.linear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.forward"><code class="docutils literal notranslate"><span class="pre">Ham_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.one_hot"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.one_hot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.spharm_edges"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.spharm_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.radial_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.radial_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.chemical_embedding"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.chemical_embedding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.convnet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.convnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_node"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_edge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out"><code class="docutils literal notranslate"><span class="pre">HamGNN_out</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.derivative"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.derivative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.create_graph"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.create_graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.nao_max"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.nao_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_type"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_only"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_only</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.include_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.include_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_switch"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_switch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cg_cal"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cg_cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.matrix_merge"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.matrix_merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.change_index"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.change_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.convert_to_mole_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.convert_to_mole_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cat_onsite_and_offsite"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cat_onsite_and_offsite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hon"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hoff"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hoff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_debug"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_debug()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_soc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.mask_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.mask_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.construct_Hsoc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.construct_Hsoc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.reduce"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.reduce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html">物理工具 (wigner.py, clebsch_gordan.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.wigner">Wigner 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.clebsch_gordan">Clebsch-Gordan 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.TensorWrapper"><code class="docutils literal notranslate"><span class="pre">TensorWrapper</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_components.html">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/outputs.html">输出模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force"><code class="docutils literal notranslate"><span class="pre">Force</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force.forward"><code class="docutils literal notranslate"><span class="pre">Force.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec"><code class="docutils literal notranslate"><span class="pre">Force_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Force_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born"><code class="docutils literal notranslate"><span class="pre">Born</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born.forward"><code class="docutils literal notranslate"><span class="pre">Born.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec"><code class="docutils literal notranslate"><span class="pre">Born_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Born_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric"><code class="docutils literal notranslate"><span class="pre">piezoelectric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric.forward"><code class="docutils literal notranslate"><span class="pre">piezoelectric.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar"><code class="docutils literal notranslate"><span class="pre">trivial_scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar.forward"><code class="docutils literal notranslate"><span class="pre">trivial_scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar"><code class="docutils literal notranslate"><span class="pre">scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar.forward"><code class="docutils literal notranslate"><span class="pre">scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor"><code class="docutils literal notranslate"><span class="pre">crystal_tensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor.forward"><code class="docutils literal notranslate"><span class="pre">crystal_tensor.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces.forward"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.EPC_output"><code class="docutils literal notranslate"><span class="pre">EPC_output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/layers.html">层定义</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer"><code class="docutils literal notranslate"><span class="pre">denseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer.forward"><code class="docutils literal notranslate"><span class="pre">denseLayer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression"><code class="docutils literal notranslate"><span class="pre">denseRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression.forward"><code class="docutils literal notranslate"><span class="pre">denseRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope.forward"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff"><code class="docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff.forward"><code class="docutils literal notranslate"><span class="pre">CosineCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression"><code class="docutils literal notranslate"><span class="pre">MLPRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression.forward"><code class="docutils literal notranslate"><span class="pre">MLPRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer.forward"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis"><code class="docutils literal notranslate"><span class="pre">BesselBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis.forward"><code class="docutils literal notranslate"><span class="pre">BesselBasis.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing.forward"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Dense.reset_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/data_processing.html">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html">图数据模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html">数据解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html">配置解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html#HamGNN_v_1_0.input.config_parsing.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/utilities.html">通用工具函数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.forward"><code class="docutils literal notranslate"><span class="pre">SSP.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.extra_repr"><code class="docutils literal notranslate"><span class="pre">SSP.extra_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH.forward"><code class="docutils literal notranslate"><span class="pre">SWISH.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss.forward"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss.forward"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss.forward"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">RMSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../source_v1/index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../source_v1/index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_1_0.models.layers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_1_0.models.layers 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-10-09 10:18:50 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-10-28 20:19:52</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">本模块定义了 HamGNN 模型中使用的各种基础神经网络层和激活函数。</span>
+<span class="sd">这些层是构建更复杂的等变网络模块的基础组件，包括自定义的全连接层、</span>
+<span class="sd">回归网络、径向基函数以及截断函数等。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_bn_act</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span><span class="p">,</span> <span class="n">batch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Linear</span><span class="p">,</span> <span class="n">Bilinear</span><span class="p">,</span> <span class="n">Sigmoid</span><span class="p">,</span> <span class="n">Softplus</span><span class="p">,</span> <span class="n">ELU</span><span class="p">,</span> <span class="n">ReLU</span><span class="p">,</span> <span class="n">SELU</span><span class="p">,</span> <span class="n">SiLU</span><span class="p">,</span>
+                      <span class="n">CELU</span><span class="p">,</span> <span class="n">BatchNorm1d</span><span class="p">,</span> <span class="n">ModuleList</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Tanh</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn.models.dimenet_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">real_sph_harm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="kn">import</span> <span class="n">xavier_uniform_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="kn">import</span> <span class="n">constant_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="c1"># 默认的权重初始化函数，使用零进行初始化</span>
+<span class="n">zeros_initializer</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">constant_</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="denseLayer">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">denseLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个包含线性层、批量归一化和激活函数的残差连接稠密层。</span>
+
+<span class="sd">    结构为: `out = Linear(Act(BN(Linear(x))))`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                    <span class="n">use_batch_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">ELU</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            in_features (int): 输入特征维度。</span>
+<span class="sd">            out_features (int): 输出特征维度。</span>
+<span class="sd">            bias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">            activation (callable): 激活函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lba</span> <span class="o">=</span> <span class="n">linear_bn_act</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                        <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_batch_norm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">out_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">)</span>
+<div class="viewcode-block" id="denseLayer.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lba</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="denseRegression">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">denseRegression</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个用于回归任务的多层稠密网络。</span>
+<span class="sd">    </span>
+<span class="sd">    包含多个隐藏层和一个最终的线性输出层。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                    <span class="n">use_batch_norm</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="n">Softplus</span><span class="p">(),</span> <span class="n">n_h</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            in_features (int): 输入特征维度。</span>
+<span class="sd">            out_features (int): 输出特征维度（回归目标维度）。</span>
+<span class="sd">            bias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">            activation (callable): 隐藏层使用的激活函数。</span>
+<span class="sd">            n_h (int): 隐藏层的数量。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n_h</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">in_features</span><span class="p">,</span> <span class="n">lbias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> 
+                        <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="o">=</span><span class="n">use_batch_norm</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_h</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+<div class="viewcode-block" id="denseRegression.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">fc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_out</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="cuttoff_envelope">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">cuttoff_envelope</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;多项式形式的截断包络函数。</span>
+<span class="sd">    </span>
+<span class="sd">    当距离 `x` 接近 `cutoff` 时，该函数平滑地衰减到零。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cutoff (float): 截断半径。</span>
+<span class="sd">            exponent (int): 多项式的指数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">cuttoff_envelope</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">exponent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+
+<div class="viewcode-block" id="cuttoff_envelope.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span>
+        <span class="n">x_pow_p0</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">x_pow_p1</span> <span class="o">=</span> <span class="n">x_pow_p0</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="n">x_pow_p2</span> <span class="o">=</span> <span class="n">x_pow_p1</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="c1"># 仅对小于 cutoff 的距离计算包络，其余为零</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x_pow_p0</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x_pow_p1</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x_pow_p2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span></div>
+</div>
+
+
+<div class="viewcode-block" id="CosineCutoff">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CosineCutoff</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Behler-Parrinello 余弦截断函数。源自 SchNetPack。</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       f(r) = \begin{cases}</span>
+<span class="sd">        0.5 \times \left[1 + \cos\left(\frac{\pi r}{r_\text{cutoff}}\right)\right]</span>
+<span class="sd">          &amp; r &lt; r_\text{cutoff} \\</span>
+<span class="sd">        0 &amp; r \geqslant r_\text{cutoff} \\</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cutoff (float, optional): 截断半径。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CosineCutoff</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;cutoff&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">([</span><span class="n">cutoff</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="CosineCutoff.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算截断值。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            distances (torch.Tensor): 原子间距离张量。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 截断函数的值。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 计算截断函数的值</span>
+        <span class="n">cutoffs</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">distances</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="c1"># 移除超出截断半径的贡献</span>
+        <span class="n">cutoffs</span> <span class="o">*=</span> <span class="p">(</span><span class="n">distances</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cutoffs</span></div>
+</div>
+
+
+<div class="viewcode-block" id="MLPRegression">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MLPRegression</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一个多层感知机（MLP）回归网络，特征维度在层间减半。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_out_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_mlp</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">lbias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">activation</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">ELU</span><span class="p">(),</span> <span class="n">use_batch_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_in_features (int): 输入特征维度。</span>
+<span class="sd">            num_out_features (int): 输出特征维度。</span>
+<span class="sd">            num_mlp (int): MLP 的层数。</span>
+<span class="sd">            lbias (bool): 是否在线性层中使用偏置。</span>
+<span class="sd">            activation (Callable): 激活函数。</span>
+<span class="sd">            use_batch_norm (bool): 是否使用批量归一化。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MLPRegression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">=</span> <span class="p">[</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">),</span> 
+                                   <span class="n">lbias</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_mlp</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">+=</span> <span class="p">[</span><span class="n">linear_bn_act</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num_in_features</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">num_mlp</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">num_out_features</span><span class="p">,</span> 
+                                    <span class="n">lbias</span><span class="p">,</span> <span class="n">activation</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="p">)]</span>                           
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span> <span class="o">=</span> <span class="n">ModuleList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLPRegression.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">lr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_regression</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">lr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+
+<div class="viewcode-block" id="sph_harm_layer">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">sph_harm_layer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算实数球谐函数的层。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_spherical</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_spherical (int): 球谐函数的阶数 l。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">sph_harm_layer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spherical</span> <span class="o">=</span> <span class="n">num_spherical</span>
+        <span class="c1"># 使用 PyTorch Geometric 的工具生成符号化的球谐函数表达式</span>
+        <span class="n">sph_harm_forms</span> <span class="o">=</span> <span class="n">real_sph_harm</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;theta&#39;</span><span class="p">)</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># l=0 时，Y00 是常数</span>
+                <span class="n">sph1</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">sph1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 将符号表达式转换为可计算的 PyTorch 函数</span>
+                <span class="n">sph</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sph</span><span class="p">)</span>
+
+<div class="viewcode-block" id="sph_harm_layer.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            angle (torch.Tensor): 极角 theta。</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 拼接后的球谐函数值。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+<div class="viewcode-block" id="BesselBasis">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BesselBasis</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    零阶贝塞尔函数作为径向基函数（来自 DimeNet）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">n_rbf</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff_func</span><span class="p">:</span><span class="nb">callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cutoff (float): 径向截断半径。</span>
+<span class="sd">            n_rbf (int): 径向基函数的数量。</span>
+<span class="sd">            cutoff_func (callable, optional): 应用于基函数的截断函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BesselBasis</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># 计算贝塞尔函数的频率</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_rbf</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&quot;freqs&quot;</span><span class="p">,</span> <span class="n">freqs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="o">=</span> <span class="n">cutoff_func</span>
+
+<div class="viewcode-block" id="BesselBasis.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;计算原子间距离的零阶贝塞尔展开。</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                dist (torch.Tensor): 形状为 (N_edge,) 的原子间距离。</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                rbf (torch.Tensor): 形状为 (N_edge, n_rbf) 的零阶贝塞尔展开。</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">a</span>
+        <span class="c1"># 零阶球贝塞尔函数 j0(x) = sin(x)/x</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span> <span class="o">/</span> <span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rbf</span> <span class="o">=</span> <span class="n">rbf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">rbf</span></div>
+</div>
+
+
+<div class="viewcode-block" id="GaussianSmearing">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GaussianSmearing</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;高斯函数作为径向基函数。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">num_gaussians</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cutoff_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            start (float): 第一个高斯函数的中心位置。</span>
+<span class="sd">            stop (float): 最后一个高斯函数的中心位置。</span>
+<span class="sd">            num_gaussians (int): 高斯函数的数量。</span>
+<span class="sd">            cutoff_func (callable, optional): 应用于基函数的截断函数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GaussianSmearing</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num_gaussians</span><span class="p">)</span>
+        <span class="c1"># 计算高斯函数的宽度系数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;offset&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="o">=</span> <span class="n">cutoff_func</span>
+<div class="viewcode-block" id="GaussianSmearing.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播。&quot;&quot;&quot;</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">expansion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expansion</span> <span class="o">=</span> <span class="n">expansion</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff_func</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">expansion</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Dense">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dense</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;源自 SchNetPack 的全连接线性层，带有激活函数。</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       y = activation(xW^T + b)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_features (int): 输入特征数 :math:`x`。</span>
+<span class="sd">        out_features (int): 输出特征数 :math:`y`。</span>
+<span class="sd">        bias (bool, optional): 如果为 False, 层将不学习偏置 :math:`b`。</span>
+<span class="sd">        activation (callable, optional): 如果为 None, 则不使用激活函数。</span>
+<span class="sd">        weight_init (callable, optional): 权重的初始化函数。</span>
+<span class="sd">        bias_init (callable, optional): 偏置的初始化函数。</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">,</span>
+        <span class="n">out_features</span><span class="p">,</span>
+        <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight_init</span><span class="o">=</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="o">=</span><span class="n">zeros_initializer</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_init</span> <span class="o">=</span> <span class="n">weight_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Dense</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
+        <span class="c1"># 初始化线性层 y = xW^T + b</span>
+
+<div class="viewcode-block" id="Dense.reset_parameters">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.reset_parameters">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;重新初始化模型的权重和偏置值。&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dense.forward">
+<a class="viewcode-back" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.forward">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;计算层的输出。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (torch.Tensor): 输入值的批次。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 层的输出。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 计算线性层 y = xW^T + b</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Dense</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="c1"># 添加激活函数</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    TorchScript导出版 | v1.0 | 中文
+    <span class="fa fa-caret-down"></span>
+  </span>
+  
+  <div class="rst-other-versions">
+    
+    
+    <dl>
+      <dt>分支</dt>
+      
+        
+          <dd><a href="../../../../chinese_annotated/v1.0/zh/source_v1/index.html">中文注释版</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">TorchScript导出版 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>版本</dt>
+      
+        
+          <dd><a href="../../../v2.0/zh/source_v2/index.html">2.0</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">1.0 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>语言</dt>
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">中文 ✓</a>
+          </dd>
+        
+      
+        
+          <dd><a href="../../en/source_v1/index.html">English</a></dd>
+        
+      
+    </dl>
+    
+    
+    <hr>
+    <dl>
+      <dt>项目主页</dt>
+      <dd>
+        <a href="https://github.com/bud-primordium/HamGNN">
+          <span class="fa fa-github"></span> GitHub
+        </a>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<style>
+/* 自定义样式优化三维切换器 */
+.rst-versions {
+  font-size: 14px;
+}
+
+/* 让版本切换器更醒目 */
+.rst-current-version {
+  background-color: #2c3e50 !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
+  padding: 12px 24px !important;
+}
+
+.rst-current-version:hover {
+  background-color: #34495e !important;
+}
+
+.rst-other-versions dl {
+  margin-bottom: 16px;
+}
+
+.rst-other-versions dt {
+  color: #55a5d9;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.rst-other-versions dd {
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+.rst-other-versions dd.rtd-current-item a {
+  font-weight: bold;
+  color: #55a5d9;
+}
+
+.rst-other-versions hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+</style><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

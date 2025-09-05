@@ -1,0 +1,646 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_1_0.GraphData.graph_data &mdash; HamGNN v1.0 中文文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=7902463a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/logo.png"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=60817391"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=faab29de"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../source_v1/index.html" class="icon icon-home">
+            HamGNN
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">API 文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/main_entry.html">主程序入口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.train_and_eval"><code class="docutils literal notranslate"><span class="pre">train_and_eval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.HamGNN"><code class="docutils literal notranslate"><span class="pre">HamGNN()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_structure.html">模型顶层结构</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.representation"><code class="docutils literal notranslate"><span class="pre">Model.representation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.output_module"><code class="docutils literal notranslate"><span class="pre">Model.output_module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.losses"><code class="docutils literal notranslate"><span class="pre">Model.losses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.post_processing"><code class="docutils literal notranslate"><span class="pre">Model.post_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.calculate_loss"><code class="docutils literal notranslate"><span class="pre">Model.calculate_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.training_step"><code class="docutils literal notranslate"><span class="pre">Model.training_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_step"><code class="docutils literal notranslate"><span class="pre">Model.validation_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.validation_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.test_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.forward"><code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.log_metrics"><code class="docutils literal notranslate"><span class="pre">Model.log_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Model.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.check_param"><code class="docutils literal notranslate"><span class="pre">Model.check_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/gnn_core.html">GNN 核心层</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/net.html">神经网络模块 (net.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block"><code class="docutils literal notranslate"><span class="pre">residual_block</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.irreps_in"><code class="docutils literal notranslate"><span class="pre">residual_block.irreps_in</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.feature_irreps_hidden"><code class="docutils literal notranslate"><span class="pre">residual_block.feature_irreps_hidden</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.resnet"><code class="docutils literal notranslate"><span class="pre">residual_block.resnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.equivariant_nonlin"><code class="docutils literal notranslate"><span class="pre">residual_block.equivariant_nonlin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear1"><code class="docutils literal notranslate"><span class="pre">residual_block.linear1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear2"><code class="docutils literal notranslate"><span class="pre">residual_block.linear2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.forward"><code class="docutils literal notranslate"><span class="pre">residual_block.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder"><code class="docutils literal notranslate"><span class="pre">Edge_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder"><code class="docutils literal notranslate"><span class="pre">Triplet_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.ang_emb"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.ang_emb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_kj"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_kj</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_ji"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_ji</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.tp"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.fc"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_triplet"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.triplets"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.triplets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.forward"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer"><code class="docutils literal notranslate"><span class="pre">Ham_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.residual"><code class="docutils literal notranslate"><span class="pre">Ham_layer.residual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.linear"><code class="docutils literal notranslate"><span class="pre">Ham_layer.linear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.forward"><code class="docutils literal notranslate"><span class="pre">Ham_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.one_hot"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.one_hot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.spharm_edges"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.spharm_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.radial_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.radial_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.chemical_embedding"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.chemical_embedding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.convnet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.convnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_node"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_edge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out"><code class="docutils literal notranslate"><span class="pre">HamGNN_out</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.derivative"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.derivative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.create_graph"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.create_graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.nao_max"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.nao_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_type"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_only"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_only</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.include_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.include_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_switch"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_switch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cg_cal"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cg_cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.matrix_merge"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.matrix_merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.change_index"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.change_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.convert_to_mole_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.convert_to_mole_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cat_onsite_and_offsite"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cat_onsite_and_offsite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hon"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hoff"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hoff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_debug"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_debug()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_soc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.mask_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.mask_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.construct_Hsoc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.construct_Hsoc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.reduce"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.reduce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html">物理工具 (wigner.py, clebsch_gordan.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.wigner">Wigner 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.clebsch_gordan">Clebsch-Gordan 系数</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.TensorWrapper"><code class="docutils literal notranslate"><span class="pre">TensorWrapper</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_components.html">模型通用组件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/outputs.html">输出模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force"><code class="docutils literal notranslate"><span class="pre">Force</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force.forward"><code class="docutils literal notranslate"><span class="pre">Force.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec"><code class="docutils literal notranslate"><span class="pre">Force_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Force_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born"><code class="docutils literal notranslate"><span class="pre">Born</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born.forward"><code class="docutils literal notranslate"><span class="pre">Born.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec"><code class="docutils literal notranslate"><span class="pre">Born_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Born_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric"><code class="docutils literal notranslate"><span class="pre">piezoelectric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric.forward"><code class="docutils literal notranslate"><span class="pre">piezoelectric.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar"><code class="docutils literal notranslate"><span class="pre">trivial_scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar.forward"><code class="docutils literal notranslate"><span class="pre">trivial_scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar"><code class="docutils literal notranslate"><span class="pre">scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar.forward"><code class="docutils literal notranslate"><span class="pre">scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor"><code class="docutils literal notranslate"><span class="pre">crystal_tensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor.forward"><code class="docutils literal notranslate"><span class="pre">crystal_tensor.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces.forward"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.EPC_output"><code class="docutils literal notranslate"><span class="pre">EPC_output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/layers.html">层定义</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer"><code class="docutils literal notranslate"><span class="pre">denseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer.forward"><code class="docutils literal notranslate"><span class="pre">denseLayer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression"><code class="docutils literal notranslate"><span class="pre">denseRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression.forward"><code class="docutils literal notranslate"><span class="pre">denseRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope.forward"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff"><code class="docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff.forward"><code class="docutils literal notranslate"><span class="pre">CosineCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression"><code class="docutils literal notranslate"><span class="pre">MLPRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression.forward"><code class="docutils literal notranslate"><span class="pre">MLPRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer.forward"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis"><code class="docutils literal notranslate"><span class="pre">BesselBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis.forward"><code class="docutils literal notranslate"><span class="pre">BesselBasis.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing.forward"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Dense.reset_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/data_processing.html">数据处理与输入</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html">图数据模块</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html">数据解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html">配置解析</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html#HamGNN_v_1_0.input.config_parsing.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/utilities.html">通用工具函数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.forward"><code class="docutils literal notranslate"><span class="pre">SSP.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.extra_repr"><code class="docutils literal notranslate"><span class="pre">SSP.extra_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH.forward"><code class="docutils literal notranslate"><span class="pre">SWISH.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss.forward"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss.forward"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss.forward"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">RMSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../source_v1/index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../source_v1/index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_1_0.GraphData.graph_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>HamGNN_v_1_0.GraphData.graph_data 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-10-07 20:44:01 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-10-29 16:24:33</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;该模块定义了 `graph_data_module` 类，用于处理和封装图数据。</span>
+
+<span class="sd">`graph_data_module` 继承自 `pytorch_lightning.LightningDataModule`，</span>
+<span class="sd">负责数据集的划分（训练、验证、测试集）、以及为每个部分创建对应的数据加载器（DataLoader）。</span>
+<span class="sd">它支持从预定义的索引文件加载数据集划分，或按比例随机划分。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_split</span><span class="p">,</span> <span class="n">Subset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+
+<div class="viewcode-block" id="graph_data_module">
+<a class="viewcode-back" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">graph_data_module</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;继承自 pl.LightningDataModule，用于管理图数据集。</span>
+
+<span class="sd">    该类自动化了数据集的加载、划分和批处理过程，使其与 PyTorch Lightning 的</span>
+<span class="sd">    训练流程无缝集成。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">train_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+                 <span class="n">val_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+                 <span class="n">test_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+                 <span class="n">val_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">test_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">split_file</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;初始化 `graph_data_module`。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset (Union[list, tuple, np.array], optional): </span>
+<span class="sd">                包含所有数据样本的完整数据集，通常是 `torch_geometric.data.Data` 对象的列表。默认为 None。</span>
+<span class="sd">            train_ratio (float, optional): </span>
+<span class="sd">                训练集所占的比例。默认为 0.6。</span>
+<span class="sd">            val_ratio (float, optional): </span>
+<span class="sd">                验证集所占的比例。默认为 0.2。</span>
+<span class="sd">            test_ratio (float, optional): </span>
+<span class="sd">                测试集所占的比例。默认为 0.2。</span>
+<span class="sd">            batch_size (int, optional): </span>
+<span class="sd">                训练时每个批次的大小。默认为 300。</span>
+<span class="sd">            val_batch_size (int, optional): </span>
+<span class="sd">                验证时每个批次的大小。如果为 None，则使用 `batch_size`。默认为 None。</span>
+<span class="sd">            test_batch_size (int, optional): </span>
+<span class="sd">                测试时每个批次的大小。如果为 None，则使用 `val_batch_size`。默认为 None。</span>
+<span class="sd">            split_file (str, optional): </span>
+<span class="sd">                一个 `.npz` 文件的路径，其中包含预先定义好的 &#39;train_idx&#39;, &#39;val_idx&#39;, &#39;test_idx&#39; </span>
+<span class="sd">                数据集划分索引。如果提供此文件，将忽略 `train_ratio`, `val_ratio`, `test_ratio`。</span>
+<span class="sd">                默认为 None。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">graph_data_module</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_ratio</span> <span class="o">=</span> <span class="n">train_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_ratio</span> <span class="o">=</span> <span class="n">val_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span> <span class="o">=</span> <span class="n">test_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_file</span> <span class="o">=</span> <span class="n">split_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_batch_size</span> <span class="o">=</span> <span class="n">val_batch_size</span> <span class="ow">or</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_batch_size</span> <span class="o">=</span> <span class="n">test_batch_size</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_batch_size</span>
+
+<div class="viewcode-block" id="graph_data_module.setup">
+<a class="viewcode-back" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.setup">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;划分数据集为训练、验证和测试三部分。</span>
+
+<span class="sd">        此方法是 PyTorch Lightning 工作流的一部分，在训练或测试开始时被调用。</span>
+<span class="sd">        其行为逻辑如下：</span>
+<span class="sd">        </span>
+<span class="sd">        1. 如果 `self.split_file` 存在，则从该文件加载预定义的索引来划分数据集。</span>
+<span class="sd">           这确保了实验的可复现性。</span>
+<span class="sd">        2. 如果没有提供划分文件，则根据 `train_ratio`, `val_ratio`, `test_ratio` </span>
+<span class="sd">           对数据集进行随机划分。划分是基于固定的随机种子（42），以保证每次运行的划分结果一致。</span>
+<span class="sd">        3. 根据 `stage` 参数（&#39;fit&#39; 或 &#39;test&#39;）来决定执行哪部分逻辑。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stage (str, optional): </span>
+<span class="sd">                当前所处的阶段，由 Lightning 自动传入。可以是 &#39;fit&#39;、&#39;test&#39; 等。默认为 None。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 如果提供了预先划分好的索引文件，则直接加载</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_file</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Split dataset by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_file</span> <span class="p">)</span>
+            <span class="n">train_idx</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="s2">&quot;train_idx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">val_idx</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="s2">&quot;val_idx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">test_idx</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="s2">&quot;test_idx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">train_idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_data</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">val_idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">test_idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 在 &#39;fit&#39; 阶段或未指定阶段时，执行随机划分</span>
+            <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s1">&#39;fit&#39;</span> <span class="ow">or</span> <span class="n">stage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># 使用固定种子以保证划分的可复现性</span>
+                <span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="n">num_train</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_ratio</span> <span class="o">*</span> <span class="n">length</span><span class="p">)</span>
+                <span class="n">num_val</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_ratio</span> <span class="o">*</span> <span class="n">length</span><span class="p">)</span>
+                <span class="n">num_test</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span> <span class="o">*</span> <span class="n">length</span><span class="p">)</span>
+                <span class="c1"># 生成随机排列的索引</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">length</span><span class="p">)))</span>
+                <span class="n">train_idx</span> <span class="o">=</span> <span class="n">perm</span><span class="p">[:</span><span class="n">num_train</span><span class="p">]</span>
+                <span class="n">val_idx</span> <span class="o">=</span> <span class="n">perm</span><span class="p">[</span><span class="n">num_train</span><span class="p">:</span><span class="n">num_train</span><span class="o">+</span><span class="n">num_val</span><span class="p">]</span>
+                <span class="n">test_idx</span> <span class="o">=</span> <span class="n">perm</span><span class="p">[</span><span class="o">-</span><span class="n">num_test</span><span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">train_idx</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">val_data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">val_idx</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">test_idx</span><span class="p">]</span>
+            <span class="c1"># 在 &#39;test&#39; 阶段，使用整个数据集作为测试集</span>
+            <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span></div>
+
+
+<div class="viewcode-block" id="graph_data_module.train_dataloader">
+<a class="viewcode-back" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.train_dataloader">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;创建并返回训练数据加载器。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_data_module.val_dataloader">
+<a class="viewcode-back" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.val_dataloader">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;创建并返回验证数据加载器。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">val_batch_size</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_data_module.test_dataloader">
+<a class="viewcode-back" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.test_dataloader">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;创建并返回测试数据加载器。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_batch_size</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 HamGNN Team。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    TorchScript导出版 | v1.0 | 中文
+    <span class="fa fa-caret-down"></span>
+  </span>
+  
+  <div class="rst-other-versions">
+    
+    
+    <dl>
+      <dt>分支</dt>
+      
+        
+          <dd><a href="../../../../chinese_annotated/v1.0/zh/source_v1/index.html">中文注释版</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">TorchScript导出版 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>版本</dt>
+      
+        
+          <dd><a href="../../../v2.0/zh/source_v2/index.html">2.0</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">1.0 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>语言</dt>
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">中文 ✓</a>
+          </dd>
+        
+      
+        
+          <dd><a href="../../en/source_v1/index.html">English</a></dd>
+        
+      
+    </dl>
+    
+    
+    <hr>
+    <dl>
+      <dt>项目主页</dt>
+      <dd>
+        <a href="https://github.com/bud-primordium/HamGNN">
+          <span class="fa fa-github"></span> GitHub
+        </a>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<style>
+/* 自定义样式优化三维切换器 */
+.rst-versions {
+  font-size: 14px;
+}
+
+/* 让版本切换器更醒目 */
+.rst-current-version {
+  background-color: #2c3e50 !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
+  padding: 12px 24px !important;
+}
+
+.rst-current-version:hover {
+  background-color: #34495e !important;
+}
+
+.rst-other-versions dl {
+  margin-bottom: 16px;
+}
+
+.rst-other-versions dt {
+  color: #55a5d9;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.rst-other-versions dd {
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+.rst-other-versions dd.rtd-current-item a {
+  font-weight: bold;
+  color: #55a5d9;
+}
+
+.rst-other-versions hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+</style><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

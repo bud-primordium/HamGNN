@@ -1,0 +1,895 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HamGNN_v_1_0.models.utils &mdash; HamGNN v1.0 中文文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=7902463a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/logo.png"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=945f9846"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=faab29de"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../source_v1/index.html" class="icon icon-home">
+            HamGNN
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/main_entry.html">Main Program Entry</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.train_and_eval"><code class="docutils literal notranslate"><span class="pre">train_and_eval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/main_entry.html#HamGNN_v_1_0.main.HamGNN"><code class="docutils literal notranslate"><span class="pre">HamGNN()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_structure.html">Top-level Model Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.representation"><code class="docutils literal notranslate"><span class="pre">Model.representation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.output_module"><code class="docutils literal notranslate"><span class="pre">Model.output_module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.losses"><code class="docutils literal notranslate"><span class="pre">Model.losses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.post_processing"><code class="docutils literal notranslate"><span class="pre">Model.post_processing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.calculate_loss"><code class="docutils literal notranslate"><span class="pre">Model.calculate_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.training_step"><code class="docutils literal notranslate"><span class="pre">Model.training_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_step"><code class="docutils literal notranslate"><span class="pre">Model.validation_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.validation_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.validation_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.test_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.test_epoch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.forward"><code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.log_metrics"><code class="docutils literal notranslate"><span class="pre">Model.log_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Model.configure_optimizers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_structure.html#HamGNN_v_1_0.models.Model.Model.check_param"><code class="docutils literal notranslate"><span class="pre">Model.check_param()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/gnn_core.html">GNN Core Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/net.html">Neural Network Module (net.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block"><code class="docutils literal notranslate"><span class="pre">residual_block</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.irreps_in"><code class="docutils literal notranslate"><span class="pre">residual_block.irreps_in</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.feature_irreps_hidden"><code class="docutils literal notranslate"><span class="pre">residual_block.feature_irreps_hidden</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.resnet"><code class="docutils literal notranslate"><span class="pre">residual_block.resnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.equivariant_nonlin"><code class="docutils literal notranslate"><span class="pre">residual_block.equivariant_nonlin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear1"><code class="docutils literal notranslate"><span class="pre">residual_block.linear1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.linear2"><code class="docutils literal notranslate"><span class="pre">residual_block.linear2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.residual_block.forward"><code class="docutils literal notranslate"><span class="pre">residual_block.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder"><code class="docutils literal notranslate"><span class="pre">Edge_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_src"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_node_dst"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_node_dst</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.tp"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.fc"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.linear_edge"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.linear_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Edge_builder_tp.forward"><code class="docutils literal notranslate"><span class="pre">Edge_builder_tp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder"><code class="docutils literal notranslate"><span class="pre">Triplet_builder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.ang_emb"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.ang_emb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_kj"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_kj</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_edge_ji"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_edge_ji</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.tp"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.tp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.fc"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.fc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.linear_triplet"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.linear_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.triplets"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.triplets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Triplet_builder.forward"><code class="docutils literal notranslate"><span class="pre">Triplet_builder.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer"><code class="docutils literal notranslate"><span class="pre">Ham_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.residual"><code class="docutils literal notranslate"><span class="pre">Ham_layer.residual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.linear"><code class="docutils literal notranslate"><span class="pre">Ham_layer.linear</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.Ham_layer.forward"><code class="docutils literal notranslate"><span class="pre">Ham_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.one_hot"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.one_hot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.spharm_edges"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.spharm_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.radial_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.radial_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.chemical_embedding"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.chemical_embedding</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.convnet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.convnet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_node"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_edge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.conv_to_output_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.conv_to_output_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre2.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre2.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_pre_charge.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_pre_charge.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out"><code class="docutils literal notranslate"><span class="pre">HamGNN_out</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.derivative"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.derivative</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.create_graph"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.create_graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.nao_max"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.nao_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_type"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.ham_only"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.ham_only</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.include_triplet"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.include_triplet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_switch"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_switch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.soc_basis"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.soc_basis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cg_cal"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cg_cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.matrix_merge"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.matrix_merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.change_index"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.change_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.convert_to_mole_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.convert_to_mole_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cat_onsite_and_offsite"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cat_onsite_and_offsite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hon"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.symmetrize_Hoff"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.symmetrize_Hoff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_debug"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_debug()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.cal_band_energy_soc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.cal_band_energy_soc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.mask_Ham"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.mask_Ham()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.construct_Hsoc"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.construct_Hsoc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.reduce"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.reduce()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/net.html#HamGNN_v_1_0.models.HamGNN.net.HamGNN_out.forward"><code class="docutils literal notranslate"><span class="pre">HamGNN_out.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html">Physics Tools (wigner.py, clebsch_gordan.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.wigner">Wigner Coefficients</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.wigner.wigner"><code class="docutils literal notranslate"><span class="pre">wigner()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#module-HamGNN_v_1_0.models.HamGNN.clebsch_gordan">Clebsch-Gordan Coefficients</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.ClebschGordan"><code class="docutils literal notranslate"><span class="pre">ClebschGordan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/gnn_core/physics_tools.html#HamGNN_v_1_0.models.HamGNN.clebsch_gordan.TensorWrapper"><code class="docutils literal notranslate"><span class="pre">TensorWrapper</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/model_components.html">Common Model Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/outputs.html">Output Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force"><code class="docutils literal notranslate"><span class="pre">Force</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force.forward"><code class="docutils literal notranslate"><span class="pre">Force.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec"><code class="docutils literal notranslate"><span class="pre">Force_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Force_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Force_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born"><code class="docutils literal notranslate"><span class="pre">Born</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born.forward"><code class="docutils literal notranslate"><span class="pre">Born.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec"><code class="docutils literal notranslate"><span class="pre">Born_node_vec</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.Born_node_vec.forward"><code class="docutils literal notranslate"><span class="pre">Born_node_vec.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric"><code class="docutils literal notranslate"><span class="pre">piezoelectric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.piezoelectric.forward"><code class="docutils literal notranslate"><span class="pre">piezoelectric.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar"><code class="docutils literal notranslate"><span class="pre">trivial_scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.trivial_scalar.forward"><code class="docutils literal notranslate"><span class="pre">trivial_scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar"><code class="docutils literal notranslate"><span class="pre">scalar</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.scalar.forward"><code class="docutils literal notranslate"><span class="pre">scalar.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor"><code class="docutils literal notranslate"><span class="pre">crystal_tensor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.crystal_tensor.forward"><code class="docutils literal notranslate"><span class="pre">crystal_tensor.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.total_energy_and_atomic_forces.forward"><code class="docutils literal notranslate"><span class="pre">total_energy_and_atomic_forces.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/outputs.html#HamGNN_v_1_0.models.outputs.EPC_output"><code class="docutils literal notranslate"><span class="pre">EPC_output</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/model_components/layers.html">Layer Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer"><code class="docutils literal notranslate"><span class="pre">denseLayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseLayer.forward"><code class="docutils literal notranslate"><span class="pre">denseLayer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression"><code class="docutils literal notranslate"><span class="pre">denseRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.denseRegression.forward"><code class="docutils literal notranslate"><span class="pre">denseRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.cuttoff_envelope.forward"><code class="docutils literal notranslate"><span class="pre">cuttoff_envelope.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff"><code class="docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.CosineCutoff.forward"><code class="docutils literal notranslate"><span class="pre">CosineCutoff.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression"><code class="docutils literal notranslate"><span class="pre">MLPRegression</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.MLPRegression.forward"><code class="docutils literal notranslate"><span class="pre">MLPRegression.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.sph_harm_layer.forward"><code class="docutils literal notranslate"><span class="pre">sph_harm_layer.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis"><code class="docutils literal notranslate"><span class="pre">BesselBasis</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.BesselBasis.forward"><code class="docutils literal notranslate"><span class="pre">BesselBasis.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.GaussianSmearing.forward"><code class="docutils literal notranslate"><span class="pre">GaussianSmearing.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.reset_parameters"><code class="docutils literal notranslate"><span class="pre">Dense.reset_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/model_components/layers.html#HamGNN_v_1_0.models.layers.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/data_processing.html">Data Processing and Input</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html">Graph Data Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module"><code class="docutils literal notranslate"><span class="pre">graph_data_module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.setup"><code class="docutils literal notranslate"><span class="pre">graph_data_module.setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.train_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.train_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.val_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.val_dataloader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../source_v1/data_processing/graph_data.html#HamGNN_v_1_0.GraphData.graph_data.graph_data_module.test_dataloader"><code class="docutils literal notranslate"><span class="pre">graph_data_module.test_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html">Data Parsing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cal_shfit_vec"><code class="docutils literal notranslate"><span class="pre">cal_shfit_vec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.build_config"><code class="docutils literal notranslate"><span class="pre">build_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.get_init_atomfea"><code class="docutils literal notranslate"><span class="pre">get_init_atomfea()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/data_parsing.html#HamGNN_v_1_0.GraphData.data_parsing.cif_parse"><code class="docutils literal notranslate"><span class="pre">cif_parse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html">Configuration Parsing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/data_processing/config_parsing.html#HamGNN_v_1_0.input.config_parsing.read_config"><code class="docutils literal notranslate"><span class="pre">read_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_v1/utilities.html">General utility functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.swish"><code class="docutils literal notranslate"><span class="pre">swish()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.linear_bn_act"><code class="docutils literal notranslate"><span class="pre">linear_bn_act()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP"><code class="docutils literal notranslate"><span class="pre">SSP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.forward"><code class="docutils literal notranslate"><span class="pre">SSP.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.extra_repr"><code class="docutils literal notranslate"><span class="pre">SSP.extra_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH"><code class="docutils literal notranslate"><span class="pre">SWISH</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH.forward"><code class="docutils literal notranslate"><span class="pre">SWISH.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_activation"><code class="docutils literal notranslate"><span class="pre">get_activation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.scatter_plot"><code class="docutils literal notranslate"><span class="pre">scatter_plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss.forward"><code class="docutils literal notranslate"><span class="pre">cosine_similarity_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss.forward"><code class="docutils literal notranslate"><span class="pre">sum_zero_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss.forward"><code class="docutils literal notranslate"><span class="pre">Euclidean_loss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss"><code class="docutils literal notranslate"><span class="pre">RMSELoss</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss.forward"><code class="docutils literal notranslate"><span class="pre">RMSELoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.parse_metric_func"><code class="docutils literal notranslate"><span class="pre">parse_metric_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_hparam_dict"><code class="docutils literal notranslate"><span class="pre">get_hparam_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.triplets"><code class="docutils literal notranslate"><span class="pre">triplets()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../source_v1/index.html">HamGNN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../source_v1/index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">HamGNN_v_1_0.models.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for HamGNN_v_1_0.models.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">/*</span>
+<span class="sd"> * @Author: Yang Zhong </span>
+<span class="sd"> * @Date: 2021-11-29 22:13:49 </span>
+<span class="sd"> * @Last Modified by: Yang Zhong</span>
+<span class="sd"> * @Last Modified time: 2021-11-29 22:26:42</span>
+<span class="sd"> */</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;该模块提供了一系列工具函数，用于模型的构建和训练过程。</span>
+
+<span class="sd">功能包括：</span>
+<span class="sd">- 激活函数的实现（swish）。</span>
+<span class="sd">- 构建包含线性层、批归一化和激活函数的网络块。</span>
+<span class="sd">- 特殊激活函数（SSP, SWISH）的类实现。</span>
+<span class="sd">- 根据名称获取激活函数。</span>
+<span class="sd">- 绘制预测值与目标值的散点图。</span>
+<span class="sd">- 自定义损失函数的实现。</span>
+<span class="sd">- 解析配置文件中的度量函数列表。</span>
+<span class="sd">- 根据配置获取超参数字典。</span>
+<span class="sd">- 计算三元组（triplet）信息。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseTensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Linear</span><span class="p">,</span> <span class="n">Bilinear</span><span class="p">,</span> <span class="n">Sigmoid</span><span class="p">,</span> <span class="n">Softplus</span><span class="p">,</span> <span class="n">ELU</span><span class="p">,</span> <span class="n">ReLU</span><span class="p">,</span> <span class="n">SELU</span><span class="p">,</span> <span class="n">SiLU</span><span class="p">,</span>
+                      <span class="n">CELU</span><span class="p">,</span> <span class="n">BatchNorm1d</span><span class="p">,</span> <span class="n">ModuleList</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Tanh</span><span class="p">,</span> <span class="n">BatchNorm1d</span> <span class="k">as</span> <span class="n">BN</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easydict</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasyDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_kde</span>
+
+<div class="viewcode-block" id="swish">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.swish">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">swish</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Swish 激活函数&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="linear_bn_act">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.linear_bn_act">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">linear_bn_act</span><span class="p">(</span><span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lbias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">activation</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_batch_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;创建一个包含线性层、批归一化层和激活函数的序列模块。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_features (int): 输入特征维度。</span>
+<span class="sd">        out_features (int): 输出特征维度。</span>
+<span class="sd">        lbias (bool, optional): 线性层是否使用偏置。默认为 False。</span>
+<span class="sd">        activation (Callable, optional): 激活函数模块。默认为 None。</span>
+<span class="sd">        use_batch_norm (bool, optional): 是否使用批归一化。默认为 False。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.nn.Sequential: 组装好的序列模块。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">use_batch_norm</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="p">),</span> <span class="n">BN</span><span class="p">(</span><span class="n">out_features</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="p">),</span> <span class="n">BN</span><span class="p">(</span><span class="n">out_features</span><span class="p">),</span> <span class="n">activation</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">lbias</span><span class="p">),</span> <span class="n">activation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SSP">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SSP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;应用逐元素的 Shifted SoftPlus (SSP) 激活函数。</span>
+
+<span class="sd">    SSP 的计算公式为: :math:`\text{SSP}(x)=\text{Softplus}(x)-\text{Softplus}(0)`。</span>
+<span class="sd">    这确保了 :math:`\text{SSP}(0)=0`。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        beta: Softplus 公式中的 :math:`\beta` 值。默认为 1。</span>
+<span class="sd">        threshold: 当输入值高于此阈值时，Softplus 将退化为线性函数。默认为 20。</span>
+
+<span class="sd">    Shape:</span>
+<span class="sd">        - 输入: :math:`(N, *)`，其中 `*` 表示任意数量的附加维度。</span>
+<span class="sd">        - 输出: :math:`(N, *)`，形状与输入相同。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SSP</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+
+<div class="viewcode-block" id="SSP.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="n">sp0</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">-</span> <span class="n">sp0</span></div>
+
+
+<div class="viewcode-block" id="SSP.extra_repr">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SSP.extra_repr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;beta=</span><span class="si">{}</span><span class="s1">, threshold=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="SWISH">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SWISH</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SWISH 激活函数模块&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SWISH</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SWISH.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.SWISH.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">swish</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="get_activation">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_activation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_activation</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;根据字符串名称返回对应的激活函数实例。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): 激活函数的名称，支持带有参数，如 &quot;elu(1.0)&quot;。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.nn.Module: 激活函数模块的实例。</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        NameError: 如果输入的名称不被支持。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">act_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\w+)\((\d+\.\d+)\)&quot;</span><span class="p">,</span> <span class="n">act_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">act_name</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">act_name</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">if</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;softplus&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Softplus</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;ssp&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SSP</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;elu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ELU</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;relu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ReLU</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;selu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SELU</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;swish&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SWISH</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;tanh&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Tanh</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;silu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SiLU</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">act_name</span> <span class="o">==</span> <span class="s1">&#39;celu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CELU</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Not supported activation: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="scatter_plot">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.scatter_plot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">scatter_plot</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;绘制预测值与目标值的散点图。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred (np.ndarray, optional): 预测值数组。</span>
+<span class="sd">        target (np.ndarray, optional): 目标值数组。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        matplotlib.figure.Figure: 绘制好的图表对象。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try:</span>
+<span class="sd">        # Calculate the point density</span>
+<span class="sd">        xy = np.vstack([pred, target])</span>
+<span class="sd">        z = gaussian_kde(xy)(xy)</span>
+<span class="sd">        idx = z.argsort()</span>
+<span class="sd">        pred, target, z = pred[idx], target[idx], z[idx]</span>
+<span class="sd">        # scatter plot</span>
+<span class="sd">        ax.scatter(x=pred, y=target, s=25, c=z, marker=&quot;.&quot;)</span>
+<span class="sd">    except:</span>
+<span class="sd">        ax.scatter(x=pred, y=target, s=25, c=&#39;g&#39;, alpha=0.5, marker=&quot;.&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Prediction VS Target&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+    <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">target</span><span class="p">,</span> <span class="n">pred</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">target</span><span class="p">,</span> <span class="n">pred</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span>
+            <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Prediction&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Target&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="cosine_similarity_loss">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">cosine_similarity_loss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算 1 - 余弦相似度的损失函数。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">cosine_similarity_loss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="cosine_similarity_loss.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.cosine_similarity_loss.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">vec_product</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pred</span><span class="o">*</span><span class="n">target</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pred_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">target_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span>
+            <span class="n">pred</span><span class="p">)</span> <span class="o">-</span> <span class="n">vec_product</span><span class="o">/</span><span class="p">(</span><span class="n">pred_norm</span><span class="o">*</span><span class="n">target_norm</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+<div class="viewcode-block" id="sum_zero_loss">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">sum_zero_loss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算预测值总和的 L2 范数，用于约束总和为零。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">sum_zero_loss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="sum_zero_loss.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.sum_zero_loss.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Euclidean_loss">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Euclidean_loss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算预测值和目标值之间的平均欧几里得距离。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Euclidean_loss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Euclidean_loss.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.Euclidean_loss.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+<div class="viewcode-block" id="RMSELoss">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RMSELoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;均方根误差损失。&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RMSELoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mse</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RMSELoss.forward">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.RMSELoss.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mse</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span></div>
+</div>
+
+
+<div class="viewcode-block" id="parse_metric_func">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.parse_metric_func">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_metric_func</span><span class="p">(</span><span class="n">losses_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;解析配置文件中的度量函数列表，将字符串名称转换为函数实例。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        losses_list (Union[list, tuple], optional): 包含度量函数配置的列表。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list or tuple: 更新后的列表，其中 &#39;metric&#39; 的值被替换为函数实例。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">loss_dict</span> <span class="ow">in</span> <span class="n">losses_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mse&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mae&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">L1Loss</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cosine_similarity&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cosine_similarity_loss</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sum_zero&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_zero_loss</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;euclidean_loss&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Euclidean_loss</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;rmse&#39;</span><span class="p">:</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RMSELoss</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;This metric function is not supported!&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">losses_list</span></div>
+
+
+<div class="viewcode-block" id="get_hparam_dict">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.get_hparam_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_hparam_dict</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;根据配置文件提取并组织用于日志记录的超参数字典。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict, optional): 项目的全局配置对象。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: 包含 GNN 名称和相关超参数的字典。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimnet&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimnet_params</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;edge_gnn&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">Edge_GNN</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;schnet&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">SchNet</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_edge&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_edge</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;painn&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">painn</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;cgcnn_triplet&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">cgcnn_triplet</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimenet_triplet&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimenet_triplet</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimeham&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimeham</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dimeorb&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">dimeorb</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;schnorb&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">schnorb</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;nequip&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">nequip</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;hamgnn_pre&#39;</span><span class="p">:</span>
+        <span class="n">hparam_dict</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">representation_nets</span><span class="o">.</span><span class="n">HamGNN_pre</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The network: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="si">}</span><span class="s2"> is not yet supported!&quot;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">hparam_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">hparam_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+            <span class="n">hparam_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">hparam_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;GNN_Name&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span><span class="n">GNN_Net</span><span class="p">}</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">hparam_dict</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="triplets">
+<a class="viewcode-back" href="../../../source_v1/utilities.html#HamGNN_v_1_0.models.utils.triplets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">triplets</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">nbr_shift</span><span class="p">,</span> <span class="n">nbr_counts</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算图中的所有三元组 (i, j, k)，其中 j 是中心原子。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        edge_index (torch.Tensor): 边索引，形状为 [2, N_edges]。</span>
+<span class="sd">        nbr_shift (torch.Tensor): 边的周期性偏移向量。</span>
+<span class="sd">        nbr_counts (torch.Tensor): 每个节点的近邻数量。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: 包含三元组信息的元组 (col_i, row_j, idx_i, idx_j, idx_k, idx_kj, idx_ji)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">row_k</span><span class="p">,</span> <span class="n">col_j</span> <span class="o">=</span> <span class="n">edge_index</span>  <span class="c1"># k-&gt;j</span>
+    <span class="n">row_j</span><span class="p">,</span> <span class="n">col_i</span> <span class="o">=</span> <span class="n">edge_index</span>  <span class="c1"># j-&gt;i</span>
+    <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="n">nbr_counts_cumsum</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">nbr_counts</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">edge_kj</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_j</span><span class="p">):</span>
+        <span class="n">j_j</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nbr_counts_cumsum</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">nbr_counts_cumsum</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">idx_kj</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge_kj</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">j_j</span><span class="p">)</span>
+        <span class="n">idx_ji</span> <span class="o">+=</span> <span class="n">j_j</span>
+        <span class="n">idx_k</span> <span class="o">+=</span> <span class="p">[</span><span class="n">row_k</span><span class="p">[</span><span class="n">edge_kj</span><span class="p">]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">j_j</span><span class="p">)</span>
+        <span class="n">idx_j</span> <span class="o">+=</span> <span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">j_j</span><span class="p">)</span>
+        <span class="n">idx_i</span> <span class="o">+=</span> <span class="n">col_i</span><span class="p">[</span><span class="n">j_j</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>      
+
+    <span class="n">idx_k</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">idx_k</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">idx_j</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">idx_j</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">idx_i</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">idx_i</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">idx_kj</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">idx_kj</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+    <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">idx_ji</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">edge_index</span><span class="p">)</span>
+
+    <span class="c1"># 移除 i == k 的三元组，除非它们在不同的周期性晶胞中</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_i</span> <span class="o">!=</span> <span class="n">idx_k</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">nbr_shift</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span><span class="o">+</span><span class="n">nbr_shift</span><span class="p">[</span><span class="n">idx_ji</span><span class="p">])</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1.0e-3</span><span class="p">)</span>
+    <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span> <span class="o">=</span> <span class="n">idx_i</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">idx_j</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">idx_k</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="c1"># 对应三元组的边索引 (k-&gt;j, j-&gt;i)</span>
+    <span class="n">idx_kj</span> <span class="o">=</span> <span class="n">idx_kj</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">idx_ji</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    idx_i -&gt; pos[idx_i]</span>
+<span class="sd">    idx_j -&gt; pos[idx_j] - nbr_shift[idx_ji]</span>
+<span class="sd">    idx_k -&gt; pos[idx_k] - nbr_shift[idx_ji] - nbr_shift[idx_kj] </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="n">col_i</span><span class="p">,</span> <span class="n">row_j</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright HamGNN Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"></span>
+    TorchScript导出版 | v1.0 | English
+    <span class="fa fa-caret-down"></span>
+  </span>
+  
+  <div class="rst-other-versions">
+    
+    
+    <dl>
+      <dt>Branches</dt>
+      
+        
+          <dd><a href="../../../../chinese_annotated/v1.0/en/source_v1/index.html">中文注释版</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">TorchScript导出版 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>Versions</dt>
+      
+        
+          <dd><a href="../../../v2.0/en/source_v2/index.html">2.0</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">1.0 ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    
+    
+    <dl>
+      <dt>Languages</dt>
+      
+        
+          <dd><a href="../../zh/source_v1/index.html">中文</a></dd>
+        
+      
+        
+          <dd class="rtd-current-item">
+            <a href="index.html">English ✓</a>
+          </dd>
+        
+      
+    </dl>
+    
+    
+    <hr>
+    <dl>
+      <dt>Project Home</dt>
+      <dd>
+        <a href="https://github.com/bud-primordium/HamGNN">
+          <span class="fa fa-github"></span> GitHub
+        </a>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+<style>
+/* 自定义样式优化三维切换器 */
+.rst-versions {
+  font-size: 14px;
+}
+
+/* 让版本切换器更醒目 */
+.rst-current-version {
+  background-color: #2c3e50 !important;
+  font-weight: bold !important;
+  font-size: 15px !important;
+  padding: 12px 24px !important;
+}
+
+.rst-current-version:hover {
+  background-color: #34495e !important;
+}
+
+.rst-other-versions dl {
+  margin-bottom: 16px;
+}
+
+.rst-other-versions dt {
+  color: #55a5d9;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.rst-other-versions dd {
+  margin-left: 16px;
+  margin-bottom: 4px;
+}
+
+.rst-other-versions dd.rtd-current-item a {
+  font-weight: bold;
+  color: #55a5d9;
+}
+
+.rst-other-versions hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #444;
+}
+</style><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
