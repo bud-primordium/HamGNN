@@ -35,6 +35,9 @@ from .Attention_kan import (RadialBasisEdgeEncoding,
                             ConvBlockE3,  
                             ClebschGordanCoefficients,
                             SoftUnitStepCutoff)
+from .NEMP.nemp import NEMPConvBlock
+from .NEMP.nemp_v2 import NEMPDirectionalBlock
+from .NEMP.nemp_v3 import NEMPV3Block
 from pymatgen.core.periodic_table import Element
 from .clebsch_gordan import ClebschGordan
 from ..e3_layers import e3TensorDecomp
@@ -171,6 +174,41 @@ class HamGNNConvE3(BaseModel):
        # --- 边特征嵌入模块 ---
         use_kan = config.HamGNN_pre.use_kan
         self.radial_MLP = config.HamGNN_pre.radial_MLP
+
+        # --- 消息传递模式与 NEMP 配置 ---
+        self.message_passing_mode = getattr(config.HamGNN_pre, 'message_passing_mode', 'eemp').lower()
+        # nemp v1
+        self.nemp_cfg = getattr(config.HamGNN_pre, 'nemp', EasyDict())
+        if 'ec_channels' not in self.nemp_cfg:
+            self.nemp_cfg.ec_channels = 64
+        if 'tp_mid_irreps' not in self.nemp_cfg:
+            self.nemp_cfg.tp_mid_irreps = str(self.irreps_node_features)
+        if 'gate' not in self.nemp_cfg:
+            self.nemp_cfg.gate = 'none'
+        # nemp v2
+        self.nemp_v2_cfg = getattr(config.HamGNN_pre, 'nemp_v2', EasyDict())
+        if 'ec_channels' not in self.nemp_v2_cfg:
+            self.nemp_v2_cfg.ec_channels = 96
+        if 'tp_mid_irreps' not in self.nemp_v2_cfg:
+            self.nemp_v2_cfg.tp_mid_irreps = str(self.irreps_node_features)
+        if 'env_scalar_mlp' not in self.nemp_v2_cfg:
+            self.nemp_v2_cfg.env_scalar_mlp = [32, 32]
+        if 'degree_norm' not in self.nemp_v2_cfg:
+            self.nemp_v2_cfg.degree_norm = True
+        if 'gate' not in self.nemp_v2_cfg:
+            self.nemp_v2_cfg.gate = 'none'
+        # nemp v3
+        self.nemp_v3_cfg = getattr(config.HamGNN_pre, 'nemp_v3', EasyDict())
+        if 'ec_channels' not in self.nemp_v3_cfg:
+            self.nemp_v3_cfg.ec_channels = 128
+        if 'tp_mid_irreps' not in self.nemp_v3_cfg:
+            self.nemp_v3_cfg.tp_mid_irreps = str(self.irreps_node_features)
+        if 'env_scalar_mlp' not in self.nemp_v3_cfg:
+            self.nemp_v3_cfg.env_scalar_mlp = [32, 32]
+        if 'degree_norm' not in self.nemp_v3_cfg:
+            self.nemp_v3_cfg.degree_norm = True
+        if 'gate' not in self.nemp_v3_cfg:
+            self.nemp_v3_cfg.gate = 'none'
         self.pair_embedding = PairInteractionEmbeddingBlock(irreps_node_feats=self.atomic_embedding.irreps_out['node_attrs'],
                                         irreps_edge_attrs=self.spharm_edges.irreps_out[AtomicDataDict.EDGE_ATTRS_KEY],
                                         irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
@@ -193,14 +231,52 @@ class HamGNNConvE3(BaseModel):
         self.pair_interactions = torch.nn.ModuleList()
         
         for i in range(self.num_layers):
-            conv = ConvBlockE3(irreps_in=self.irreps_node_features,
-                                               irreps_out=self.irreps_node_features,
-                                               irreps_node_attrs=self.atomic_embedding.irreps_out['node_attrs'],
-                                               irreps_edge_attrs=self.spharm_edges.irreps_out[AtomicDataDict.EDGE_ATTRS_KEY],                      
-                                               irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
-                                               radial_MLP=self.radial_MLP,
-                                               use_skip_connections=True,
-                                               use_kan=use_kan)
+            if self.message_passing_mode == 'nemp':
+                conv = NEMPConvBlock(
+                    irreps_in=self.irreps_node_features,
+                    irreps_out=self.irreps_node_features,
+                    irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
+                    ec_channels=int(self.nemp_cfg.ec_channels),
+                    irreps_mid=o3.Irreps(self.nemp_cfg.tp_mid_irreps),
+                    radial_MLP=self.radial_MLP,
+                    use_kan=use_kan,
+                    gate=str(self.nemp_cfg.gate),
+                )
+            elif self.message_passing_mode == 'nemp_v2':
+                conv = NEMPDirectionalBlock(
+                    irreps_in=self.irreps_node_features,
+                    irreps_out=self.irreps_node_features,
+                    irreps_edge_attrs=self.spharm_edges.irreps_out[AtomicDataDict.EDGE_ATTRS_KEY],
+                    irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
+                    ec_channels=int(self.nemp_v2_cfg.ec_channels),
+                    irreps_mid=o3.Irreps(self.nemp_v2_cfg.tp_mid_irreps),
+                    radial_MLP=self.radial_MLP,
+                    env_scalar_mlp=self.nemp_v2_cfg.env_scalar_mlp,
+                    gate=str(self.nemp_v2_cfg.gate),
+                    degree_norm=bool(self.nemp_v2_cfg.degree_norm),
+                )
+            elif self.message_passing_mode == 'nemp_v3':
+                conv = NEMPV3Block(
+                    irreps_in=self.irreps_node_features,
+                    irreps_out=self.irreps_node_features,
+                    irreps_edge_attrs=self.spharm_edges.irreps_out[AtomicDataDict.EDGE_ATTRS_KEY],
+                    irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
+                    ec_channels=int(self.nemp_v3_cfg.ec_channels),
+                    irreps_mid=o3.Irreps(self.nemp_v3_cfg.tp_mid_irreps),
+                    radial_MLP=self.radial_MLP,
+                    env_scalar_mlp=self.nemp_v3_cfg.env_scalar_mlp,
+                    gate=str(self.nemp_v3_cfg.gate),
+                    degree_norm=bool(self.nemp_v3_cfg.degree_norm),
+                )
+            else:
+                conv = ConvBlockE3(irreps_in=self.irreps_node_features,
+                                   irreps_out=self.irreps_node_features,
+                                   irreps_node_attrs=self.atomic_embedding.irreps_out['node_attrs'],
+                                   irreps_edge_attrs=self.spharm_edges.irreps_out[AtomicDataDict.EDGE_ATTRS_KEY],
+                                   irreps_edge_embed=self.radial_basis.irreps_out[AtomicDataDict.EDGE_EMBEDDING_KEY],
+                                   radial_MLP=self.radial_MLP,
+                                   use_skip_connections=True,
+                                   use_kan=use_kan)
             self.convolutions.append(conv)
             
             if self.use_corr_prod:

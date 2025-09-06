@@ -26,7 +26,10 @@ from torch.nn import (Linear, Bilinear, Sigmoid, Softplus, ELU, ReLU, SELU, SiLU
 from typing import Callable, Union, Optional, Dict
 import re
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except Exception:
+    plt = None
 from easydict import EasyDict
 from scipy.stats import gaussian_kde
 from e3nn import o3
@@ -161,7 +164,7 @@ def get_activation(name: str) -> nn.Module:
     else:
         raise NameError("不支持的激活函数: {}".format(name))
 
-def scatter_plot(pred: np.ndarray, target: np.ndarray) -> plt.Figure:
+def scatter_plot(pred: np.ndarray, target: np.ndarray):
     """生成一个预测值 vs. 目标值的散点图。
 
     图中会画出 y=x 的虚线作为参考。可选地，可以使用核密度估计
@@ -174,6 +177,8 @@ def scatter_plot(pred: np.ndarray, target: np.ndarray) -> plt.Figure:
     Returns:
         plt.Figure: 生成的 matplotlib Figure 对象。
     """
+    if plt is None:
+        return None
     fig, ax = plt.subplots()
     """
         try:
