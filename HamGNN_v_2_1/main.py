@@ -37,6 +37,20 @@ from .models.hamgnn_output import HamGNNPlusPlusOut
 from .utils.hparam import get_hparam_dict
 
 
+def log_seed_verification(seed: int) -> None:
+    """
+    Print reproducibility checks for the configured seed value.
+    """
+    L.seed_everything(seed, workers=True)
+    torch_sample_1 = torch.randint(0, 1_000_000, (1,)).item()
+    numpy_sample_1 = np.random.randint(0, 1_000_000)
+    L.seed_everything(seed, workers=True)
+    torch_sample_2 = torch.randint(0, 1_000_000, (1,)).item()
+    numpy_sample_2 = np.random.randint(0, 1_000_000)
+    print(f"[Seed check] torch.randint sample1={torch_sample_1}, sample2={torch_sample_2}")
+    print(f"[Seed check] numpy randint sample1={numpy_sample_1}, sample2={numpy_sample_2}")
+
+
 def initialize_output_parameters(output_params):
     """
     Initialize default values for output parameters if they don't already exist.
@@ -477,7 +491,8 @@ def train_and_evaluate(config):
 
 def HamGNN():
     #torch.autograd.set_detect_anomaly(True)
-    pl.utilities.seed.seed_everything(666)
+    log_seed_verification(666)
+    L.seed_everything(666, workers=True)
     
     # Print version info on master process
     print(soft_logo)
