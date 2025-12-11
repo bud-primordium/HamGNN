@@ -100,6 +100,10 @@ class Model(LightningModule):
         
         # Track if derivatives are required
         self.requires_derivatives = self.output_module.derivative
+        
+        # Buffers for epoch-end visualization
+        self.validation_step_outputs = []
+        self.test_step_outputs = []
 
     def calculate_loss(self, batch: Dict[str, torch.Tensor], 
                        predictions: Dict[str, torch.Tensor], 
@@ -208,18 +212,16 @@ class Model(LightningModule):
                 outputs_pred[loss_dict["prediction"]] = predictions[loss_dict["prediction"]].detach().cpu().numpy()  
                 outputs_target[loss_dict["target"]] = batch[loss_dict["target"]].detach().cpu().numpy()
                 
-        return {'pred': outputs_pred, 'target': outputs_target}
+        epoch_output = {'pred': outputs_pred, 'target': outputs_target}
+        self.validation_step_outputs.append(epoch_output)
+        return epoch_output
 
-    def validation_epoch_end(self, validation_step_outputs: List[Dict]) -> None:
-        """
-        Process and log validation results at the end of an epoch.
-        
-        Parameters
-        ----------
-        validation_step_outputs : List[Dict]
-            List of outputs from all validation steps in the epoch
-        """
-        self._plot_prediction_vs_target(validation_step_outputs, mode='validation')
+    def on_validation_epoch_start(self) -> None:
+        self.validation_step_outputs = []
+
+    def on_validation_epoch_end(self) -> None:
+        if self.validation_step_outputs:
+            self._plot_prediction_vs_target(self.validation_step_outputs, mode='validation')
 
     def test_step(self, batch: Dict[str, torch.Tensor], batch_idx: int) -> Dict:
         """
@@ -265,31 +267,31 @@ class Model(LightningModule):
                 outputs_pred[loss_dict["prediction"]] = predictions[loss_dict["prediction"]].detach().cpu().numpy()  
                 outputs_target[loss_dict["target"]] = batch[loss_dict["target"]].detach().cpu().numpy()
                 
-        return {
+        result = {
             'pred': outputs_pred, 
             'target': outputs_target, 
             'processed_values': processed_values
         }
+        self.test_step_outputs.append(result)
+        return result
 
-    def test_epoch_end(self, test_step_outputs: List[Dict]) -> None:
-        """
-        Process and log test results at the end of testing.
-        
-        Parameters
-        ----------
-        test_step_outputs : List[Dict]
-            List of outputs from all test steps
-        """
+    def on_test_epoch_start(self) -> None:
+        self.test_step_outputs = []
+
+    def on_test_epoch_end(self) -> None:
         # Create output directory if it doesn't exist
-        log_dir = self.trainer.logger.log_dir
+        if self.trainer.logger and getattr(self.trainer.logger, "log_dir", None):
+            log_dir = self.trainer.logger.log_dir
+        else:
+            log_dir = os.path.join(self.trainer.default_root_dir, "fast_dev_run_logs")
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         
         # Save predictions and targets
-        self._save_predictions_and_targets(test_step_outputs, log_dir)
+        self._save_predictions_and_targets(self.test_step_outputs, log_dir)
         
         # Generate and log scatter plots
-        self._plot_prediction_vs_target(test_step_outputs, mode='test')
+        self._plot_prediction_vs_target(self.test_step_outputs, mode='test')
         
         # Save post-processed values if available
         if self.post_processing is not None:
@@ -297,7 +299,7 @@ class Model(LightningModule):
             
             if post_processing_name == 'epc_output':
                 processed_values = np.concatenate([
-                    out['processed_values']["epc_mat"] for out in test_step_outputs if out['processed_values'] is not None
+                    out['processed_values']["epc_mat"] for out in self.test_step_outputs if out['processed_values'] is not None
                 ])
                 np.save(os.path.join(log_dir, 'processed_values_epc_mat.npy'), processed_values)
 
