@@ -256,11 +256,27 @@ def setup_trainer(config, callbacks):
     )
     
     # Configure trainer with parameters from config
+    num_gpus_raw = getattr(config.setup, 'num_gpus', 0) or 0
+    if isinstance(num_gpus_raw, (list, tuple)):
+        accelerator = 'gpu'
+        devices = list(num_gpus_raw)
+    else:
+        num_gpus = int(num_gpus_raw)
+        accelerator = 'gpu' if num_gpus > 0 else 'cpu'
+        devices = num_gpus if num_gpus > 0 else 1
+    
+    requested_precision = getattr(config.setup, 'precision', 32)
+    if requested_precision == 16:
+        trainer_precision = "16-mixed"
+    elif requested_precision == 64:
+        trainer_precision = "64-true"
+    else:
+        trainer_precision = requested_precision
+
     trainer_params = {
-        'gpus': config.setup.num_gpus, 
-        'precision': config.setup.precision,
-        'callbacks': callbacks,
-        'progress_bar_refresh_rate': 1,
+        'accelerator': accelerator,
+        'devices': devices,
+        'precision': trainer_precision,
         'logger': tb_logger,
         'gradient_clip_val': config.optim_params.gradient_clip_val,
         'max_epochs': config.optim_params.max_epochs,
@@ -268,12 +284,30 @@ def setup_trainer(config, callbacks):
         'min_epochs': config.optim_params.min_epochs,
     }
     
-    # Add checkpoint path if resuming training
-    if config.setup.resume and config.setup.checkpoint_path:
-        trainer_params['resume_from_checkpoint'] = config.setup.checkpoint_path
+    fast_dev_run = getattr(config.setup, 'fast_dev_run', False)
+    if fast_dev_run:
+        trainer_params['fast_dev_run'] = fast_dev_run
     
-    # Create the trainer with the configured parameters
-    trainer = pl.Trainer(**trainer_params)
+    limit_train_batches = getattr(config.setup, 'limit_train_batches', None)
+    if limit_train_batches is not None:
+        trainer_params['limit_train_batches'] = limit_train_batches
+    
+    limit_val_batches = getattr(config.setup, 'limit_val_batches', None)
+    if limit_val_batches is not None:
+        trainer_params['limit_val_batches'] = limit_val_batches
+    
+    limit_test_batches = getattr(config.setup, 'limit_test_batches', None)
+    if limit_test_batches is not None:
+        trainer_params['limit_test_batches'] = limit_test_batches
+    
+    log_every_n_steps = getattr(config.setup, 'log_every_n_steps', None)
+    if log_every_n_steps is not None:
+        trainer_params['log_every_n_steps'] = log_every_n_steps
+
+    if callbacks:
+        trainer_params['callbacks'] = callbacks
+    
+    trainer = Trainer(**trainer_params)
     
     return trainer, tb_logger
 
@@ -332,28 +366,33 @@ def load_or_create_model(config, graph_representation, output_module, post_proce
     return model
 
 
-def train_model(trainer, model, data_module):
+def train_model(trainer, model, data_module, ckpt_path=None):
     """
-    Train the model using the configured trainer.
+    Train the model and optionally resume from a checkpoint.
     
     Parameters
     ----------
-    trainer : pl.Trainer
-        PyTorch Lightning trainer
+    trainer : Trainer
+        Configured Lightning trainer
     model : Model
-        Model to train
+        LightningModule to train
     data_module : graph_data_module
-        Data module containing training data
+        Data module providing train/val splits
+    ckpt_path : str, optional
+        Checkpoint path for resuming interrupted training
     
     Returns
     -------
     list
-        Test results after training
+        Test metrics collected after evaluation
     """
     print("Starting training...")
     
     # Train the model
-    trainer.fit(model, data_module)
+    fit_kwargs = {}
+    if ckpt_path:
+        fit_kwargs['ckpt_path'] = ckpt_path
+    trainer.fit(model, data_module, **fit_kwargs)
     
     print("Training completed.")
     print("Starting evaluation...")
@@ -372,8 +411,8 @@ def test_model(trainer, model, data_module):
     
     Parameters
     ----------
-    trainer : pl.Trainer
-        PyTorch Lightning trainer
+    trainer : Trainer
+        Configured Lightning trainer
     model : Model
         Model to test
     data_module : graph_data_module
@@ -424,20 +463,22 @@ def train_and_evaluate(config):
     metrics = config.losses_metrics.metrics
     
     # Setup callbacks
+    progress_refresh = getattr(config.profiler_params, 'progress_bar_refresh_rat', 1)
     callbacks = [
-        pl.callbacks.LearningRateMonitor(),
-        pl.callbacks.EarlyStopping(
+        LearningRateMonitor(),
+        EarlyStopping(
             monitor="training/total_loss",
             patience=config.optim_params.stop_patience, 
             min_delta=1e-6,
         ),
-        pl.callbacks.ModelCheckpoint(
+        ModelCheckpoint(
             filename="{epoch}-{val_loss:.6f}",
             save_top_k=1,
             verbose=False,
             monitor='validation/total_loss',
             mode='min',
-        )
+        ),
+        TQDMProgressBar(refresh_rate=progress_refresh),
     ]
     
     # Training stage
@@ -450,6 +491,9 @@ def train_and_evaluate(config):
         
         # Setup trainer
         trainer, tb_logger = setup_trainer(config, callbacks)
+        resume_ckpt = None
+        if config.setup.resume and config.setup.checkpoint_path:
+            resume_ckpt = config.setup.checkpoint_path
         
         # Log version info to TensorBoard
         version_info = get_full_version_info()
@@ -457,7 +501,7 @@ def train_and_evaluate(config):
             tb_logger.experiment.add_text(f"version/{key}", str(value), global_step=0)
         
         # Train and evaluate model
-        test_results = train_model(trainer, model, data_module)
+        test_results = train_model(trainer, model, data_module, ckpt_path=resume_ckpt)
         
         # Log hyperparameters in tensorboard
         hparam_dict = get_hparam_dict(config)
