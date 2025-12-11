@@ -13,13 +13,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.nn import functional as F
-import pytorch_lightning as pl
+from lightning.pytorch import LightningModule
 from typing import List, Dict, Union, Callable, Optional, Any
 
 from ..utils.visualization import scatter_plot
 
 
-class Model(pl.LightningModule):
+class Model(LightningModule):
     """
     A PyTorch Lightning module for scientific machine learning models.
     

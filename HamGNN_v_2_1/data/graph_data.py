@@ -6,7 +6,7 @@
  * @Last Modified time: 2021-10-29 16:24:33
  */
 """
-import pytorch_lightning as pl
+from lightning.pytorch import LightningDataModule
 from torch_geometric.data import Data
 from torch_geometric.loader import DataLoader
 from typing import Union, Callable, Optional, List
@@ -183,7 +183,7 @@ class NPZGraphDataset(Dataset):
             
         return data
 
-class graph_data_module(pl.LightningDataModule):
+class graph_data_module(LightningDataModule):
     """
     Data module for efficiently handling large-scale graph data
     """

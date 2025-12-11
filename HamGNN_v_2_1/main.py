@@ -16,8 +16,15 @@ import yaml
 import torch
 import torch.nn as nn
 import numpy as np
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
+import lightning as L
+from lightning.pytorch import Trainer
+from lightning.pytorch.callbacks import (
+    EarlyStopping,
+    LearningRateMonitor,
+    ModelCheckpoint,
+    TQDMProgressBar,
+)
+from lightning.pytorch.loggers import TensorBoardLogger
 import pprint
 
 from .data.graph_data import graph_data_module
