@@ -69,7 +69,7 @@ The HamGNN framework recommends Python 3.9 and depends on the following key Pyth
 - `numpy == 1.21.2`
 - `PyTorch == 1.11.0`
 - `PyTorch Geometric == 2.0.4`
-- `pytorch_lightning == 1.5.10`
+- `lightning == 2.6.0`
 - `e3nn == 0.5.0`
 - `pymatgen == 2022.3.7`
 - `tensorboard == 2.8.0`
@@ -605,4 +605,3 @@ The papers related to HamGNN:
 ## Project leaders: 
 + Hongjun Xiang  (Fudan University)
 + Xingao Gong  (Fudan University)
-
