@@ -129,3 +129,8 @@ setup:
   precision: 32
   property: hamiltonian
   stage: fit # fit: training; test: inference
+  fast_dev_run: False
+  limit_train_batches: null
+  limit_val_batches: null
+  limit_test_batches: null
+  log_every_n_steps: null

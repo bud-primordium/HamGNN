@@ -32,6 +32,11 @@ config_default_setup['job_id'] = 'time_2025'
 config_default_setup['precision'] = 32
 config_default_setup['property'] = 'hamiltonian'
 config_default_setup['stage'] = 'fit'
+config_default_setup['fast_dev_run'] = False
+config_default_setup['limit_train_batches'] = None
+config_default_setup['limit_val_batches'] = None
+config_default_setup['limit_test_batches'] = None
+config_default_setup['log_every_n_steps'] = None
 config_default['setup'] = config_default_setup
 
 """The parameters for profiler"""
@@ -214,4 +219,3 @@ def load_config(config_file_path: Optional[str] = None) -> EasyDict:
             config.losses_metrics.metrics = parse_metric_func(config.losses_metrics.metrics)
     
     return config
-
