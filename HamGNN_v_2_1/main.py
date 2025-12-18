@@ -451,7 +451,12 @@ def train_and_evaluate(config):
     graph_representation, output_module, post_processing_utility = build_hamgnn_model(config)
     
     # Set precision (data type)
-    dtype = torch.float32 if config.setup.precision == 32 else torch.float64
+    # Notes:
+    # - With Lightning `precision="16-mixed"`, model parameters should stay in float32.
+    #   AMP handles mixed precision internally.
+    # - Switch to float64 only when explicitly requested.
+    requested_precision = getattr(config.setup, 'precision', 32)
+    dtype = torch.float64 if requested_precision == 64 else torch.float32
     torch.set_default_dtype(dtype)
     
     # Convert model components to correct precision

@@ -176,6 +176,8 @@ class Model(LightningModule):
         self._enable_position_gradients(batch)
         predictions = self(batch)
         loss = self.calculate_loss(batch, predictions, 'training')
+        # Keep a plain "loss" key for the progress bar (legacy-friendly).
+        self.log("loss", loss, on_step=True, on_epoch=False, prog_bar=True, logger=False)
         self.log("training/total_loss", loss, on_step=True, on_epoch=True, prog_bar=False)
         return loss
 
@@ -202,6 +204,7 @@ class Model(LightningModule):
         predictions = self(batch)
         
         val_loss = self.calculate_loss(batch, predictions, 'validation')
+        self.log("val_loss", val_loss, on_step=False, on_epoch=True, prog_bar=True, logger=False)
         self.log("validation/total_loss", val_loss, on_step=False, on_epoch=True, prog_bar=False)
         self.log_metrics(batch, predictions, 'validation')
         
@@ -257,6 +260,7 @@ class Model(LightningModule):
             predictions = self(batch)
         
         test_loss = self.calculate_loss(batch, predictions, 'test')
+        self.log("test_loss", test_loss, on_step=False, on_epoch=True, prog_bar=True, logger=False)
         self.log("test/total_loss", test_loss, on_step=False, on_epoch=True)
         self.log_metrics(batch, predictions, "test")
         
