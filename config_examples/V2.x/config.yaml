@@ -93,6 +93,13 @@ output_nets:
 
 profiler_params:
   progress_bar_refresh_rat: 1
+  # GPU stats logging (per-epoch): write to TensorBoard and show in progress bar.
+  # Notes:
+  # - Memory stats are collected via `torch.cuda.*` when CUDA is available.
+  # - Utilization requires NVML via `pynvml` (pip package: `nvidia-ml-py`).
+  gpu_stats_enable: false
+  gpu_stats_every_n_epochs: 1
+  gpu_stats_use_nvml: true
   train_dir: ./ #The folder for saving training information and prediction results. This directory can be read by tensorboard to monitor the training process.
 
 representation_nets:

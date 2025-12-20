@@ -39,7 +39,8 @@ setup(
         "tqdm",
         "tensorboard",
         "natsort",
-        "numba"
+        "numba",
+        "nvidia-ml-py"
     ],
     license="MIT",
     license_files="LICENSE",

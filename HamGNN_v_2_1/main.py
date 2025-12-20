@@ -19,6 +19,7 @@ import numpy as np
 import lightning as L
 from lightning.pytorch import Trainer
 from lightning.pytorch.callbacks import (
+    Callback,
     EarlyStopping,
     LearningRateMonitor,
     ModelCheckpoint,
@@ -49,6 +50,130 @@ def log_seed_verification(seed: int) -> None:
     numpy_sample_2 = np.random.randint(0, 1_000_000)
     print(f"[Seed check] torch.randint sample1={torch_sample_1}, sample2={torch_sample_2}")
     print(f"[Seed check] numpy randint sample1={numpy_sample_1}, sample2={numpy_sample_2}")
+
+
+class EpochGpuStatsCallback(Callback):
+    """
+    Log GPU statistics once per epoch (to TensorBoard and the progress bar).
+
+    Parameters
+    ----------
+    every_n_epochs : int
+        Log once every N epochs (1 means every epoch).
+    use_nvml : bool
+        Whether to additionally log utilization via NVML (requires `pynvml` / `nvidia-ml-py`).
+
+    Notes
+    -----
+    - Always logs CUDA memory stats when CUDA is available.
+    - Falls back silently when NVML is unavailable to avoid impacting training.
+    """
+
+    def __init__(self, every_n_epochs: int = 1, use_nvml: bool = True):
+        super().__init__()
+        self.every_n_epochs = max(int(every_n_epochs), 1)
+        self.use_nvml = bool(use_nvml)
+        self._nvml = None
+        self._nvml_handle = None
+
+    def _should_log_epoch(self, trainer: Trainer) -> bool:
+        # Lightning epochs are 0-indexed.
+        return (trainer.current_epoch + 1) % self.every_n_epochs == 0
+
+    def _try_init_nvml(self, device_index: int) -> None:
+        if not self.use_nvml or self._nvml is not None:
+            return
+        try:
+            import pynvml  # type: ignore
+        except Exception:
+            return
+        try:
+            pynvml.nvmlInit()
+            self._nvml = pynvml
+            self._nvml_handle = pynvml.nvmlDeviceGetHandleByIndex(int(device_index))
+        except Exception:
+            self._nvml = None
+            self._nvml_handle = None
+
+    def on_fit_epoch_start(self, trainer: Trainer, pl_module: L.LightningModule) -> None:
+        if not torch.cuda.is_available() or pl_module.device.type != "cuda":
+            return
+        if not self._should_log_epoch(trainer):
+            return
+        torch.cuda.reset_peak_memory_stats(pl_module.device)
+
+    def on_fit_epoch_end(self, trainer: Trainer, pl_module: L.LightningModule) -> None:
+        if not trainer.is_global_zero:
+            return
+        if not torch.cuda.is_available() or pl_module.device.type != "cuda":
+            return
+        if not self._should_log_epoch(trainer):
+            return
+
+        device = pl_module.device
+        alloc_gb = torch.cuda.memory_allocated(device) / (1024**3)
+        reserved_gb = torch.cuda.memory_reserved(device) / (1024**3)
+        max_alloc_gb = torch.cuda.max_memory_allocated(device) / (1024**3)
+        max_reserved_gb = torch.cuda.max_memory_reserved(device) / (1024**3)
+
+        pl_module.log(
+            "gpu/mem_alloc_gb",
+            float(alloc_gb),
+            prog_bar=True,
+            logger=True,
+            on_step=False,
+            on_epoch=True,
+        )
+        pl_module.log(
+            "gpu/mem_reserved_gb",
+            float(reserved_gb),
+            prog_bar=False,
+            logger=True,
+            on_step=False,
+            on_epoch=True,
+        )
+        pl_module.log(
+            "gpu/peak_mem_alloc_gb",
+            float(max_alloc_gb),
+            prog_bar=True,
+            logger=True,
+            on_step=False,
+            on_epoch=True,
+        )
+        pl_module.log(
+            "gpu/peak_mem_reserved_gb",
+            float(max_reserved_gb),
+            prog_bar=False,
+            logger=True,
+            on_step=False,
+            on_epoch=True,
+        )
+
+        device_index = device.index if device.index is not None else torch.cuda.current_device()
+        self._try_init_nvml(device_index=device_index)
+        if self._nvml is None or self._nvml_handle is None:
+            return
+        try:
+            util = self._nvml.nvmlDeviceGetUtilizationRates(self._nvml_handle)
+            pl_module.log(
+                "gpu/util_pct",
+                float(util.gpu),
+                prog_bar=True,
+                logger=True,
+                on_step=False,
+                on_epoch=True,
+            )
+            pl_module.log(
+                "gpu/mem_util_pct",
+                float(util.memory),
+                prog_bar=False,
+                logger=True,
+                on_step=False,
+                on_epoch=True,
+            )
+        except Exception:
+            # Fall back silently when NVML queries fail to avoid impacting training.
+            return
 
 
 def initialize_output_parameters(output_params):
@@ -469,6 +594,9 @@ def train_and_evaluate(config):
     
     # Setup callbacks
     progress_refresh = getattr(config.profiler_params, 'progress_bar_refresh_rat', 1)
+    gpu_stats_enable = getattr(config.profiler_params, "gpu_stats_enable", False)
+    gpu_stats_every_n_epochs = getattr(config.profiler_params, "gpu_stats_every_n_epochs", 1)
+    gpu_stats_use_nvml = getattr(config.profiler_params, "gpu_stats_use_nvml", True)
     callbacks = [
         LearningRateMonitor(),
         EarlyStopping(
@@ -482,6 +610,11 @@ def train_and_evaluate(config):
             verbose=False,
             monitor='validation/total_loss',
             mode='min',
+        ),
+        *(
+            [EpochGpuStatsCallback(every_n_epochs=gpu_stats_every_n_epochs, use_nvml=gpu_stats_use_nvml)]
+            if gpu_stats_enable
+            else []
         ),
         TQDMProgressBar(refresh_rate=progress_refresh),
     ]
