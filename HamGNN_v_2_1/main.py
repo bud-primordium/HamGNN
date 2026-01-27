@@ -195,7 +195,7 @@ def initialize_output_parameters(output_params):
     default_params = {
         'add_H_nonsoc': False,          # Add non-spin-orbit coupling Hamiltonian
         'get_nonzero_mask_tensor': False, # Generate mask for non-zero elements
-        'zero_point_shift': False,       # Apply zero-point energy shift
+        'zero_point_shift': True,       # Apply zero-point energy shift
         'soc_basis': 'so3',           # Spin-orbit coupling basis
     }
     
@@ -236,7 +236,7 @@ def prepare_dataset(config):
     graph_data_path = config.dataset_params.graph_data_path
     
     # Check if graph_data_path is a file, if not append 'graph_data.npz'
-    if not os.path.isfile(graph_data_path):
+    if not os.path.isfile(graph_data_path) and not graph_data_path.lower().endswith(".lmdb"):
         graph_data_path = os.path.join(graph_data_path, 'graph_data.npz')
     
     # Get optional parameters with defaults
@@ -704,3 +704,4 @@ def HamGNN():
 
 if __name__ == '__main__':
     HamGNN()
+
